@@ -23,7 +23,6 @@ class Forest:
         max_radius: float,
         min_spare_distance: float = 0.2,
         max_spawn_attempts: int = 50,
-        seed: int = 0,
     ):
         """Initialize the forest object.
 
@@ -42,9 +41,6 @@ class Forest:
         self.trees: List[Tree] = []
         self.xlim = xlim
         self.ylim = ylim
-
-        # Set the seed for reproducibility
-        np.random.seed(seed)
 
         # Generate random trees
         for _ in range(n_trees):
@@ -70,6 +66,8 @@ class Forest:
                     for tree in self.trees
                 ):
                     continue
+
+                # TODO: Check if the tree is not in the exclusion zone
 
                 self.trees.append(Tree(Point(x_pos, y_pos), radius))
                 break

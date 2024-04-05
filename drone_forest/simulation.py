@@ -3,9 +3,10 @@
 from drone_forest.geometric_objects import Point
 from drone_forest.forest import Forest
 from drone_forest.lidar import Lidar
+from drone_forest.drone import Drone
 
 import matplotlib.pyplot as plt
-from typing import Tuple
+from typing import List, Tuple
 
 
 class Simulation:
@@ -18,6 +19,7 @@ class Simulation:
 
     def __init__(
         self,
+        dt: float,
         xlim: Tuple[float, float],
         ylim: Tuple[float, float],
         n_trees: int,
@@ -26,7 +28,6 @@ class Simulation:
         max_lidar_range: float,
         min_spare_distance: float = 0.2,
         max_spawn_attempts: int = 50,
-        seed: int = 0,
     ):
         """Initialize the simulation object.
 
@@ -44,6 +45,7 @@ class Simulation:
         assert xlim[0] < 0 < xlim[1], "The x-axis limits must contain zero."
         assert ylim[0] < 0 < ylim[1], "The y-axis limits must contain zero."
 
+        self.dt = dt
         self.forest = Forest(
             xlim,
             ylim,
@@ -51,9 +53,11 @@ class Simulation:
             max_tree_radius,
             min_spare_distance,
             max_spawn_attempts,
-            seed,
         )
-        self.lidar = Lidar(Point(0, 0), max_lidar_range, n_lidar_beams)
+        self.drone = Drone(
+            Point(0, 0), Lidar(Point(0, 0), max_lidar_range, n_lidar_beams)
+        )
+        self.sim_time = 0.0
 
     def draw(self, ax: plt.Axes):
         """Draw the simulation."""
@@ -62,10 +66,15 @@ class Simulation:
             tree.draw(ax)
 
         # Draw the lidar
-        self.lidar.draw(ax)
+        self.drone.draw(ax)
 
-    def step(self):
+    def step(self, dvec: Point) -> List[float]:
         """Take a step in the simulation."""
+        # Move the drone
+        self.drone.move(self.dt, dvec)
+
+        # Update the simulation time
+        self.sim_time += self.dt
+
         # Update the lidar scan
-        obstacles = [tree.circle for tree in self.forest.trees]
-        self.lidar.scan(obstacles)
+        return self.drone.lidar.scan([tree.circle for tree in self.forest.trees])

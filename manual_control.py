@@ -2,9 +2,11 @@
 
 import matplotlib.pyplot as plt
 
+from drone_forest.geometric_objects import Point
 from drone_forest.simulation import Simulation
 
 # Set the parameters for the simulation
+dt = 0.1
 xlim = (-10, 10)
 ylim = (-1, 25)
 n_trees = 200
@@ -14,13 +16,13 @@ max_lidar_range = 3.0
 
 # Create the simulation
 simulation = Simulation(
+    dt,
     xlim,
     ylim,
     n_trees,
     max_tree_radius,
     n_lidar_beams,
     max_lidar_range,
-    seed=0,
 )
 
 # Set up the plot
@@ -29,7 +31,7 @@ ax: plt.Axes
 figure, ax = plt.subplots()
 
 # Manual control in the loop
-simulation.step()
+simulation.step(Point(0, 0))
 while True:
     # Show the simulation window
     ax.clear()
@@ -51,16 +53,17 @@ while True:
     action = input("Enter an action (w: up, a: left, s: down, d: right, q: quit): ")
 
     # Perform the action
+    control_action: Point = Point(0, 0)
     if action == "w":
-        simulation.lidar.position.y += 0.1
+        control_action = Point(0, 1)
     elif action == "a":
-        simulation.lidar.position.x -= 0.1
+        control_action = Point(-1, 0)
     elif action == "s":
-        simulation.lidar.position.y -= 0.1
+        control_action = Point(0, -1)
     elif action == "d":
-        simulation.lidar.position.x += 0.1
+        control_action = Point(1, 0)
     elif action == "q":
         break
 
     # Perform simulation step
-    simulation.step()
+    simulation.step(control_action)

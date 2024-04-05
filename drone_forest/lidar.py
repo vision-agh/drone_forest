@@ -57,7 +57,7 @@ class Lidar:
 
         # Draw the lidar position as a small circle
         lidar_circle = plt.Circle(
-            (self.position.x, self.position.y), 0.2, color="red", fill=True
+            (self.position.x, self.position.y), 0.05, color="black", fill=True
         )
         ax.add_artist(lidar_circle)
 
