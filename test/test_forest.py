@@ -83,11 +83,11 @@ class TestForest(unittest.TestCase):
         """Test the draw method of the forest object."""
         ax = plt.gca()
 
-        forest = Forest((-10, 10), (-10, 10), 5, 1, seed=13)
+        forest = Forest((-10, 10), (-10, 10), 5, 1)
         forest.draw(ax)
 
         ax.clear()
-        forest = Forest((-10, 10), (-10, 10), 10, 0.5, seed=13)
+        forest = Forest((-10, 10), (-10, 10), 10, 0.5)
         forest.draw(ax)
 
         # ax.set_xlim(-10, 10)
