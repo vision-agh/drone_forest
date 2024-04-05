@@ -11,9 +11,11 @@ class Point:
     y: float
 
     def __add__(self, other: "Point") -> "Point":
+        """Add two points together."""
         return [self.x + other.x, self.y + other.y]
 
     def __sub__(self, other: "Point") -> "Point":
+        """Subtract one point from another."""
         return [self.x - other.x, self.y - other.y]
 
 

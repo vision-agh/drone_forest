@@ -1,6 +1,6 @@
 """Script for the simulation class."""
 
-from drone_forest.geometric_objects import Point
+from drone_forest.geometric_objects import Circle, Point
 from drone_forest.forest import Forest
 from drone_forest.lidar import Lidar
 from drone_forest.drone import Drone
@@ -51,6 +51,7 @@ class Simulation:
             ylim,
             n_trees,
             max_tree_radius,
+            [Circle(Point(0, 0), 1)],
             min_spare_distance,
             max_spawn_attempts,
         )
