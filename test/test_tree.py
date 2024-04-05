@@ -60,6 +60,28 @@ class TestTree(unittest.TestCase):
         with self.assertRaises(AssertionError):
             tree.draw(None)
 
+    def test_tree_get_position(self):
+        """Test the get_position method of the tree object."""
+        tree = Tree(Point(0, 0), 1)
+        self.assertEqual(tree.get_position(), Point(0, 0))
+
+        tree = Tree(Point(3, 4), 5)
+        self.assertEqual(tree.get_position(), Point(3, 4))
+
+        tree = Tree(Point(-2, -3), 0.25)
+        self.assertEqual(tree.get_position(), Point(-2, -3))
+
+    def test_tree_get_radius(self):
+        """Test the get_radius method of the tree object."""
+        tree = Tree(Point(0, 0), 1)
+        self.assertEqual(tree.get_radius(), 1)
+
+        tree = Tree(Point(3, 4), 5)
+        self.assertEqual(tree.get_radius(), 5)
+
+        tree = Tree(Point(-2, -3), 0.25)
+        self.assertEqual(tree.get_radius(), 0.25)
+
 
 if __name__ == "__main__":
     unittest.main()

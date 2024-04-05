@@ -46,3 +46,19 @@ class Tree:
             fill=True,
         )
         ax.add_artist(circle)
+
+    def get_position(self) -> Point:
+        """Get the position of the tree.
+
+        Returns:
+            Point: The position of the tree.
+        """
+        return self.circle.center
+
+    def get_radius(self) -> float:
+        """Get the radius of the tree.
+
+        Returns:
+            float: The radius of the tree.
+        """
+        return self.circle.radius

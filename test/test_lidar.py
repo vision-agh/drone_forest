@@ -111,14 +111,14 @@ class TestLidar(unittest.TestCase):
         self.assertEqual(distances[:13], [5] * 13)
         self.assertEqual(distances[33:], [5] * 57)
 
-        ax = plt.gca()
-        for obstacle in obstacles:
-            obstacle.draw(ax)
-        lidar.draw(ax)
-        ax.set_xlim(-20, 20)
-        ax.set_ylim(-20, 20)
-        ax.set_aspect("equal")
-        plt.show()
+        # ax = plt.gca()
+        # for obstacle in obstacles:
+        #     obstacle.draw(ax)
+        # lidar.draw(ax)
+        # ax.set_xlim(-20, 20)
+        # ax.set_ylim(-20, 20)
+        # ax.set_aspect("equal")
+        # plt.show()
 
     def test_lidar_scan_no_obstacles(self):
         """Test the scan method of the lidar object without obstacles."""
@@ -188,14 +188,14 @@ class TestLidar(unittest.TestCase):
         self.assertEqual(distances[:13], [5] * 13)
         self.assertEqual(distances[33:], [5] * 57)
 
-        ax = plt.gca()
-        for obstacle in obstacles:
-            obstacle.draw(ax)
-        lidar.draw(ax)
-        ax.set_xlim(-20, 20)
-        ax.set_ylim(-20, 20)
-        ax.set_aspect("equal")
-        plt.show()
+        # ax = plt.gca()
+        # for obstacle in obstacles:
+        #     obstacle.draw(ax)
+        # lidar.draw(ax)
+        # ax.set_xlim(-20, 20)
+        # ax.set_ylim(-20, 20)
+        # ax.set_aspect("equal")
+        # plt.show()
 
 
 if __name__ == "__main__":

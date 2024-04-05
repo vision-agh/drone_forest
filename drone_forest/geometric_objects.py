@@ -10,6 +10,12 @@ class Point:
     x: float
     y: float
 
+    def __add__(self, other: "Point") -> "Point":
+        return [self.x + other.x, self.y + other.y]
+
+    def __sub__(self, other: "Point") -> "Point":
+        return [self.x - other.x, self.y - other.y]
+
 
 @dataclasses.dataclass
 class Line:
