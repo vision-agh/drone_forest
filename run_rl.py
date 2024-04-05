@@ -1,14 +1,10 @@
 """Script for running reinforcement learning on the drone forest."""
 
-import numpy as np
 import matplotlib.pyplot as plt
 
 # from stable_baselines3 import A2C
 
 from drone_forest.gym_wrapper import DroneForestEnv
-
-# Set the seed for reproducibility
-np.random.seed(0)
 
 # Set the parameters for the simulation
 dt = 0.1
@@ -38,8 +34,8 @@ figure, ax = plt.subplots()
 
 # Run the reinforcement learning loop
 n_episodes = 3
-obs = env.reset(0)
 for episode in range(n_episodes):
+    obs = env.reset()
     while True:
         action = env.action_space.sample()
         obs, reward, terminated, truncated, info = env.step(action)
@@ -67,7 +63,6 @@ for episode in range(n_episodes):
             else:
                 print(f"Episode {episode + 1} truncated with reward {reward}.")
             break
-    obs = env.reset()
 
 # Close the plot
 plt.ioff()

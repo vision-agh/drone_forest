@@ -82,7 +82,13 @@ class DroneForestEnv(gym.Env):
         observation = np.array(self.simulation.step(control_value))
 
         # Terminated, truncated and reward
-        collision = np.any(observation < 0.2)
+        collision = (
+            np.any(observation < 0.2)
+            or self.simulation.drone.position.y <= self.ylim[0]
+            or self.simulation.drone.position.y >= self.ylim[1]
+            or self.simulation.drone.position.x <= self.xlim[0]
+            or self.simulation.drone.position.x >= self.xlim[1]
+        )
         success = self.simulation.drone.position.x >= self.xlim[1] - 2.0
         if collision:
             reward = -1
