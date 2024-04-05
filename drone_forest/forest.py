@@ -4,7 +4,7 @@ import numpy as np
 from typing import List, Tuple
 
 from drone_forest.tree import Tree
-from drone_forest.geometric_objects import Point
+from drone_forest.geometric_objects import Circle, Point
 from drone_forest.geometric_utils import distance
 
 
@@ -21,6 +21,7 @@ class Forest:
         ylim: Tuple[float, float],
         n_trees: int,
         max_radius: float,
+        exclusion_zones: List[Circle] = [],
         min_spare_distance: float = 0.2,
         max_spawn_attempts: int = 50,
     ):
@@ -67,7 +68,13 @@ class Forest:
                 ):
                     continue
 
-                # TODO: Check if the tree is not in the exclusion zone
+                # Check if the tree is not in the exclusion zone
+                if any(
+                    distance(Point(x_pos, y_pos), circle.center)
+                    < radius + circle.radius
+                    for circle in exclusion_zones
+                ):
+                    continue
 
                 self.trees.append(Tree(Point(x_pos, y_pos), radius))
                 break

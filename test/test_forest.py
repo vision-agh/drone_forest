@@ -5,6 +5,7 @@ import unittest
 import matplotlib.pyplot as plt
 import numpy as np
 
+from drone_forest.geometric_objects import Circle, Point
 from drone_forest.forest import Forest
 
 
@@ -30,14 +31,14 @@ class TestForest(unittest.TestCase):
             Forest((-10, 10), (-10, 10), 0, 1)
 
     def test_forest_init_negative_spare_distance(self):
-        """Test the initialization of the forest object with a negative"""
-        """ minimum spare distance."""
+        """Test the initialization of the forest object with a negative \
+        minimum spare distance."""
         with self.assertRaises(AssertionError):
             Forest((-10, 10), (-10, 10), 5, 1, -1)
 
     def test_forest_init_negative_max_spawn_attempts(self):
-        """Test the initialization of the forest object with a negative"""
-        """ max spawn attempts."""
+        """Test the initialization of the forest object with a negative \
+        max spawn attempts."""
         with self.assertRaises(AssertionError):
             Forest((-10, 10), (-10, 10), 5, 1, 0.2, -1)
 
@@ -78,6 +79,25 @@ class TestForest(unittest.TestCase):
                         np.linalg.norm(tree.circle.center - other.circle.center),
                         min_spare_distance + tree.circle.radius + other.circle.radius,
                     )
+
+    def test_forest_exclusion_zones(self):
+        """Test the exclusion zones of the forest object."""
+        # Case 1: No exclusion zones
+        forest = Forest((-10, 10), (-10, 10), 5, 1)
+        self.assertLessEqual(len(forest.trees), 5)
+        self.assertGreaterEqual(len(forest.trees), 1)
+
+        # Case 2: Exclusion zones
+        exclusion_zones = [Circle(Point(0, 0), 2), Circle(Point(5, 5), 1)]
+        forest = Forest((-10, 10), (-10, 10), 5, 1, exclusion_zones, 0.5, 50)
+        self.assertLessEqual(len(forest.trees), 5)
+        self.assertGreaterEqual(len(forest.trees), 1)
+        for tree in forest.trees:
+            for exclusion_zone in exclusion_zones:
+                self.assertGreaterEqual(
+                    np.linalg.norm(tree.circle.center - exclusion_zone.center),
+                    exclusion_zone.radius + tree.circle.radius,
+                )
 
     def test_forest_draw(self):
         """Test the draw method of the forest object."""
