@@ -57,6 +57,8 @@ class TestForest(unittest.TestCase):
 
         # Case 1: Spare forest
         forest = Forest((-10, 10), (-10, 10), 5, 1, min_spare_distance)
+        self.assertLessEqual(len(forest.trees), 5)
+        self.assertGreaterEqual(len(forest.trees), 1)
         for tree in forest.trees:
             for other in forest.trees:
                 if tree != other:
@@ -67,6 +69,8 @@ class TestForest(unittest.TestCase):
 
         # Case 2: Dense forest
         forest = Forest((-10, 10), (-10, 10), 5000, 1, min_spare_distance)
+        self.assertLessEqual(len(forest.trees), 5000)
+        self.assertGreaterEqual(len(forest.trees), 1)
         for tree in forest.trees:
             for other in forest.trees:
                 if tree != other:

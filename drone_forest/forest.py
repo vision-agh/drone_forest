@@ -40,6 +40,8 @@ class Forest:
         assert ylim[0] < ylim[1], "The y-axis limits must be in increasing order."
 
         self.trees: List[Tree] = []
+        self.xlim = xlim
+        self.ylim = ylim
 
         # Set the seed for reproducibility
         np.random.seed(seed)

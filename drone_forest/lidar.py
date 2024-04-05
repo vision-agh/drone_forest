@@ -1,6 +1,7 @@
 """Script for the lidar class."""
 
 import math
+import matplotlib.pyplot as plt
 from typing import List
 
 from drone_forest.geometric_objects import Circle, Line, Point
@@ -42,7 +43,7 @@ class Lidar:
             )
             self.beam_lines.append(Line(self.position, end))
 
-    def draw(self, ax):
+    def draw(self, ax: plt.Axes):
         """Draw the lidar on the given axis.
 
         Args:
@@ -50,8 +51,15 @@ class Lidar:
         """
         assert ax is not None, "The axis must be provided."
 
+        # Draw the beams emitted by the lidar
         for line in self.beam_lines:
             ax.plot([line.start.x, line.end.x], [line.start.y, line.end.y], "b-")
+
+        # Draw the lidar position as a small circle
+        lidar_circle = plt.Circle(
+            (self.position.x, self.position.y), 0.2, color="red", fill=True
+        )
+        ax.add_artist(lidar_circle)
 
     def scan(self, obstacles: List[Circle]) -> List[float]:
         """Scan the environment for obstacles.
