@@ -1,10 +1,9 @@
 """Script for running reinforcement learning on the drone forest."""
 
-import matplotlib.pyplot as plt
+import os
 
 from stable_baselines3 import PPO
 
-# from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.vec_env import SubprocVecEnv
@@ -35,24 +34,29 @@ def make_env(rank: int, seed: int = 0) -> DroneForestEnv:
 
 if __name__ == "__main__":
     # Set the parameters for the simulation
-    n_envs = 8
-    n_learning_steps = 25_000
-    n_eval_steps = 1_000
+    n_training_envs = 8
+    n_eval_envs = 4
+    n_learning_steps = 10_000_000
+    n_eval_every = 100_000
+
+    # Create log dir where evaluation results will be saved
+    eval_log_dir = "./eval_logs/"
+    os.makedirs(eval_log_dir, exist_ok=True)
 
     # Create the environments
-    vec_env = SubprocVecEnv([make_env(i) for i in range(n_envs)])
+    train_envs = SubprocVecEnv([make_env(i) for i in range(n_training_envs)])
+    eval_envs = SubprocVecEnv([make_env(i) for i in range(n_eval_envs)])
+
+    eval_callback = EvalCallback(
+        eval_envs,
+        best_model_save_path=eval_log_dir,
+        log_path=eval_log_dir,
+        eval_freq=max(n_eval_every // n_training_envs, 1),
+        n_eval_episodes=1,
+        deterministic=True,
+        render=True,
+    )
 
     # Create the reinforcement learning model
-    model = PPO("MlpPolicy", vec_env, verbose=1)
-    model.learn(total_timesteps=n_learning_steps)
-
-    # Run the evaluation
-    plt.ion()
-    obs = vec_env.reset()
-    for _ in range(n_eval_steps):
-        action, _ = model.predict(obs)
-        obs, rewards, dones, info = vec_env.step(action)
-        vec_env.render()
-
-    # Close the plot
-    plt.ioff()
+    model = PPO("MlpPolicy", train_envs, verbose=1)
+    model.learn(total_timesteps=n_learning_steps, callback=eval_callback)
