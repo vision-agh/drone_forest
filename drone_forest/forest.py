@@ -79,13 +79,13 @@ class Forest:
                 self.trees.append(Tree(Point(x_pos, y_pos), radius))
                 break
 
-    def draw(self, ax):
+    def draw(self, img: np.ndarray, t_vec: Point, m2px: float):
         """Draw the forest on the given axis.
 
         Args:
             ax (matplotlib.axes.Axes): The axis to draw the forest on.
         """
-        assert ax is not None, "The axis must be provided."
+        assert img is not None, "The axis must be provided."
 
         for tree in self.trees:
-            tree.draw(ax)
+            tree.draw(img, t_vec, m2px)

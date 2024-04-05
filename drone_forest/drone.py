@@ -1,9 +1,11 @@
 """Script for the drone class."""
 
-import matplotlib.pyplot as plt
+import cv2
+import numpy as np
 
 from drone_forest.geometric_objects import Point
 from drone_forest.lidar import Lidar
+from drone_forest.render_utils import transform_coords_to_render, IMAGE_HEIGHT
 
 
 class Drone:
@@ -27,26 +29,37 @@ class Drone:
         self.lidar: Lidar = lidar
         self.update_lidar_position()
 
-    def draw(self, ax: plt.Axes):
+    def draw(self, img: np.ndarray, t_vec: Point, m2px: float):
         """Draw the drone on the given axis.
 
         Args:
             ax (matplotlib.axes.Axes): The axis to draw the drone on.
         """
-        assert ax is not None, "The axis must be provided."
+        assert img is not None, "The axis must be provided."
 
         # Draw the lidar attached to the drone
-        self.lidar.draw(ax)
+        self.lidar.draw(img, t_vec, m2px)
 
         # Draw the drone as a small rectangle
-        drone_rectangle = plt.Rectangle(
-            (self.position.x - 0.05, self.position.y - 0.1),
-            0.1,
-            0.2,
-            color="black",
-            fill=True,
+        coord_bottom_left = transform_coords_to_render(
+            Point(self.position.x - 0.05, self.position.y - 0.1), t_vec
         )
-        ax.add_patch(drone_rectangle)
+        coord_top_right = transform_coords_to_render(
+            Point(self.position.x + 0.05, self.position.y + 0.1), t_vec
+        )
+        cv2.rectangle(
+            img,
+            (
+                int(coord_bottom_left.x * m2px),
+                int(coord_bottom_left.y * m2px) + IMAGE_HEIGHT,
+            ),
+            (
+                int(coord_top_right.x * m2px),
+                int(coord_top_right.y * m2px) + IMAGE_HEIGHT,
+            ),
+            (0, 0, 0),
+            -1,
+        )
 
     def move(self, dt: float, v: Point):
         """Move the drone by a given velocity.

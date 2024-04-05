@@ -1,7 +1,8 @@
 """Script for the lidar class."""
 
+import cv2
 import math
-import matplotlib.pyplot as plt
+import numpy as np
 from typing import List
 
 from drone_forest.geometric_objects import Circle, Line, Point
@@ -9,6 +10,7 @@ from drone_forest.geometric_utils import (
     calculate_line_circle_intersection_points,
     distance,
 )
+from drone_forest.render_utils import transform_coords_to_render, IMAGE_HEIGHT
 
 
 class Lidar:
@@ -43,23 +45,31 @@ class Lidar:
             )
             self.beam_lines.append(Line(self.position, end))
 
-    def draw(self, ax: plt.Axes):
+    def draw(self, img: np.ndarray, t_vec: Point, m2px: float):
         """Draw the lidar on the given axis.
 
         Args:
             ax (matplotlib.axes.Axes): The axis to draw the lidar on.
         """
-        assert ax is not None, "The axis must be provided."
+        assert img is not None, "The axis must be provided."
 
         # Draw the beams emitted by the lidar
         for line in self.beam_lines:
-            ax.plot([line.start.x, line.end.x], [line.start.y, line.end.y], "b-")
-
-        # Draw the lidar position as a small circle
-        lidar_circle = plt.Circle(
-            (self.position.x, self.position.y), 0.05, color="black", fill=True
-        )
-        ax.add_artist(lidar_circle)
+            coord_start = transform_coords_to_render(line.start, t_vec)
+            coord_end = transform_coords_to_render(line.end, t_vec)
+            cv2.line(
+                img,
+                (
+                    int(coord_start.x * m2px),
+                    int(coord_start.y * m2px) + IMAGE_HEIGHT,
+                ),
+                (
+                    int(coord_end.x * m2px),
+                    int(coord_end.y * m2px) + IMAGE_HEIGHT,
+                ),
+                (255, 0, 0),
+                1,
+            )
 
     def scan(self, obstacles: List[Circle]) -> List[float]:
         """Scan the environment for obstacles.

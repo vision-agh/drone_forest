@@ -1,12 +1,13 @@
 """Gymnasium wrapper for the drone forest environment."""
 
+import cv2
 import gymnasium as gym
-import matplotlib.pyplot as plt
 import numpy as np
 from typing import Tuple, Union
 
 from drone_forest.geometric_objects import Point
 from drone_forest.simulation import Simulation
+from drone_forest.render_utils import IMAGE_HEIGHT
 
 N_ACTIONS = 4
 MAX_SIM_TIME_S = 120.0
@@ -29,6 +30,7 @@ class DroneForestEnv(gym.Env):
         min_spare_distance: float = 0.2,
         max_spawn_attempts: int = 50,
         seed: int = 0,
+        render_mode: str = "human",
     ):
         """Initialize the drone forest environment.
 
@@ -46,7 +48,8 @@ class DroneForestEnv(gym.Env):
         assert xlim[0] < 0 < xlim[1], "The x-axis limits must contain zero."
         assert ylim[0] < 0 < ylim[1], "The y-axis limits must contain zero."
 
-        super().__init__()
+        super(DroneForestEnv, self).__init__()
+        self.render_mode = render_mode
 
         self.simulation: Simulation = None
         self.dt = dt
@@ -62,8 +65,16 @@ class DroneForestEnv(gym.Env):
 
         self.action_space = gym.spaces.Discrete(N_ACTIONS)
         self.observation_space = gym.spaces.Box(
-            low=0.0, high=max_lidar_range, shape=(n_lidar_beams,), dtype=np.float32
+            low=0.0, high=max_lidar_range, shape=(n_lidar_beams,), dtype=np.float64
         )
+
+        # Rendering
+        if self.render_mode == "human":
+            self.m2px = IMAGE_HEIGHT / (ylim[1] - ylim[0])
+            render_width = int((xlim[1] - xlim[0]) * self.m2px)
+            # cv2.namedWindow("Drone Forest", cv2.WINDOW_NORMAL)
+            # cv2.resizeWindow("Drone Forest", render_width, RENDER_HEIGHT)
+            self.img = np.zeros((IMAGE_HEIGHT, render_width, 3), dtype=np.uint8)
 
     def step(self, action: int):
         """Take a step in the environment."""
@@ -79,7 +90,7 @@ class DroneForestEnv(gym.Env):
         elif action == 3:
             control_value = Point(1, 0)
 
-        observation = np.array(self.simulation.step(control_value))
+        observation = np.array(self.simulation.step(control_value), dtype=np.float64)
 
         # Terminated, truncated and reward
         collision = (
@@ -106,8 +117,10 @@ class DroneForestEnv(gym.Env):
 
         return observation, reward, terminated, truncated, info
 
-    def reset(self, seed: Union[None, int] = None):
+    def reset(self, seed: Union[None, int] = None, options=None):
         """Reset the environment."""
+        super().reset(seed=seed, options=options)
+
         if seed is not None:
             np.random.seed(seed)
 
@@ -123,11 +136,15 @@ class DroneForestEnv(gym.Env):
             self.max_spawn_attempts,
         )
 
-        return np.array(self.simulation.step(Point(0, 0))), {}
+        return np.array(self.simulation.step(Point(0, 0)), dtype=np.float64), {}
 
-    def render(self, ax: plt.Axes):
+    def render(self):
         """Render the environment."""
-        self.simulation.draw(ax)
+        if self.render_mode == "human":
+            self.img[:] = (0, 255, 0)
+            self.simulation.draw(self.img, self.m2px)
+            cv2.imshow("Drone Forest", self.img)
+            cv2.waitKey(1)
 
     def close(self):
         """Close the environment."""

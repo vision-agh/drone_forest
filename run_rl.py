@@ -2,67 +2,57 @@
 
 import matplotlib.pyplot as plt
 
-# from stable_baselines3 import A2C
+from stable_baselines3 import PPO
+
+# from stable_baselines3.common.env_checker import check_env
+from stable_baselines3.common.callbacks import EvalCallback
+from stable_baselines3.common.utils import set_random_seed
+from stable_baselines3.common.vec_env import SubprocVecEnv
 
 from drone_forest.gym_wrapper import DroneForestEnv
 
-# Set the parameters for the simulation
-dt = 0.1
-xlim = (-10, 10)
-ylim = (-1, 25)
-n_trees = 200
-max_tree_radius = 1.0
-n_lidar_beams = 36
-max_lidar_range = 3.0
 
-# Create the gym environment
-env = DroneForestEnv(
-    dt,
-    xlim,
-    ylim,
-    n_trees,
-    max_tree_radius,
-    n_lidar_beams,
-    max_lidar_range,
-    seed=0,
-)
+def make_env(rank: int, seed: int = 0) -> DroneForestEnv:
+    """Make the drone forest environment."""
 
-# Set up the plot
-plt.ion()
-ax: plt.Axes
-figure, ax = plt.subplots()
-
-# Run the reinforcement learning loop
-n_episodes = 3
-for episode in range(n_episodes):
-    obs = env.reset()
-    while True:
-        action = env.action_space.sample()
-        obs, reward, terminated, truncated, info = env.step(action)
-
-        # Show the simulation window
-        ax.clear()
-        ax.fill_between(
-            [xlim[0], xlim[1]],
-            [ylim[0], ylim[0]],
-            [ylim[1], ylim[1]],
-            color="green",
-            alpha=0.7,
+    def _init() -> DroneForestEnv:
+        env = DroneForestEnv(
+            dt=0.1,
+            xlim=(-10, 10),
+            ylim=(-1, 25),
+            n_trees=200,
+            max_tree_radius=1.0,
+            n_lidar_beams=36,
+            max_lidar_range=3.0,
+            seed=seed + rank,
         )
-        env.render(ax)
-        ax.set_aspect("equal")
-        ax.set_xlim(xlim)
-        ax.set_ylim(ylim)
-        figure.canvas.draw()
-        figure.canvas.flush_events()
+        env.reset(seed=seed + rank)
+        return env
 
-        # Check if the episode is done
-        if terminated or truncated:
-            if terminated:
-                print(f"Episode {episode + 1} terminated with reward {reward}.")
-            else:
-                print(f"Episode {episode + 1} truncated with reward {reward}.")
-            break
+    set_random_seed(seed)
+    return _init
 
-# Close the plot
-plt.ioff()
+
+if __name__ == "__main__":
+    # Set the parameters for the simulation
+    n_envs = 8
+    n_learning_steps = 25_000
+    n_eval_steps = 1_000
+
+    # Create the environments
+    vec_env = SubprocVecEnv([make_env(i) for i in range(n_envs)])
+
+    # Create the reinforcement learning model
+    model = PPO("MlpPolicy", vec_env, verbose=1)
+    model.learn(total_timesteps=n_learning_steps)
+
+    # Run the evaluation
+    plt.ion()
+    obs = vec_env.reset()
+    for _ in range(n_eval_steps):
+        action, _ = model.predict(obs)
+        obs, rewards, dones, info = vec_env.step(action)
+        vec_env.render()
+
+    # Close the plot
+    plt.ioff()

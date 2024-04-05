@@ -5,7 +5,7 @@ from drone_forest.forest import Forest
 from drone_forest.lidar import Lidar
 from drone_forest.drone import Drone
 
-import matplotlib.pyplot as plt
+import numpy as np
 from typing import List, Tuple
 
 
@@ -59,15 +59,15 @@ class Simulation:
             Point(0, 0), Lidar(Point(0, 0), max_lidar_range, n_lidar_beams)
         )
         self.sim_time = 0.0
+        self.t_vec = Point(-self.forest.xlim[0], -self.forest.ylim[0])
 
-    def draw(self, ax: plt.Axes):
+    def draw(self, img: np.ndarray, m2px: float):
         """Draw the simulation."""
         # Draw the trees in the forest
-        for tree in self.forest.trees:
-            tree.draw(ax)
+        self.forest.draw(img, self.t_vec, m2px)
 
         # Draw the lidar
-        self.drone.draw(ax)
+        self.drone.draw(img, self.t_vec, m2px)
 
     def step(self, dvec: Point) -> List[float]:
         """Take a step in the simulation."""

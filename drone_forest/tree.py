@@ -1,8 +1,10 @@
 """Script for the tree class."""
 
-import matplotlib.pyplot as plt
+import cv2
+import numpy as np
 
 from drone_forest.geometric_objects import Circle, Point
+from drone_forest.render_utils import transform_coords_to_render, IMAGE_HEIGHT
 
 
 class Tree:
@@ -31,21 +33,25 @@ class Tree:
         """
         return f"Tree(position={self.circle.center}, radius={self.circle.radius})"
 
-    def draw(self, ax):
+    def draw(self, img: np.ndarray, t_vec: Point, m2px: float):
         """Draw the tree on the given axis.
 
         Args:
             ax (matplotlib.axes.Axes): The axis to draw the tree on.
         """
-        assert ax is not None, "The axis must be provided."
+        assert img is not None, "The axis must be provided."
 
-        circle = plt.Circle(
-            (self.circle.center.x, self.circle.center.y),
-            self.circle.radius,
-            color="brown",
-            fill=True,
+        coord_center = transform_coords_to_render(self.circle.center, t_vec)
+        cv2.circle(
+            img,
+            (
+                int(coord_center.x * m2px),
+                int(coord_center.y * m2px) + IMAGE_HEIGHT,
+            ),
+            int(self.circle.radius * m2px),
+            (42, 42, 166),
+            -1,
         )
-        ax.add_artist(circle)
 
     def get_position(self) -> Point:
         """Get the position of the tree.
