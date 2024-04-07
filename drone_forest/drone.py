@@ -76,7 +76,8 @@ class Drone:
             dt (float): The time step for the movement.
             v (Point): The velocity of the drone.
         """
-        acceleration = (v - self.velocity) / dt
+        acc = v - self.velocity
+        acceleration = Point(acc[0] / dt, acc[1] / dt)
         if acceleration.x > self.max_acceleration:
             acceleration.x = self.max_acceleration
         if acceleration.y > self.max_acceleration:
@@ -86,7 +87,8 @@ class Drone:
         if acceleration.y < -self.max_acceleration:
             acceleration.y = -self.max_acceleration
 
-        v = self.velocity + acceleration * dt
+        vel = self.velocity + acceleration * dt
+        v = Point(vel[0], vel[1])
         if v.x > self.max_speed:
             v.x = self.max_speed
         if v.y > self.max_speed:
@@ -97,7 +99,8 @@ class Drone:
             v.y = -self.max_speed
 
         self.velocity = v
-        self.position += self.velocity * dt
+        self.position.x += self.velocity.x * dt
+        self.position.y += self.velocity.y * dt
         self.update_lidar_position()
 
     def update_lidar_position(self):
