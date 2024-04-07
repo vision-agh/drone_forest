@@ -17,12 +17,14 @@ def make_env(rank: int, seed: int = 0) -> DroneForestEnv:
     def _init() -> DroneForestEnv:
         env = DroneForestEnv(
             dt=0.1,
-            xlim=(-10, 10),
-            ylim=(-1, 25),
-            n_trees=200,
-            max_tree_radius=1.0,
+            xlim=(-15, 15),
+            ylim=(-3, 27),
+            n_trees=100,
+            max_tree_radius=0.7,
             n_lidar_beams=36,
             max_lidar_range=3.0,
+            min_spare_distance=0.5,
+            max_spawn_attempts=50,
             seed=seed + rank,
         )
         env.reset(seed=seed + rank)

@@ -17,7 +17,13 @@ class Drone:
         lidar (Lidar): The lidar attached to the drone.
     """
 
-    def __init__(self, position: Point, lidar: Lidar):
+    def __init__(
+        self,
+        position: Point,
+        lidar: Lidar,
+        max_speed: float = 1.0,
+        max_acceleration: float = 0.6,
+    ):
         """Initialize the drone object.
 
         Args:
@@ -26,6 +32,8 @@ class Drone:
         """
         self.position: Point = position
         self.velocity: Point = Point(0, 0)
+        self.max_speed: float = max_speed
+        self.max_acceleration: float = max_acceleration
         self.lidar: Lidar = lidar
         self.update_lidar_position()
 
@@ -68,9 +76,28 @@ class Drone:
             dt (float): The time step for the movement.
             v (Point): The velocity of the drone.
         """
+        acceleration = (v - self.velocity) / dt
+        if acceleration.x > self.max_acceleration:
+            acceleration.x = self.max_acceleration
+        if acceleration.y > self.max_acceleration:
+            acceleration.y = self.max_acceleration
+        if acceleration.x < -self.max_acceleration:
+            acceleration.x = -self.max_acceleration
+        if acceleration.y < -self.max_acceleration:
+            acceleration.y = -self.max_acceleration
+
+        v = self.velocity + acceleration * dt
+        if v.x > self.max_speed:
+            v.x = self.max_speed
+        if v.y > self.max_speed:
+            v.y = self.max_speed
+        if v.x < -self.max_speed:
+            v.x = -self.max_speed
+        if v.y < -self.max_speed:
+            v.y = -self.max_speed
+
         self.velocity = v
-        self.position.x += self.velocity.x * dt
-        self.position.y += self.velocity.y * dt
+        self.position += self.velocity * dt
         self.update_lidar_position()
 
     def update_lidar_position(self):

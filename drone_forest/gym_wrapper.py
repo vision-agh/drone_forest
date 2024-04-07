@@ -12,6 +12,14 @@ from drone_forest.render_utils import IMAGE_HEIGHT
 N_ACTIONS = 4
 MAX_SIM_TIME_S = 120.0
 
+TREE_SAFE_DISTANCE = 0.15
+TREE_COLLISION_DISTANCE = 0.2
+PENALTY_CLOSE_TO_TREE = -0.25
+PENALTY_TREE_COLLISION = -1.5
+PENALTY_FAR_FROM_CENTER_LINE_COEFF = -0.1
+PENALTY_WRONG_DIRECTION_COEFF = -3.0
+REWARD_GOOD_DIRECTION_COEFF = 0.8
+
 
 class DroneForestEnv(gym.Env):
     """Drone forest environment that follows the gym interface."""
@@ -93,24 +101,45 @@ class DroneForestEnv(gym.Env):
         observation = np.array(self.simulation.step(control_value), dtype=np.float64)
 
         # Terminated, truncated and reward
-        collision = (
-            np.any(observation < 0.2)
+        if (
+            np.any(observation < TREE_COLLISION_DISTANCE)
             or self.simulation.drone.position.y <= self.ylim[0]
             or self.simulation.drone.position.y >= self.ylim[1]
             or self.simulation.drone.position.x <= self.xlim[0]
             or self.simulation.drone.position.x >= self.xlim[1]
-        )
-        success = self.simulation.drone.position.x >= self.xlim[1] - 2.0
-        if collision:
-            reward = -1
+        ):
+            # Drone collided with a tree or went out of bounds
+            reward = PENALTY_TREE_COLLISION
             terminated = True
-        elif success:
-            reward = 1
+        elif self.simulation.drone.position.x >= self.xlim[1] - 2.0:
+            # Drone reached the end of the forest
             terminated = True
         else:
             reward = 0
             terminated = False
         truncated = self.simulation.sim_time >= MAX_SIM_TIME_S
+
+        # Reward shaping
+        if not terminated:
+            # Center line reward
+            reward += PENALTY_FAR_FROM_CENTER_LINE_COEFF * abs(
+                self.simulation.drone.position.x
+            )
+
+            # Moving direction reward
+            reward += (
+                REWARD_GOOD_DIRECTION_COEFF
+                if self.simulation.drone.velocity.y > 0
+                else PENALTY_WRONG_DIRECTION_COEFF
+            )
+
+            # Penalty for being close to trees
+            for tree in self.simulation.forest.trees:
+                distance_to_tree = np.linalg.norm(
+                    self.simulation.drone.position - tree.circle.center
+                )
+                if distance_to_tree < TREE_SAFE_DISTANCE:
+                    reward += PENALTY_CLOSE_TO_TREE
 
         # Info
         info = {}
