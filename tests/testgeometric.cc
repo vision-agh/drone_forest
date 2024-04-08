@@ -168,6 +168,65 @@ TEST(GeometricTest, LineCircleIntersection)
   EXPECT_DOUBLE_EQ(intersection_points[0].y(), 3);
 }
 
+TEST(GeometricTest, LineDraw)
+{
+  // No origin translation, no scaling
+  evs::geometric::Point p1(0, 0);
+  evs::geometric::Point p2(99, 99);
+  evs::geometric::Line line(p1, p2);
+  cv::Mat image(100, 100, CV_8UC3, cv::Scalar(255, 255, 255));
+  line.Draw(image, cv::Scalar(0, 0, 0), evs::geometric::Point(0, 0), 1.0);
+  cv::Vec3b color_start = image.at<cv::Vec3b>(99, 0);
+  EXPECT_EQ(color_start[0], 0);
+  EXPECT_EQ(color_start[1], 0);
+  EXPECT_EQ(color_start[2], 0);
+  cv::Vec3b color_end = image.at<cv::Vec3b>(0, 99);
+  EXPECT_EQ(color_end[0], 0);
+  EXPECT_EQ(color_end[1], 0);
+  EXPECT_EQ(color_end[2], 0);
+  cv::Vec3b color_outside = image.at<cv::Vec3b>(25, 25);
+  EXPECT_EQ(color_outside[0], 255);
+  EXPECT_EQ(color_outside[1], 255);
+  EXPECT_EQ(color_outside[2], 255);
+
+  // Origin translation, no scaling
+  line = evs::geometric::Line(p1, p2);
+  image = cv::Mat(100, 100, CV_8UC3, cv::Scalar(255, 255, 255));
+  line.Draw(image, cv::Scalar(0, 0, 0), evs::geometric::Point(50, 0), 1.0);
+  color_start = image.at<cv::Vec3b>(99, 50);
+  EXPECT_EQ(color_start[0], 0);
+  EXPECT_EQ(color_start[1], 0);
+  EXPECT_EQ(color_start[2], 0);
+  color_end = image.at<cv::Vec3b>(50, 99);
+  EXPECT_EQ(color_end[0], 0);
+  EXPECT_EQ(color_end[1], 0);
+  EXPECT_EQ(color_end[2], 0);
+  color_outside = image.at<cv::Vec3b>(25, 75);
+  EXPECT_EQ(color_outside[0], 255);
+  EXPECT_EQ(color_outside[1], 255);
+  EXPECT_EQ(color_outside[2], 255);
+
+  // Origin translation, scaling
+  line = evs::geometric::Line(p1, p2);
+  image = cv::Mat(100, 100, CV_8UC3, cv::Scalar(255, 255, 255));
+  line.Draw(image, cv::Scalar(0, 0, 0), evs::geometric::Point(25, 25), 2.0);
+  cv::namedWindow("Line", cv::WINDOW_AUTOSIZE);
+  cv::imshow("Line", image);
+  cv::waitKey(0);
+  color_start = image.at<cv::Vec3b>(49, 50);
+  EXPECT_EQ(color_start[0], 0);
+  EXPECT_EQ(color_start[1], 0);
+  EXPECT_EQ(color_start[2], 0);
+  color_end = image.at<cv::Vec3b>(0, 99);
+  EXPECT_EQ(color_end[0], 0);
+  EXPECT_EQ(color_end[1], 0);
+  EXPECT_EQ(color_end[2], 0);
+  color_outside = image.at<cv::Vec3b>(25, 76);
+  EXPECT_EQ(color_outside[0], 255);
+  EXPECT_EQ(color_outside[1], 255);
+  EXPECT_EQ(color_outside[2], 255);
+}
+
 int main(int argc, char **argv)
 {
   testing::InitGoogleTest(&argc, argv);

@@ -114,5 +114,12 @@ Point Line::CalculateClosestPoint(const Point& pt) const
   }
 }
 
+void Line::Draw(cv::Mat& image, cv::Scalar color, Point t_vec,
+                double m2px) const
+{
+  cv::line(image, start_.ToCvPoint(t_vec, m2px, image.cols),
+           end_.ToCvPoint(t_vec, m2px, image.cols), color);
+}
+
 }  // namespace geometric
 }  // namespace evs

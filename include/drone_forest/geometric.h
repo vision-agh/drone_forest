@@ -186,6 +186,14 @@ class Circle
     return radius_;
   }
 
+  /**
+   * @brief Draw the circle on an image
+   *
+   * @param image Image to draw the circle on
+   * @param color Color of the circle
+   * @param t_vec Translation vector
+   * @param m2px Meters to pixels conversion factor
+   */
   void Draw(cv::Mat& image, cv::Scalar color, Point t_vec, double m2px) const;
 
  private:
@@ -230,6 +238,16 @@ class Line
    * @return Point Closest point on the line
    */
   Point CalculateClosestPoint(const Point& pt) const;
+
+  /**
+   * @brief Draw the line on an image
+   *
+   * @param image Image to draw the line on
+   * @param color Color of the line
+   * @param t_vec Translation vector
+   * @param m2px Meters to pixels conversion factor
+   */
+  void Draw(cv::Mat& image, cv::Scalar color, Point t_vec, double m2px) const;
 
  private:
   Point start_;
