@@ -38,11 +38,11 @@ if __name__ == "__main__":
     # Set the parameters for the simulation
     n_training_envs = 8
     n_eval_envs = 4
-    n_learning_steps = 10_000_000
+    n_learning_steps = 100_000_000
     n_eval_every = 100_000
 
     # Create log dir where evaluation results will be saved
-    eval_log_dir = "./eval_logs/"
+    eval_log_dir = "./logs_ppo/"
     os.makedirs(eval_log_dir, exist_ok=True)
 
     # Create the environments
@@ -60,5 +60,5 @@ if __name__ == "__main__":
     )
 
     # Create the reinforcement learning model
-    model = PPO("MlpPolicy", train_envs, verbose=1)
+    model = PPO("MlpPolicy", train_envs, verbose=1, tensorboard_log="./logs_ppo/")
     model.learn(total_timesteps=n_learning_steps, callback=eval_callback)
