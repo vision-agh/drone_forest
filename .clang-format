@@ -1,0 +1,13 @@
+AllowAllArgumentsOnNextLine: True
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: Empty
+BasedOnStyle: Google
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeBraces: Allman
+BreakConstructorInitializers: BeforeColon
+ColumnLimit: 80
+IndentWidth: 2
+PackConstructorInitializers: CurrentLine
+ReflowComments: True
+TabWidth: 4
+UseTab: Never
