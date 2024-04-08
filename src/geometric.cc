@@ -5,11 +5,26 @@ namespace evs
 namespace geometric
 {
 
-// void Circle::Draw(cv::Mat& img, cv::Scalar color) const
-// {
-//   cv::circle(img, cv::Point(center_.x(), center_.y()), radius_, color,
-//              cv::FILLED);
-// }
+cv::Point Point::ToCvPoint(Point t_vec, double m2pix, int img_height) const
+{
+  // Translate the point to the Image origin
+  Point t_coords{x_ + t_vec.x(), y_ + t_vec.y()};
+
+  // Rotate the point to the Image coordinate system
+  Point r_coords{t_coords.x(), -t_coords.y()};
+
+  // Scale the point to the Image coordinate system
+  Point s_coords{r_coords.x() * m2pix, r_coords.y() * m2pix};
+
+  return cv::Point(s_coords.x(), s_coords.y() + img_height - 1);
+}
+
+void Circle::Draw(cv::Mat& image, cv::Scalar color, Point t_vec,
+                  double m2px) const
+{
+  cv::circle(image, center_.ToCvPoint(t_vec, m2px, image.cols), radius_ * m2px,
+             color, cv::FILLED);
+}
 
 std::vector<Point> Line::CalculateCircleIntersection(const Circle& circ) const
 {

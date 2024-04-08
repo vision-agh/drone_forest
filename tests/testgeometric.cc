@@ -46,16 +46,59 @@ TEST(GeometricTest, PointDistance)
   EXPECT_EQ(distance, 5);
 }
 
-// TEST(GeometricTest, CircleDraw)
-// {
-//   cv::Mat img(100, 100, CV_8UC3, cv::Scalar(255, 255, 255));
-//   evs::geometric::Circle circle(evs::geometric::Point(50, 50), 10);
-//   circle.Draw(img, cv::Scalar(0, 0, 0));
-//   cv::Vec3b color = img.at<cv::Vec3b>(50, 50);
-//   EXPECT_EQ(color[0], 0);
-//   EXPECT_EQ(color[1], 0);
-//   EXPECT_EQ(color[2], 0);
-// }
+TEST(GeometricTest, CircleDraw)
+{
+  // No origin translation, no scaling
+  evs::geometric::Circle circle(evs::geometric::Point(0, 0), 2);
+  cv::Mat image(100, 100, CV_8UC3, cv::Scalar(255, 255, 255));
+  circle.Draw(image, cv::Scalar(0, 0, 0), evs::geometric::Point(0, 0), 1.0);
+  cv::Vec3b color_center = image.at<cv::Vec3b>(99, 0);
+  EXPECT_EQ(color_center[0], 0);
+  EXPECT_EQ(color_center[1], 0);
+  EXPECT_EQ(color_center[2], 0);
+  cv::Vec3b color_edge = image.at<cv::Vec3b>(97, 0);
+  EXPECT_EQ(color_edge[0], 0);
+  EXPECT_EQ(color_edge[1], 0);
+  EXPECT_EQ(color_edge[2], 0);
+  cv::Vec3b color_outside = image.at<cv::Vec3b>(96, 3);
+  EXPECT_EQ(color_outside[0], 255);
+  EXPECT_EQ(color_outside[1], 255);
+  EXPECT_EQ(color_outside[2], 255);
+
+  // Origin translation, no scaling
+  circle = evs::geometric::Circle(evs::geometric::Point(0, 0), 10);
+  image = cv::Mat(100, 100, CV_8UC3, cv::Scalar(255, 255, 255));
+  circle.Draw(image, cv::Scalar(0, 0, 0), evs::geometric::Point(50, 0), 1.0);
+  color_center = image.at<cv::Vec3b>(99, 50);
+  EXPECT_EQ(color_center[0], 0);
+  EXPECT_EQ(color_center[1], 0);
+  EXPECT_EQ(color_center[2], 0);
+  color_edge = image.at<cv::Vec3b>(89, 50);
+  EXPECT_EQ(color_edge[0], 0);
+  EXPECT_EQ(color_edge[1], 0);
+  EXPECT_EQ(color_edge[2], 0);
+  color_outside = image.at<cv::Vec3b>(86, 53);
+  EXPECT_EQ(color_outside[0], 255);
+  EXPECT_EQ(color_outside[1], 255);
+  EXPECT_EQ(color_outside[2], 255);
+
+  // Origin translation, scaling
+  circle = evs::geometric::Circle(evs::geometric::Point(5, 5), 10);
+  image = cv::Mat(100, 100, CV_8UC3, cv::Scalar(255, 255, 255));
+  circle.Draw(image, cv::Scalar(0, 0, 0), evs::geometric::Point(25, 25), 2.0);
+  color_center = image.at<cv::Vec3b>(39, 60);
+  EXPECT_EQ(color_center[0], 0);
+  EXPECT_EQ(color_center[1], 0);
+  EXPECT_EQ(color_center[2], 0);
+  color_edge = image.at<cv::Vec3b>(19, 60);
+  EXPECT_EQ(color_edge[0], 0);
+  EXPECT_EQ(color_edge[1], 0);
+  EXPECT_EQ(color_edge[2], 0);
+  color_outside = image.at<cv::Vec3b>(16, 63);
+  EXPECT_EQ(color_outside[0], 255);
+  EXPECT_EQ(color_outside[1], 255);
+  EXPECT_EQ(color_outside[2], 255);
+}
 
 TEST(GeometricTest, LineClosestPointOnLine)
 {

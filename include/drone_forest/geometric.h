@@ -2,7 +2,7 @@
 #define _DRONE_FOREST_GEOMETRIC_H_
 
 #include <cmath>
-// #include <opencv4/opencv2/opencv.hpp>
+#include <opencv4/opencv2/opencv.hpp>
 #include <vector>
 
 namespace evs
@@ -127,6 +127,19 @@ class Point
     return sqrt(pow(x_ - p.x_, 2) + pow(y_ - p.y_, 2));
   }
 
+  /**
+   * @brief Convert the point to a cv::Point
+   *
+   * This method is useful to convert the point to a cv::Point for drawing
+   * operations.
+   *
+   * @param t_vec Translation vector
+   * @param m2pix Meters to pixels conversion factor
+   * @param img_height Height of the image
+   * @return cv::Point Converted point
+   */
+  cv::Point ToCvPoint(Point t_vec, double m2pix, int img_height) const;
+
  private:
   double x_;
   double y_;
@@ -173,7 +186,7 @@ class Circle
     return radius_;
   }
 
-  // void Draw(cv::Mat& image, cv::Scalar color) const;
+  void Draw(cv::Mat& image, cv::Scalar color, Point t_vec, double m2px) const;
 
  private:
   Point center_;
