@@ -16,7 +16,8 @@ cv::Point Point::ToCvPoint(Point t_vec, double m2pix, int img_height) const
   // Scale the point to the Image coordinate system
   Point s_coords{r_coords.x() * m2pix, r_coords.y() * m2pix};
 
-  return cv::Point(s_coords.x(), s_coords.y() + img_height - 1);
+  return cv::Point(std::round(s_coords.x()),
+                   std::round(s_coords.y() + img_height - 1));
 }
 
 void Circle::Draw(cv::Mat& image, cv::Scalar color, Point t_vec,

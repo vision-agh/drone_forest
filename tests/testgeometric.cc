@@ -210,9 +210,6 @@ TEST(GeometricTest, LineDraw)
   line = evs::geometric::Line(p1, p2);
   image = cv::Mat(100, 100, CV_8UC3, cv::Scalar(255, 255, 255));
   line.Draw(image, cv::Scalar(0, 0, 0), evs::geometric::Point(25, 25), 2.0);
-  cv::namedWindow("Line", cv::WINDOW_AUTOSIZE);
-  cv::imshow("Line", image);
-  cv::waitKey(0);
   color_start = image.at<cv::Vec3b>(49, 50);
   EXPECT_EQ(color_start[0], 0);
   EXPECT_EQ(color_start[1], 0);

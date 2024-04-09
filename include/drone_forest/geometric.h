@@ -224,6 +224,26 @@ class Line
   Line(Point start, Point end) : start_(start), end_(end) {}
 
   /**
+   * @brief Get the start point of the line
+   *
+   * @return Point Start point of the line
+   */
+  Point start() const
+  {
+    return start_;
+  }
+
+  /**
+   * @brief Get the end point of the line
+   *
+   * @return Point End point of the line
+   */
+  Point end() const
+  {
+    return end_;
+  }
+
+  /**
    * @brief Calculate the intersection points of a line and a given circle
    *
    * @param circ Circle to intersect with

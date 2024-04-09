@@ -18,3 +18,7 @@ add_test(test_geometric geometric_test)
 add_executable(forest_test testforest.cc)
 target_link_libraries(forest_test PRIVATE GTest::GTest forest_lib ${OpenCV_LIBS})
 add_test(test_forest forest_test)
+
+add_executable(lidar_test testlidar.cc)
+target_link_libraries(lidar_test PRIVATE GTest::GTest lidar_lib ${OpenCV_LIBS})
+add_test(test_lidar lidar_test)

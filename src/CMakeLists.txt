@@ -12,6 +12,11 @@ target_include_directories(forest_lib PUBLIC ../include)
 target_link_libraries(forest_lib geometric_lib)
 target_compile_features(forest_lib PUBLIC cxx_std_17)
 
+add_library(lidar_lib lidar.cc ${HEADER_LIST})
+target_include_directories(lidar_lib PUBLIC ../include)
+target_link_libraries(lidar_lib geometric_lib)
+target_compile_features(lidar_lib PUBLIC cxx_std_17)
+
 source_group(
     TREE "${PROJECT_SOURCE_DIR}/include" 
     PREFIX "Header Files" 
