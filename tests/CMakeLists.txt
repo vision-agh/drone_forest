@@ -22,3 +22,7 @@ add_test(test_forest forest_test)
 add_executable(lidar_test testlidar.cc)
 target_link_libraries(lidar_test PRIVATE GTest::GTest lidar_lib ${OpenCV_LIBS})
 add_test(test_lidar lidar_test)
+
+add_executable(drone_test testdrone.cc)
+target_link_libraries(drone_test PRIVATE GTest::GTest drone_lib)
+add_test(test_drone drone_test)
