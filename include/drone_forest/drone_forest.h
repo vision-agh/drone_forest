@@ -11,7 +11,7 @@
 
 namespace evs
 {
-namespace simulation
+namespace drone_forest
 {
 
 /**
@@ -23,11 +23,11 @@ namespace simulation
  * can move in the x-y plane with a given speed and acceleration. The forest is
  * generated randomly with a given number of trees and tree sizes.
  */
-class Simulation
+class DroneForest
 {
  public:
   /**
-   * @brief Construct a new Simulation object
+   * @brief Construct a new DroneForest object
    *
    * @param sim_step Time step of the simulation (in seconds)
    * @param xlim x-axis limits of the simulation area (min, max in meters)
@@ -44,12 +44,12 @@ class Simulation
    * @param img_height Height of the image to render
    * @param window_name Name of the window to render
    */
-  Simulation(double sim_step, std::tuple<double, double> xlim,
-             std::tuple<double, double> ylim, int n_trees,
-             double tree_min_radius, double tree_max_radius, int n_lidar_beams,
-             double lidar_range, double min_tree_spare_distance,
-             int max_spawn_attempts, double max_speed, double max_acceleration,
-             int img_height = 800, std::string window_name = "Drone Forest");
+  DroneForest(double sim_step, std::tuple<double, double> xlim,
+              std::tuple<double, double> ylim, int n_trees,
+              double tree_min_radius, double tree_max_radius, int n_lidar_beams,
+              double lidar_range, double min_tree_spare_distance,
+              int max_spawn_attempts, double max_speed, double max_acceleration,
+              int img_height = 800, std::string window_name = "Drone Forest");
 
   /**
    * @brief Get the image of the simulation
@@ -120,7 +120,7 @@ class Simulation
   double m2px_;
 };
 
-}  // namespace simulation
+}  // namespace drone_forest
 }  // namespace evs
 
 #endif  // _DRONE_FOREST_SIMULATION_H_

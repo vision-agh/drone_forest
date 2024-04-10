@@ -6,6 +6,8 @@ project(
   LANGUAGES CXX
 )
 
+find_package(GEGELATI)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -26,4 +28,4 @@ add_subdirectory(src)
 add_subdirectory(tests)
 
 add_executable(run_manual run_manual.cc)
-target_link_libraries(run_manual PRIVATE simulation_lib)
+target_link_libraries(run_manual PRIVATE drone_forest_lib)

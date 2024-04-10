@@ -22,10 +22,14 @@ target_include_directories(drone_lib PUBLIC ../include)
 target_link_libraries(drone_lib geometric_lib lidar_lib)
 target_compile_features(drone_lib PUBLIC cxx_std_17)
 
-add_library(simulation_lib simulation.cc ${HEADER_LIST})
-target_include_directories(simulation_lib PUBLIC ../include)
-target_link_libraries(simulation_lib forest_lib drone_lib)
-target_compile_features(simulation_lib PUBLIC cxx_std_17)
+add_library(drone_forest_lib drone_forest.cc ${HEADER_LIST})
+target_include_directories(drone_forest_lib PUBLIC ../include)
+target_link_libraries(drone_forest_lib forest_lib drone_lib)
+target_compile_features(drone_forest_lib PUBLIC cxx_std_17)
+
+# add_library(gegelati_wrapper_lib gegelati_wrapper.cc ${HEADER_LIST})
+# target_include_directories(gegelati_wrapper_lib PUBLIC ../include ${GEGELATI_INCLUDE_DIRS})
+# target_link_libraries(gegelati_wrapper_lib drone_forest_lib ${GEGELATI_LIBRARIES})
 
 source_group(
     TREE "${PROJECT_SOURCE_DIR}/include" 

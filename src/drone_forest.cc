@@ -1,19 +1,19 @@
-#include <drone_forest/simulation.h>
+#include <drone_forest/drone_forest.h>
 
 #include <iostream>
 
 namespace evs
 {
-namespace simulation
+namespace drone_forest
 {
 
-Simulation::Simulation(double sim_step, std::tuple<double, double> xlim,
-                       std::tuple<double, double> ylim, int n_trees,
-                       double tree_min_radius, double tree_max_radius,
-                       int n_lidar_beams, double lidar_range,
-                       double min_tree_spare_distance, int max_spawn_attempts,
-                       double max_speed, double max_acceleration,
-                       int img_height, std::string window_name)
+DroneForest::DroneForest(double sim_step, std::tuple<double, double> xlim,
+                         std::tuple<double, double> ylim, int n_trees,
+                         double tree_min_radius, double tree_max_radius,
+                         int n_lidar_beams, double lidar_range,
+                         double min_tree_spare_distance, int max_spawn_attempts,
+                         double max_speed, double max_acceleration,
+                         int img_height, std::string window_name)
     : sim_step_(sim_step),
       drone_(geometric::Point(0, 0), lidar_range, n_lidar_beams, max_speed,
              max_acceleration),
@@ -39,7 +39,7 @@ Simulation::Simulation(double sim_step, std::tuple<double, double> xlim,
   img_ = cv::Mat(img_height_, img_width_, CV_8UC3, cv::Scalar(0, 255, 0));
 }
 
-void Simulation::Render()
+void DroneForest::Render()
 {
   // Create an image and fill it with green
   img_ = cv::Mat(img_height_, img_width_, CV_8UC3, cv::Scalar(0, 255, 0));
@@ -51,7 +51,7 @@ void Simulation::Render()
   drone_.Draw(img_, t_vec_, m2px_);
 }
 
-void Simulation::Reset()
+void DroneForest::Reset()
 {
   drone_.Reset(geometric::Point(0, 0));
   forest_ =
@@ -60,13 +60,13 @@ void Simulation::Reset()
                      min_tree_spare_distance_, max_spwan_attempts_);
 }
 
-void Simulation::Reset(int seed)
+void DroneForest::Reset(int seed)
 {
   forest::Forest::SetSeed(seed);
   Reset();
 }
 
-std::vector<double> Simulation::Step(geometric::Point velocity)
+std::vector<double> DroneForest::Step(geometric::Point velocity)
 {
   // Move the drone
   drone_.Move(sim_step_, velocity);
@@ -77,5 +77,5 @@ std::vector<double> Simulation::Step(geometric::Point velocity)
   return lidar_readings;
 }
 
-}  // namespace simulation
+}  // namespace drone_forest
 }  // namespace evs

@@ -1,4 +1,4 @@
-#include <drone_forest/simulation.h>
+#include <drone_forest/drone_forest.h>
 
 #include <iostream>
 
@@ -29,7 +29,7 @@ int main(int argc, char** argv)
   std::string window_name = "Drone Forest";
 
   // Create a simulation object
-  evs::simulation::Simulation sim(
+  evs::drone_forest::DroneForest sim(
       sim_step, xlim, ylim, n_trees, tree_min_radius, tree_max_radius,
       n_lidar_beams, lidar_range, min_tree_spare_distance, max_spawn_attempts,
       max_speed, max_acceleration, img_height, window_name);
