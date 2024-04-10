@@ -5,16 +5,14 @@ namespace evs
 namespace forest
 {
 
+std::mt19937 Forest::gen_(std::random_device{}());
+
 Forest::Forest(const std::tuple<double, double> x_limits,
                const std::tuple<double, double> y_limits, int num_trees,
                double min_radius, double max_radius,
                std::vector<geometric::Circle> exclusion_zones,
                double min_spare_distance, int max_spawn_attempts)
 {
-  // Generate random number generator
-  std::random_device rd;
-  std::mt19937 gen(rd());
-
   // Generate uniform distribution for x and y
   std::uniform_real_distribution<double> x_dist(std::get<0>(x_limits),
                                                 std::get<1>(x_limits));
@@ -28,8 +26,8 @@ Forest::Forest(const std::tuple<double, double> x_limits,
     for (int idx_attempt = 0; idx_attempt < max_spawn_attempts; idx_attempt++)
     {
       // Generate random tree
-      geometric::Circle tree(geometric::Point(x_dist(gen), y_dist(gen)),
-                             radius_dist(gen));
+      geometric::Circle tree(geometric::Point(x_dist(gen_), y_dist(gen_)),
+                             radius_dist(gen_));
 
       // Check if tree is in exclusion zone
       bool in_exclusion_zone = false;
@@ -53,6 +51,14 @@ Forest::Forest(const std::tuple<double, double> x_limits,
       trees_.push_back(Tree(tree));
       break;
     }
+  }
+}
+
+void Forest::Draw(cv::Mat& img, geometric::Point t_vec, double m2px) const
+{
+  for (const Tree& tree : trees_)
+  {
+    tree.Draw(img, t_vec, m2px);
   }
 }
 

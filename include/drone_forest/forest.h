@@ -3,6 +3,7 @@
 
 #include <drone_forest/geometric.h>
 
+#include <opencv4/opencv2/opencv.hpp>
 #include <random>
 #include <tuple>
 #include <vector>
@@ -73,10 +74,18 @@ class Tree
     return trunk_.radius();
   }
 
-  // void Draw(cv::Mat& img, cv::Scalar color) const
-  // {
-  //   trunk_.Draw(img, color);
-  // }
+  /**
+   * @brief Draw the tree on an image
+   *
+   * @param img Image to draw the tree on
+   * @param t_vec Translation vector
+   * @param m2px Meters to pixels conversion factor
+   */
+  void Draw(cv::Mat& img, geometric::Point t_vec, double m2px) const
+  {
+    // NOTE: Tree has a brown color
+    trunk_.Draw(img, cv::Scalar(19, 69, 139), t_vec, m2px);
+  }
 
  private:
   geometric::Circle trunk_;
@@ -123,15 +132,23 @@ class Forest
     return trees_.size();
   }
 
-  // void Draw(cv::Mat& img, cv::Scalar color) const
-  // {
-  //   for (const Tree& tree : trees_)
-  //   {
-  //     tree.Draw(img, color);
-  //   }
-  // }
+  /**
+   * @brief Draw the forest on an image
+   *
+   * @param img Image to draw the forest on
+   * @param t_vec Translation vector
+   * @param m2px Meters to pixels conversion factor
+   */
+  void Draw(cv::Mat& img, geometric::Point t_vec, double m2px) const;
+
+  static void SetSeed(int seed)
+  {
+    gen_.seed(seed);
+  }
 
  private:
+  static std::mt19937 gen_;
+
   std::vector<Tree> trees_;
 };
 

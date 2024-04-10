@@ -70,6 +70,71 @@ TEST(ForestTest, ForestConstructor)
   }
 }
 
+TEST(ForestTest, ForestSize)
+{
+  std::tuple<double, double> x_limits(0, 10);
+  std::tuple<double, double> y_limits(0, 10);
+  int num_trees = 10;
+  double min_radius = 1;
+  double max_radius = 2;
+  std::vector<evs::geometric::Circle> exclusion_zones;
+  double min_spare_distance = 0;
+  int max_spawn_attempts = 50;
+  evs::forest::Forest forest(x_limits, y_limits, num_trees, min_radius,
+                             max_radius, exclusion_zones, min_spare_distance,
+                             max_spawn_attempts);
+  EXPECT_EQ(forest.size(), forest.trees().size());
+}
+
+TEST(ForestTest, ForestDraw)
+{
+  std::tuple<double, double> x_limits(0, 200);
+  std::tuple<double, double> y_limits(0, 200);
+  int num_trees = 10;
+  double min_radius = 0.5;
+  double max_radius = 10;
+  std::vector<evs::geometric::Circle> exclusion_zones;
+  double min_spare_distance = 0;
+  int max_spawn_attempts = 50;
+  evs::forest::Forest forest(x_limits, y_limits, num_trees, min_radius,
+                             max_radius, exclusion_zones, min_spare_distance,
+                             max_spawn_attempts);
+  cv::Mat img(200, 200, CV_8UC3, cv::Scalar(0, 255, 0));
+  evs::geometric::Point t_vec(0, 0);
+  double m2px = 1;
+  forest.Draw(img, t_vec, m2px);
+}
+
+TEST(ForestTest, ForestSetSeed)
+{
+  std::tuple<double, double> x_limits(0, 10);
+  std::tuple<double, double> y_limits(0, 10);
+  int num_trees = 10;
+  double min_radius = 1;
+  double max_radius = 2;
+  std::vector<evs::geometric::Circle> exclusion_zones;
+  double min_spare_distance = 0;
+  int max_spawn_attempts = 50;
+  evs::forest::Forest::SetSeed(0);
+  evs::forest::Forest forest1(x_limits, y_limits, num_trees, min_radius,
+                              max_radius, exclusion_zones, min_spare_distance,
+                              max_spawn_attempts);
+  evs::forest::Forest::SetSeed(0);
+  evs::forest::Forest forest2(x_limits, y_limits, num_trees, min_radius,
+                              max_radius, exclusion_zones, min_spare_distance,
+                              max_spawn_attempts);
+  EXPECT_EQ(forest1.trees().size(), forest2.trees().size());
+  for (int i = 0; i < forest1.trees().size(); i++)
+  {
+    EXPECT_EQ(forest1.trees()[i].trunk().center().x(),
+              forest2.trees()[i].trunk().center().x());
+    EXPECT_EQ(forest1.trees()[i].trunk().center().y(),
+              forest2.trees()[i].trunk().center().y());
+    EXPECT_EQ(forest1.trees()[i].trunk().radius(),
+              forest2.trees()[i].trunk().radius());
+  }
+}
+
 int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
