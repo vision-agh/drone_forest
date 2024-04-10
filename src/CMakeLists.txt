@@ -27,9 +27,9 @@ target_include_directories(drone_forest_lib PUBLIC ../include)
 target_link_libraries(drone_forest_lib forest_lib drone_lib)
 target_compile_features(drone_forest_lib PUBLIC cxx_std_17)
 
-# add_library(gegelati_wrapper_lib gegelati_wrapper.cc ${HEADER_LIST})
-# target_include_directories(gegelati_wrapper_lib PUBLIC ../include ${GEGELATI_INCLUDE_DIRS})
-# target_link_libraries(gegelati_wrapper_lib drone_forest_lib ${GEGELATI_LIBRARIES})
+add_library(gegelati_wrapper_lib gegelati_wrapper.cc ${HEADER_LIST})
+target_include_directories(gegelati_wrapper_lib PUBLIC ../include ${GEGELATI_INCLUDE_DIRS})
+target_link_libraries(gegelati_wrapper_lib drone_forest_lib ${GEGELATI_LIBRARIES})
 
 source_group(
     TREE "${PROJECT_SOURCE_DIR}/include" 

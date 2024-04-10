@@ -52,16 +52,40 @@ class DroneForest
               int img_height = 800, std::string window_name = "Drone Forest");
 
   /**
+   * @brief Get the Drone Position object
+   *
+   * @return geometric::Point& Drone position
+   */
+  geometric::Point& GetDronePosition()
+  {
+    return drone_position_;
+  }
+
+  /**
    * @brief Get the image of the simulation
    *
    * @note This function should be called after Render()
    *
-   * @return cv::Mat Image of the simulation
+   * @return cv::Mat& Image of the simulation
    */
-  cv::Mat GetImage()
+  cv::Mat& GetImage()
   {
     return img_;
   }
+
+  /**
+   * @brief Get the distances detected by the LiDAR sensor
+   *
+   * @return std::vector<double>& Distances detected by the LiDAR sensor
+   */
+  std::vector<double>& GetLidarDistances();
+
+  /**
+   * @brief Get the time of the simulation
+   *
+   * @return double Time of the simulation (in seconds)
+   */
+  double GetTime() const;
 
   /**
    * @brief Render the simulation on the image
@@ -92,31 +116,32 @@ class DroneForest
    * This method moves the drone according to the given velocity and performs a
    * LiDAR scan to detect the trees in the forest.
    *
-   * @param velocity Velocity of the drone
-   * @return std::vector<double> Distances to the trees measured by the LiDAR
-   * sensor
+   * @param velocity Velocity of the drone (in m/s)
    */
-  std::vector<double> Step(geometric::Point velocity);
+  void Step(geometric::Point velocity);
 
  private:
-  double sim_step_;
+  const double sim_step_;
+  double sim_time_;
+  std::vector<double> lidar_distances_;
 
   drone::Drone drone_;
+  geometric::Point drone_position_;
 
   forest::Forest forest_;
-  std::tuple<double, double> xlim_;
-  std::tuple<double, double> ylim_;
-  int n_trees_;
-  double tree_min_radius_;
-  double tree_max_radius_;
-  double min_tree_spare_distance_;
-  int max_spwan_attempts_;
+  const std::tuple<double, double> xlim_;
+  const std::tuple<double, double> ylim_;
+  const int n_trees_;
+  const double tree_min_radius_;
+  const double tree_max_radius_;
+  const double min_tree_spare_distance_;
+  const int max_spwan_attempts_;
 
-  std::string window_name_;
+  const std::string window_name_;
   cv::Mat img_;
-  int img_height_;
+  const int img_height_;
   int img_width_;
-  geometric::Point t_vec_;
+  const geometric::Point t_vec_;
   double m2px_;
 };
 

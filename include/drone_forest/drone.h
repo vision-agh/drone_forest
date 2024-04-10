@@ -79,8 +79,9 @@ class Drone
    *
    * @param dt Time step
    * @param velocity Desired velocity
+   * @return geometric::Point New position of the drone
    */
-  void Move(double dt, const geometric::Point& velocity);
+  geometric::Point Move(double dt, const geometric::Point& velocity);
 
   /**
    * @brief Reset the drone state

@@ -17,7 +17,7 @@ std::vector<double> Drone::LidarScan(
   return lidar_.Scan(obstacles);
 }
 
-void Drone::Move(double dt, const geometric::Point& velocity)
+geometric::Point Drone::Move(double dt, const geometric::Point& velocity)
 {
   // Calculate the acceleration
   geometric::Point acceleration = (velocity - velocity_) / dt;
@@ -65,6 +65,8 @@ void Drone::Move(double dt, const geometric::Point& velocity)
 
   // Update the drone position
   position_ = new_position;
+
+  return position_;
 }
 
 void Drone::Reset(const geometric::Point& position)
