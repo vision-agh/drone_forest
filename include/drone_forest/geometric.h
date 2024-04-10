@@ -246,6 +246,8 @@ class Line
   /**
    * @brief Calculate the intersection points of a line and a given circle
    *
+   * Algorithm from https://stackoverflow.com/a/1084899
+   *
    * @param circ Circle to intersect with
    * @return std::vector<Point> Intersection points
    */
@@ -253,6 +255,9 @@ class Line
 
   /**
    * @brief Calculate the closest point on the line to a given point
+   *
+   * Algorithm from
+   * https://web.archive.org/web/20210507021429/https://geomalgorithms.com/a02-_lines.html
    *
    * @param pt Point to calculate the closest point to
    * @return Point Closest point on the line
