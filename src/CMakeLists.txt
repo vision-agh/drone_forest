@@ -22,6 +22,11 @@ target_include_directories(drone_lib PUBLIC ../include)
 target_link_libraries(drone_lib geometric_lib lidar_lib)
 target_compile_features(drone_lib PUBLIC cxx_std_17)
 
+add_library(simulation_lib simulation.cc ${HEADER_LIST})
+target_include_directories(simulation_lib PUBLIC ../include)
+target_link_libraries(simulation_lib forest_lib drone_lib)
+target_compile_features(simulation_lib PUBLIC cxx_std_17)
+
 source_group(
     TREE "${PROJECT_SOURCE_DIR}/include" 
     PREFIX "Header Files" 

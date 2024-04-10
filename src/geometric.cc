@@ -10,20 +10,20 @@ cv::Point Point::ToCvPoint(Point t_vec, double m2pix, int img_height) const
   // Translate the point to the Image origin
   Point t_coords{x_ + t_vec.x(), y_ + t_vec.y()};
 
-  // Rotate the point to the Image coordinate system
-  Point r_coords{t_coords.x(), -t_coords.y()};
-
   // Scale the point to the Image coordinate system
-  Point s_coords{r_coords.x() * m2pix, r_coords.y() * m2pix};
+  Point s_coords = t_coords * m2pix;
 
-  return cv::Point(std::round(s_coords.x()),
-                   std::round(s_coords.y() + img_height - 1));
+  // Flip the point to the Image coordinate system
+  Point f_coords{s_coords.x(), img_height - 1 - s_coords.y()};
+
+  return cv::Point(std::round(f_coords.x()), std::round(f_coords.y()));
 }
 
 void Circle::Draw(cv::Mat& image, cv::Scalar color, Point t_vec,
                   double m2px) const
 {
-  cv::circle(image, center_.ToCvPoint(t_vec, m2px, image.cols), radius_ * m2px,
+  int img_height = image.rows;
+  cv::circle(image, center_.ToCvPoint(t_vec, m2px, img_height), radius_ * m2px,
              color, cv::FILLED);
 }
 
@@ -118,8 +118,9 @@ Point Line::CalculateClosestPoint(const Point& pt) const
 void Line::Draw(cv::Mat& image, cv::Scalar color, Point t_vec,
                 double m2px) const
 {
-  cv::line(image, start_.ToCvPoint(t_vec, m2px, image.cols),
-           end_.ToCvPoint(t_vec, m2px, image.cols), color);
+  int img_height = image.rows;
+  cv::line(image, start_.ToCvPoint(t_vec, m2px, img_height),
+           end_.ToCvPoint(t_vec, m2px, img_height), color);
 }
 
 }  // namespace geometric

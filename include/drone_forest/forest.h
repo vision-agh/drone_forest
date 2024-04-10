@@ -141,6 +141,18 @@ class Forest
    */
   void Draw(cv::Mat& img, geometric::Point t_vec, double m2px) const;
 
+  /**
+   * @brief Get the Obstacles in the forest
+   *
+   * @return std::vector<geometric::Circle> Obstacles in the forest
+   */
+  std::vector<geometric::Circle> GetObstacles() const;
+
+  /**
+   * @brief Set the seed of the random number generator
+   *
+   * @param seed Seed for the random number generator
+   */
   static void SetSeed(int seed)
   {
     gen_.seed(seed);

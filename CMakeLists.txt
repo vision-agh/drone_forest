@@ -24,3 +24,6 @@ include(CTest)
 add_subdirectory(src)
 
 add_subdirectory(tests)
+
+add_executable(run_manual run_manual.cc)
+target_link_libraries(run_manual PRIVATE simulation_lib)

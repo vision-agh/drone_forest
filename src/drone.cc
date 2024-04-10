@@ -11,6 +11,12 @@ void Drone::Draw(cv::Mat& image, geometric::Point t_vec, double m2px) const
   lidar_.Draw(image, t_vec, m2px);
 }
 
+std::vector<double> Drone::LidarScan(
+    const std::vector<geometric::Circle>& obstacles)
+{
+  return lidar_.Scan(obstacles);
+}
+
 void Drone::Move(double dt, const geometric::Point& velocity)
 {
   // Calculate the acceleration

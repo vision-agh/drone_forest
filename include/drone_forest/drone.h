@@ -65,6 +65,16 @@ class Drone
   void Draw(cv::Mat& image, geometric::Point t_vec, double m2px) const;
 
   /**
+   * @brief Perform a LiDAR scan
+   *
+   * @param obstacles Obstacles to scan
+   * @return std::vector<double> Distances to the obstacles measured by the
+   * LiDAR sensor
+   */
+  std::vector<double> LidarScan(
+      const std::vector<geometric::Circle>& obstacles);
+
+  /**
    * @brief Move the drone
    *
    * @param dt Time step

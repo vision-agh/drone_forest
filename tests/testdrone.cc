@@ -49,6 +49,24 @@ TEST(DroneTest, DroneReset)
   EXPECT_DOUBLE_EQ(drone.lidar().position().y(), 2);
 }
 
+TEST(DroneTest, DroneLidarScan)
+{
+  evs::geometric::Point position(1, 2);
+  double lidar_range = 3;
+  int lidar_n_beams = 4;
+  evs::drone::Drone drone(position, lidar_range, lidar_n_beams);
+  std::vector<evs::geometric::Circle> obstacles;
+  obstacles.push_back(evs::geometric::Circle(evs::geometric::Point(1, 4), 1));
+  obstacles.push_back(evs::geometric::Circle(evs::geometric::Point(1, 0), 1));
+  obstacles.push_back(evs::geometric::Circle(evs::geometric::Point(3, 2), 1));
+  obstacles.push_back(evs::geometric::Circle(evs::geometric::Point(-1, 2), 1));
+  std::vector<double> scan = drone.LidarScan(obstacles);
+  EXPECT_DOUBLE_EQ(scan[0], 1);
+  EXPECT_DOUBLE_EQ(scan[1], 1);
+  EXPECT_DOUBLE_EQ(scan[2], 1);
+  EXPECT_DOUBLE_EQ(scan[3], 1);
+}
+
 int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);

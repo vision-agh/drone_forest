@@ -34,7 +34,7 @@ Forest::Forest(const std::tuple<double, double> x_limits,
       for (const geometric::Circle& exclusion_zone : exclusion_zones)
       {
         if (tree.center().Distance(exclusion_zone.center())
-            < tree.radius() + exclusion_zone.radius() + min_spare_distance)
+            < tree.radius() + exclusion_zone.radius())
         {
           in_exclusion_zone = true;
           break;
@@ -43,6 +43,24 @@ Forest::Forest(const std::tuple<double, double> x_limits,
 
       // Skip tree if in exclusion zone
       if (in_exclusion_zone)
+      {
+        continue;
+      }
+
+      // Check if minimum distance to other trees is satisfied
+      bool min_distance_satisfied = true;
+      for (const Tree& other_tree : trees_)
+      {
+        if (tree.center().Distance(other_tree.trunk().center())
+            < tree.radius() + other_tree.trunk().radius() + min_spare_distance)
+        {
+          min_distance_satisfied = false;
+          break;
+        }
+      }
+
+      // Skip tree if minimum distance is not satisfied
+      if (!min_distance_satisfied)
       {
         continue;
       }
@@ -60,6 +78,16 @@ void Forest::Draw(cv::Mat& img, geometric::Point t_vec, double m2px) const
   {
     tree.Draw(img, t_vec, m2px);
   }
+}
+
+std::vector<geometric::Circle> Forest::GetObstacles() const
+{
+  std::vector<geometric::Circle> obstacles;
+  for (const Tree& tree : trees_)
+  {
+    obstacles.push_back(tree.trunk());
+  }
+  return obstacles;
 }
 
 }  // namespace forest
