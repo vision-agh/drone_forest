@@ -77,6 +77,16 @@ class Lidar
   void Draw(cv::Mat& image, geometric::Point t_vec, double m2px) const;
 
   /**
+   * @brief Reset the LiDAR sensor
+   *
+   * This method resets the LiDAR beams to their initial state (maximum range)
+   * and updates the position of the LiDAR sensor.
+   *
+   * @param position New position of the LiDAR sensor after the reset
+   */
+  void Reset(const geometric::Point& position);
+
+  /**
    * @brief Perform a LiDAR scan
    *
    * @param obstacles Vector of obstacles to scan

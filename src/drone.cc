@@ -61,5 +61,17 @@ void Drone::Move(double dt, const geometric::Point& velocity)
   position_ = new_position;
 }
 
+void Drone::Reset(const geometric::Point& position)
+{
+  // Reset the drone position
+  position_ = position;
+
+  // Reset the drone velocity
+  velocity_ = geometric::Point(0, 0);
+
+  // Reset the LiDAR sensor
+  lidar_.Reset(position_);
+}
+
 }  // namespace drone
 }  // namespace evs

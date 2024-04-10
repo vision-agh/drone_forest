@@ -39,6 +39,20 @@ void Lidar::Draw(cv::Mat& image, geometric::Point t_vec, double m2px) const
   }
 }
 
+void Lidar::Reset(const geometric::Point& position)
+{
+  position_ = position;
+
+  // Initialize the beams with the maximum range
+  for (int i = 0; i < beams_.size(); i++)
+  {
+    beams_[i] = geometric::Line(
+        position_, position_
+                       + geometric::Point(range_ * cos(beam_angles_[i]),
+                                          range_ * sin(beam_angles_[i])));
+  }
+}
+
 std::vector<double> Lidar::Scan(const std::vector<geometric::Circle>& obstacles)
 {
   // Reset the beams

@@ -72,6 +72,11 @@ class Drone
    */
   void Move(double dt, const geometric::Point& velocity);
 
+  /**
+   * @brief Reset the drone state
+   */
+  void Reset(const geometric::Point& position);
+
  private:
   geometric::Point position_;
   geometric::Point velocity_;

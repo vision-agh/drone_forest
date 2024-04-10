@@ -155,6 +155,27 @@ TEST(LidarTest, LidarDraw)
   EXPECT_EQ(down[2], 0);
 }
 
+TEST(LidarTest, LidarReset)
+{
+  evs::geometric::Point position(1, 2);
+  double range = 3;
+  int n_beams = 4;
+  evs::lidar::Lidar lidar(position, range, n_beams);
+  std::vector<evs::geometric::Circle> obstacles;
+  std::vector<double> distances = lidar.Scan(obstacles);
+  for (int i = 0; i < n_beams; i++)
+  {
+    EXPECT_DOUBLE_EQ(distances[i], range);
+  }
+  evs::geometric::Point new_position(3, 4);
+  lidar.UpdatePosition(new_position);
+  distances = lidar.Scan(obstacles);
+  for (int i = 0; i < n_beams; i++)
+  {
+    EXPECT_DOUBLE_EQ(distances[i], range);
+  }
+}
+
 int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
