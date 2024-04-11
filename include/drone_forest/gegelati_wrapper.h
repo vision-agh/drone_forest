@@ -4,6 +4,8 @@
 #include <drone_forest/drone_forest.h>
 #include <gegelati.h>
 
+#include <deque>
+#include <opencv4/opencv2/opencv.hpp>
 #include <tuple>
 #include <vector>
 
@@ -31,26 +33,6 @@ class GegelatiWrapper : public Learn::LearningEnvironment
 {
  public:
   /**
-   * @brief Actions that the drone can take.
-   */
-  static const std::vector<geometric::Point> actions;
-
-  /**
-   * @brief Environment instance.
-   */
-  DroneForest drone_forest_;
-
-  /**
-   * @brief LiDAR distances - observation space.
-   */
-  std::vector<Data::PointerWrapper<double>> lidar_distances_;
-
-  /**
-   * @brief Accumulated reward for the current episode.
-   */
-  double accumulated_reward_;
-
-  /**
    * @brief Construct a new Gegelati Wrapper object
    *
    * @param sim_step Time step of the simulation (in seconds)
@@ -75,26 +57,105 @@ class GegelatiWrapper : public Learn::LearningEnvironment
                   double min_tree_spare_distance, int max_spawn_attempts,
                   double max_speed, double max_acceleration,
                   int img_height = 800,
-                  std::string window_name = "Drone Forest");
+                  std::string window_name = "Drone Forest",
+                  Learn::LearningMode mode = Learn::LearningMode::TRAINING);
 
+  /**
+   * @brief Get the data sources for the learning environment.
+   *
+   * This method is inherited from the LearningEnvironment interface.
+   *
+   * Data source in this learning environment is the LiDAR sensor. Therefore,
+   * the method returns a vector of references to the distances measured by the
+   * LiDAR sensor.
+   *
+   * @return std::vector<std::reference_wrapper<const Data::DataHandler>>
+   */
   virtual std::vector<std::reference_wrapper<const Data::DataHandler>>
   getDataSources() override;
 
-  virtual void reset(size_t seed, Learn::LearningMode) override;
+  /**
+   * @brief Reset the learning environment.
+   *
+   * This method is inherited from the LearningEnvironment interface.
+   *
+   * The method resets the environment and sets the accumulated reward to zero.
+   * During the reset, the drone is placed at the origin of the coordinate
+   * system and lidar distances are set to the maximum range. The new forest is
+   * generated from scratch.
+   *
+   * @param seed Integer for controlling randomness.
+   * @param mode Learning mode in which environment should be reset.
+   */
+  virtual void reset(size_t seed, Learn::LearningMode mode) override;
 
+  /**
+   * @brief Execute an action in the learning environment.
+   *
+   * This method is inherited from the LearningEnvironment interface.
+   *
+   * The method executes the action in the environment. The action is a desired
+   * velocity vector for the drone. Through this method, one of the predefined
+   * actions (stored in internal vector) is selected and passed to the
+   * simulation under the hood. After executing the action, the method updates
+   * the internal state of the learning environment, i.e. accumulates the reward
+   * and checks if the episode is terminal.
+   *
+   * @param actionID ID of the action to be executed.
+   */
   virtual void doAction(uint64_t actionID) override;
 
+  /**
+   * @brief Get the score for the current episode.
+   *
+   * This method is inherited from the LearningEnvironment interface.
+   *
+   * Simple getter for the accumulated score. It is calculated by accumulating
+   * the rewards for each action executed during the episode (in doAction()).
+   * The reward is calculated based on the following elements:
+   * - collision with the tree,
+   * - distance from the center line,
+   * - distance from the trees,
+   * - direction of the drone movement.
+   *
+   * @return double Score for the current episode.
+   */
   virtual double getScore() const override;
 
+  /**
+   * @brief Check if drone is in a terminal state.
+   *
+   * This method is required by the LearningEnvironment interface.
+   *
+   * There are three possible scenarios for the terminal state:
+   * - the drone collided with the tree or run out of the simulation area,
+   * - the drone successfully flew through the forest,
+   * - the simulation time exceeded the maximum time.
+   *
+   * @return true if the episode is terminal, false otherwise.
+   */
   virtual bool isTerminal() const override;
 
+  cv::Mat& Render();
+
  private:
+  // Simulation parameters
   std::tuple<double, double> xlim_;
   std::tuple<double, double> ylim_;
+  int img_height_;
+  cv::Mat render_;
+  const int score_panel_height_ = 100;
 
+  // Learning environment components
+  static const std::vector<geometric::Point> actions;
+  DroneForest drone_forest_;
+  std::vector<Data::PointerWrapper<double>> lidar_distances_;
+  double accumulated_reward_;
+  Learn::LearningMode mode_;
+
+  // Internal state
   bool is_collision_;
   bool is_success_;
-
   geometric::Point last_drone_position_;
 };
 

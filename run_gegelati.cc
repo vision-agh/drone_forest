@@ -1,13 +1,41 @@
 #include <drone_forest/gegelati_wrapper.h>
 #include <gegelati.h>
 
+#include <chrono>
 #include <iomanip>
 #include <iostream>
+#include <opencv4/opencv2/opencv.hpp>
 #include <string>
 #include <thread>
 
+void displayEnv(std::atomic<bool> &exit, cv::Mat &display)
+{
+  const double FPS = 30.0;
+  cv::namedWindow("Drone Forest", cv::WINDOW_NORMAL);
+  std::cout << "Press 'q' to exit." << std::endl;
+  std::cout.flush();
+  exit = false;
+
+  char k = 0;
+  while (!exit)
+  {
+    cv::imshow("Drone Forest", display);
+    k = char(cv::waitKey(1));
+    if (k == 'q')
+    {
+      exit = true;
+    }
+  }
+
+  cv::destroyAllWindows();
+  std::cout << "Program will end." << std::endl;
+  std::cout.flush();
+}
+
 int main(int argc, char **argv)
 {
+  const double FPS = 30.0;
+
   try
   {  // Global exception catching.
 
@@ -69,45 +97,46 @@ int main(int argc, char **argv)
     Learn::LearningAgent la(droneForestLE, instructionSet, params);
     la.init();
 
-    // // Start display thread
-    // std::atomic<bool> exitProgram =
-    //     true;  // (set to false by other thread after init)
-    // std::atomic<bool> doDisplay = false;
-    // std::atomic<uint64_t> generation = 0;
-    // std::deque<std::tuple<uint64_t, double, double>> replay;
-    // std::thread threadDisplay(Renderer::replayThread, std::ref(exitProgram),
-    //                           std::ref(doDisplay), std::ref(generation),
-    //                           pendulumLE.p.TIME_DELTA, std::ref(replay));
-    // while (exitProgram)
-    //   ;  // Wait for other thread to print key info.
-
     // Basic logger for the training process
     Log::LABasicLogger basicLogger(la);
 
+    // Display thread
+    std::atomic<bool> exit(true);  // Display thread will set it to false
+    cv::Mat display = droneForestLE.Render();
+    std::thread displayThread(displayEnv, std::ref(exit), std::ref(display));
+    while (exit)
+      ;  // Wait for the display thread to start
+
     // Train for params.nbGenerations generations
-    for (int i = 0; i < params.nbGenerations; i++)
+    Environment env(instructionSet, droneForestLE.getDataSources(),
+                    params.nbRegisters, params.nbProgramConstant);
+    TPG::TPGExecutionEngine tee(env);
+    for (int i = 0; i < params.nbGenerations && !exit; i++)
     {
       la.trainOneGeneration(i);
 
-      //   // Get replay of best root actions on the pendulum
-      //   replay = createReplay(pendulumLE, la.getBestRoot().first,
-      //   instructionSet,
-      //                         params);
-      //   generation = i;
-
-      //   // trigger display
-      //   doDisplay = true;
-      //   while (doDisplay && !exitProgram)
-      //     ;
+      // Evaluation of the best program
+      droneForestLE.reset(0, Learn::LearningMode::VALIDATION);
+      while (!droneForestLE.isTerminal() && !exit)
+      {
+        auto vertexList = tee.executeFromRoot(*la.getBestRoot().first);
+        const auto actionID =
+            ((const TPG::TPGAction *)vertexList.back())->getActionID();
+        droneForestLE.doAction(actionID);
+        display = droneForestLE.Render();
+        std::this_thread::sleep_for(
+            std::chrono::milliseconds(static_cast<int>(1000.0 / FPS)));
+      }
     }
 
     // Cleanup instruction set
     // deleteInstructions(instructionSet);
 
     // Exit the display thread
+    displayThread.join();
     std::cout << "Exiting program, press a key then [enter] to exit if nothing "
-                 "happens.";
-    // threadDisplay.join();
+                 "happens."
+              << std::endl;
   }
   catch (const std::exception &ex)
   {
