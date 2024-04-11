@@ -1,5 +1,7 @@
 #include <drone_forest/gegelati_wrapper.h>
 #include <gegelati.h>
+#include <inttypes.h>
+#include <math.h>
 
 #include <chrono>
 #include <iomanip>
@@ -7,12 +9,13 @@
 #include <opencv4/opencv2/opencv.hpp>
 #include <string>
 #include <thread>
+#define _USE_MATH_DEFINES  // To get M_PI (is it necessary?)
 
 void displayEnv(std::atomic<bool> &exit, cv::Mat &display)
 {
   const double FPS = 30.0;
   cv::namedWindow("Drone Forest", cv::WINDOW_NORMAL);
-  std::cout << "Press 'q' to exit." << std::endl;
+  std::cout << "Press 'q' on the open display to exit." << std::endl;
   std::cout.flush();
   exit = false;
 
@@ -28,7 +31,7 @@ void displayEnv(std::atomic<bool> &exit, cv::Mat &display)
   }
 
   cv::destroyAllWindows();
-  std::cout << "Program will end." << std::endl;
+  std::cout << "Program will end after current generation." << std::endl;
   std::cout.flush();
 }
 
@@ -50,6 +53,12 @@ int main(int argc, char **argv)
     auto max = [](double a, double b) -> double { return std::max(a, b); };
     auto ln = [](double a) -> double { return std::log(a); };
     auto exp = [](double a) -> double { return std::exp(a); };
+    auto cos = [](double a) -> double { return std::cos(a); };
+    auto sin = [](double a) -> double { return std::sin(a); };
+    auto tan = [](double a) -> double { return std::tan(a); };
+    auto pi = [](double a) -> double { return M_PI; };
+    auto multByConst = [](double a, Data::Constant c) -> double
+    { return a * (double)c / 10.0; };
 
     instructionSet.add(*(new Instructions::LambdaInstruction<double, double>(
         minus, "$0 = $1 - $2;")));
@@ -65,6 +74,17 @@ int main(int argc, char **argv)
         *(new Instructions::LambdaInstruction<double>(exp, "$0 = exp($1);")));
     instructionSet.add(
         *(new Instructions::LambdaInstruction<double>(ln, "$0 = log($1);")));
+    instructionSet.add(
+        *(new Instructions::LambdaInstruction<double>(cos, "$0 = cos($1);")));
+    instructionSet.add(
+        *(new Instructions::LambdaInstruction<double>(sin, "$0 = sin($1);")));
+    instructionSet.add(
+        *(new Instructions::LambdaInstruction<double>(tan, "$0 = tan($1);")));
+    instructionSet.add(
+        *(new Instructions::LambdaInstruction<double>(pi, "$0 = M_PI;")));
+    instructionSet.add(
+        *(new Instructions::LambdaInstruction<double, Data::Constant>(
+            multByConst, "$0 = $1 * ((double)($2) / 10.0);")));
 
     // Set the parameters for the learning process.
     // Controls mutations probability, program lengths, and graph size among

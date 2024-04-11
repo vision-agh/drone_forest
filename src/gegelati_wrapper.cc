@@ -119,6 +119,16 @@ void GegelatiWrapper::doAction(uint64_t actionID)
   last_drone_position_ = drone_position;
 }
 
+bool GegelatiWrapper::isCopyable() const
+{
+  return true;
+}
+
+Learn::LearningEnvironment* GegelatiWrapper::clone() const
+{
+  return new GegelatiWrapper(*this);
+}
+
 double GegelatiWrapper::getScore() const
 {
   return accumulated_reward_;

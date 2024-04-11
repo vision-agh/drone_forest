@@ -106,6 +106,18 @@ class GegelatiWrapper : public Learn::LearningEnvironment
   virtual void doAction(uint64_t actionID) override;
 
   /**
+   * @brief Return if the learning environment is copyable.
+   *
+   * This method is inherited from the LearningEnvironment interface.
+   *
+   * @return true Environment is copyable.
+   * @return false Environment is not copyable.
+   */
+  virtual bool isCopyable() const override;
+
+  virtual LearningEnvironment* clone() const override;
+
+  /**
    * @brief Get the score for the current episode.
    *
    * This method is inherited from the LearningEnvironment interface.
