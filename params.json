@@ -12,7 +12,7 @@
 	// Maximum number of actions performed on the learning environment during the
 	// each evaluation of a root.
 	// "maxNbActionsPerEval" : 1000, // Default value
-	"maxNbActionsPerEval" : 12000,
+	"maxNbActionsPerEval" : 1200,
 	// Maximum number of times a given root is evaluated.After this number is
 	// reached, possibly after several generations, the score of the root will be
 	// fixed, and no further evaluation will be done.
@@ -64,7 +64,7 @@
 			/* "nbActions" : 0,*/
 			// Number of root TPGTeams to maintain when populating the TPGGraph
 			// "nbRoots" : 100, // Default value
-			"nbRoots": 300,
+			"nbRoots": 36,
 			// Probability of adding an outgoing Edge to a Team.
 			// "pEdgeAddition" : 0.7, // Default value
 			"pEdgeAddition": 0.7,

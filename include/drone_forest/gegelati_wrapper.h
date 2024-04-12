@@ -14,15 +14,14 @@ namespace evs
 namespace drone_forest
 {
 
-const double kMaxSimTimeS = 120.0;
-
-const double kTreeSafeDistance = 0.15;
+// const double kTreeSafeDistance = 0.15;
 const double kTreeCollisionDistance = 0.2;
-const double kPenaltyCloseToTree = -0.25;
-const double kPenaltyTreeCollision = -1.5;
-const double kPenaltyFarFromCenterLineCoeff = -0.1;
-const double kPenaltyWrongDirection = -3.0;
-const double kRewardGoodDirection = 0.8;
+// const double kRewardSuccess = 1.0;
+// const double kPenaltyCloseToTree = -0.25;
+// const double kPenaltyTreeCollision = -3.0;
+// const double kPenaltyFarFromCenterLineCoeff = -0.05;
+// const double kPenaltyWrongDirection = -3.0;
+// const double kRewardGoodDirection = 0.8;
 
 /**
  * @brief Class representing a wrapper for the DroneForest class to be used with
@@ -50,7 +49,8 @@ class GegelatiWrapper : public Learn::LearningEnvironment
    * @param img_height Height of the image to render
    * @param window_name Name of the window to render
    */
-  GegelatiWrapper(double sim_step, std::tuple<double, double> xlim,
+  GegelatiWrapper(const std::vector<geometric::Point>& actions, double sim_step,
+                  std::tuple<double, double> xlim,
                   std::tuple<double, double> ylim, int n_trees,
                   double tree_min_radius, double tree_max_radius,
                   int n_lidar_beams, double lidar_range,
@@ -59,6 +59,13 @@ class GegelatiWrapper : public Learn::LearningEnvironment
                   int img_height = 800,
                   std::string window_name = "Drone Forest",
                   Learn::LearningMode mode = Learn::LearningMode::TRAINING);
+
+  /**
+   * @brief Copy constructor for the GegelatiWrapper class.
+   *
+   * @param other Reference to the object to be copied.
+   */
+  GegelatiWrapper(const GegelatiWrapper& other);
 
   /**
    * @brief Get the data sources for the learning environment.
@@ -150,6 +157,14 @@ class GegelatiWrapper : public Learn::LearningEnvironment
 
   cv::Mat& Render();
 
+ protected:
+  /**
+   * @brief Set the distances measured by the LiDAR sensor.
+   *
+   * @param distances Vector of distances measured by the LiDAR sensor.
+   */
+  void SetLidarDistances(const std::vector<double>& distances);
+
  private:
   // Simulation parameters
   std::tuple<double, double> xlim_;
@@ -159,10 +174,11 @@ class GegelatiWrapper : public Learn::LearningEnvironment
   const int score_panel_height_ = 100;
 
   // Learning environment components
-  static const std::vector<geometric::Point> actions;
+  const std::vector<geometric::Point> actions_;
+  Data::PrimitiveTypeArray<double> lidar_distances_;
   DroneForest drone_forest_;
-  std::vector<Data::PointerWrapper<double>> lidar_distances_;
   double accumulated_reward_;
+  double last_reward_;
   Learn::LearningMode mode_;
 
   // Internal state
