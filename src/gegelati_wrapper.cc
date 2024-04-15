@@ -105,11 +105,42 @@ void GegelatiWrapper::doAction(uint64_t actionID)
 
   // Success check
   double distance_to_goal =
-      std::abs(drone_position.y() - std::get<1>(ylim_) + 2.0);
+      std::abs(drone_position.y() - std::get<1>(ylim_)) - 2.0;
   is_success_ = distance_to_goal == 0;
 
   // Reward calculation
-  last_reward_ = -distance_to_goal;
+  // // Quite good configuration
+  // if (is_collision_)
+  // {
+  //   last_reward_ = -5.0;
+  // }
+  // else if (last_drone_position_.y() < drone_position.y())
+  // {
+  //   last_reward_ = 1.0;
+  // }
+  // else
+  // {
+  //   last_reward_ = -2.0;
+  // }
+
+  if (is_collision_)
+  {
+    last_reward_ = -5.0;
+  }
+  else if (last_drone_position_.y() < drone_position.y())
+  {
+    last_reward_ = 1.0;
+  }
+  else if (last_drone_position_.y() > drone_position.y())
+  {
+    last_reward_ = -2.0;
+  }
+  else
+  {
+    last_reward_ = -1.0;
+  }
+
+  // last_reward_ = -distance_to_goal;
 
   // last_reward_ = 0.0;
 
@@ -158,18 +189,27 @@ Learn::LearningEnvironment* GegelatiWrapper::clone() const
 
 double GegelatiWrapper::getScore() const
 {
-  if (is_collision_)
+  // if (is_collision_)
+  // {
+  //   return accumulated_reward_;
+  // }
+  // else if (is_success_)
+  // {
+  //   return 10.0 / drone_forest_.GetTime();
+  // }
+  // else
+  // {
+  //   return accumulated_reward_ / drone_forest_.GetTime();
+  // }
+  if (isTerminal())
   {
     return accumulated_reward_;
   }
-  else if (is_success_)
-  {
-    return 10.0 / drone_forest_.GetTime();
-  }
   else
   {
-    return accumulated_reward_ / drone_forest_.GetTime();
+    return last_reward_;
   }
+  // return last_reward_;
 }
 
 bool GegelatiWrapper::isTerminal() const

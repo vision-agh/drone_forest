@@ -31,5 +31,9 @@ add_executable(run_manual run_manual.cc)
 target_link_libraries(run_manual PRIVATE drone_forest_lib)
 
 add_executable(run_gegelati run_gegelati.cc)
-target_link_libraries(run_gegelati PRIVATE gegelati_wrapper_lib ${GEGELATI_LIBRARIES})
+target_link_libraries(run_gegelati PRIVATE gegelati_wrapper_lib instructions_lib ${GEGELATI_LIBRARIES})
 target_compile_definitions(run_gegelati PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
+
+add_executable(eval_gegelati eval_gegelati.cc)
+target_link_libraries(eval_gegelati PRIVATE gegelati_wrapper_lib instructions_lib ${GEGELATI_LIBRARIES})
+target_compile_definitions(eval_gegelati PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")

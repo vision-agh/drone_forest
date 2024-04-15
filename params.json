@@ -24,10 +24,10 @@
 		{
 			// Maximum constant value possible.
 			// "maxConstValue" : 100, // Default value
-			"maxConstValue" : 10,
+			"maxConstValue" : 50,
 			// Maximum number of Line within the Program of the TPG.
 			// "maxProgramSize" : 96, // Default value
-			"maxProgramSize" : 44,
+			"maxProgramSize" : 96,
 			// Minimum constant value possible.
 			// "minConstValue" : -10, // Default value
 			"minConstValue" : -10,
@@ -42,10 +42,10 @@
 			"pDelete" : 0.5,
 			// Probability of altering a line of the Program.
 			// "pMutate" : 1.0, // Default value
-			"pMutate" : 1.0,
+			"pMutate" : 0.7,
 			// Probability of swapping two lines of the Program.
 			// "pSwap" : 1.0, // Default value
-			"pSwap" : 1.0
+			"pSwap" : 0.7
 		},
 		"tpg": {
 			// When a Program is mutated, makes sure its behavior is no longer the same.
@@ -64,7 +64,7 @@
 			/* "nbActions" : 0,*/
 			// Number of root TPGTeams to maintain when populating the TPGGraph
 			// "nbRoots" : 100, // Default value
-			"nbRoots": 36,
+			"nbRoots": 72,
 			// Probability of adding an outgoing Edge to a Team.
 			// "pEdgeAddition" : 0.7, // Default value
 			"pEdgeAddition": 0.7,
@@ -84,7 +84,7 @@
 	},
 	// Number of generations of the training.
 	// "nbGenerations" : 500, // Default value
-	"nbGenerations" : 500,
+	"nbGenerations" : 1000,
 	// [Only used in AdversarialLearningAgent.]
 	// Number of times each job is evaluated in the learning process.
 	// Each root may belong to several jobs, hence this parameter should be lower
@@ -108,5 +108,5 @@
 	/* "nbThreads" : 0,*/
 	// Percentage of deleted (and regenerated) root TPGVertex at each generation.
 	// "ratioDeletedRoots" : 0.5, // Default value
-	"ratioDeletedRoots" : 0.5
+	"ratioDeletedRoots" : 0.7
 }

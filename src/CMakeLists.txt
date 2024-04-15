@@ -31,6 +31,10 @@ add_library(gegelati_wrapper_lib gegelati_wrapper.cc ${HEADER_LIST})
 target_include_directories(gegelati_wrapper_lib PUBLIC ../include ${GEGELATI_INCLUDE_DIRS})
 target_link_libraries(gegelati_wrapper_lib drone_forest_lib ${GEGELATI_LIBRARIES})
 
+add_library(instructions_lib instructions.cc ${HEADER_LIST})
+target_include_directories(instructions_lib PUBLIC ../include ${GEGELATI_INCLUDE_DIRS})
+target_link_libraries(instructions_lib ${GEGELATI_LIBRARIES})
+
 source_group(
     TREE "${PROJECT_SOURCE_DIR}/include" 
     PREFIX "Header Files" 
