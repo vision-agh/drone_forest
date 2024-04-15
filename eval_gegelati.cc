@@ -12,6 +12,7 @@ namespace fs = std::filesystem;
 int main(int argc, char** argv)
 {
   size_t seed = argc > 1 ? std::stoul(argv[1]) : 0;
+  fs::path save_eval_dir = argc > 2 ? fs::path(argv[2]) : fs::path();
   const double FPS = 30.0;
 
   // Path to the experiment directory
@@ -116,6 +117,11 @@ int main(int argc, char** argv)
 
     // Render the environment
     display = drone_forest_le.Render();
+    if (!save_eval_dir.empty())
+    {
+      fs::path img_path = save_eval_dir / (std::to_string(i) + ".png");
+      cv::imwrite(img_path.string(), display);
+    }
     cv::imshow(window_name, display);
     k = char(cv::waitKey(1000 / FPS));
     if (k == 'q')
