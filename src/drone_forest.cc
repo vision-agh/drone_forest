@@ -29,7 +29,7 @@ DroneForest::DroneForest(double sim_step, std::tuple<double, double> xlim,
       tree_min_radius_(tree_min_radius),
       tree_max_radius_(tree_max_radius),
       min_tree_spare_distance_(min_tree_spare_distance),
-      max_spwan_attempts_(max_spawn_attempts),
+      max_spawn_attempts_(max_spawn_attempts),
       window_name_(window_name),
       img_height_(img_height),
       t_vec_(-std::get<0>(xlim), -std::get<0>(ylim))
@@ -40,6 +40,17 @@ DroneForest::DroneForest(double sim_step, std::tuple<double, double> xlim,
   m2px_ = img_height_ / y_range;
   img_width_ = int(x_range * m2px_);
   img_ = cv::Mat(img_height_, img_width_, CV_8UC3, cv::Scalar(0, 255, 0));
+}
+
+std::vector<uchar> DroneForest::GetImageAsVector()
+{
+  std::vector<uchar> img_data;
+
+  // Clone the image to ensure data continuity
+  cv::Mat img = img_.clone();
+
+  img_data.assign(img.data, img.data + img.total() * img.channels());
+  return img_data;
 }
 
 std::vector<double>& DroneForest::GetLidarDistances()
@@ -72,7 +83,7 @@ void DroneForest::Reset()
   forest_ =
       forest::Forest(xlim_, ylim_, n_trees_, tree_min_radius_, tree_max_radius_,
                      {geometric::Circle(geometric::Point(0, 0), 1.0)},
-                     min_tree_spare_distance_, max_spwan_attempts_);
+                     min_tree_spare_distance_, max_spawn_attempts_);
   sim_time_ = 0.0;
 
   // NOTE: It is important to keep lidar_distances_ intact in terms of memory
@@ -103,6 +114,11 @@ void DroneForest::Step(geometric::Point velocity)
   {
     lidar_distances_[i] = tmp_distances[i];
   }
+}
+
+void DroneForest::StepVelocityVector(std::vector<double> velocity)
+{
+  Step(geometric::Point(velocity[0], velocity[1]));
 }
 
 }  // namespace drone_forest

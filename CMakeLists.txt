@@ -23,8 +23,9 @@ include(CTest)
 #   message(STATUS "Doxygen not found, not building documentation")
 # endif()
 
+add_subdirectory(extern/pybind11)
+add_subdirectory(scripts)
 add_subdirectory(src)
-
 add_subdirectory(tests)
 
 add_executable(run_manual run_manual.cc)

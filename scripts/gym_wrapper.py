@@ -1,15 +1,28 @@
 """Gymnasium wrapper for the drone forest environment."""
 
+import os
+import sys
+
+script_dir = os.path.abspath(os.path.dirname(__file__))
+
+# Add pybind11 wrapper for the drone forest environment
+module_dir = os.path.abspath(os.path.join(script_dir, "../build/scripts"))
+
+if not os.path.exists(module_dir):
+    print(f"Cannot find the pybind11 wrapper at {module_dir}.")
+    print("Please build the pybind11 wrapper first.")
+    exit(1)
+
+if module_dir not in sys.path:
+    sys.path.append(module_dir)
+
+from drone_forest import DroneForest
+
 import cv2
 import gymnasium as gym
 import numpy as np
-from typing import Tuple, Union
+from typing import Dict, List, Tuple, Union
 
-from drone_forest.geometric_objects import Point
-from drone_forest.simulation import Simulation
-from drone_forest.render_utils import IMAGE_HEIGHT
-
-N_ACTIONS = 4
 MAX_SIM_TIME_S = 120.0
 
 TREE_SAFE_DISTANCE = 0.15
@@ -28,153 +41,172 @@ class DroneForestEnv(gym.Env):
 
     def __init__(
         self,
+        actions: List[List[float]],
         dt: float,
-        xlim: Tuple[float, float],
-        ylim: Tuple[float, float],
+        x_lim: Tuple[float, float],
+        y_lim: Tuple[float, float],
         n_trees: int,
-        max_tree_radius: float,
+        tree_radius_lim: Tuple[float, float],
         n_lidar_beams: int,
-        max_lidar_range: float,
-        min_spare_distance: float = 0.2,
-        max_spawn_attempts: int = 50,
-        seed: int = 0,
+        lidar_range: float,
+        min_tree_spare_distance: float,
+        max_spawn_attempts: int,
+        max_speed: float,
+        max_acceleration: float,
         render_mode: str = "human",
     ):
         """Initialize the drone forest environment.
 
         Args:
-            xlim (Tuple[float, float]): The x-axis limits of the simulation.
-            ylim (Tuple[float, float]): The y-axis limits of the simulation.
+            actions (List[List[float]]): The list of actions to take.
+            dt (float): The simulation time step.
+            x_lim (Tuple[float, float]): The x-axis limits of the simulation.
+            y_lim (Tuple[float, float]): The y-axis limits of the simulation.
             n_trees (int): The number of trees in the forest.
-            max_tree_radius (float): The maximum radius of the trees in the forest.
+            tree_radius_lim (Tuple[float, float]): The limits of the tree radii.
             n_lidar_beams (int): The number of beams emitted by the lidar.
-            max_lidar_range (float): The maximum range of the lidar.
-            min_spare_distance (float): The minimum spare distance between trees.
+            lidar_range (float): The maximum range of the lidar.
+            min_tree_spare_distance (float): The minimum spare distance between trees.
             max_spawn_attempts (int): The maximum number of spawn attempts for trees.
-            seed (int): The seed for reproducibility.
+            max_speed (float): The maximum speed of the drone.
+            max_acceleration (float): The maximum acceleration of the drone.
+            render_mode (str, optional): The rendering mode. Defaults to "human".
         """
-        assert xlim[0] < 0 < xlim[1], "The x-axis limits must contain zero."
-        assert ylim[0] < 0 < ylim[1], "The y-axis limits must contain zero."
+        assert x_lim[0] < 0 < x_lim[1], "The x-axis limits must contain zero."
+        assert y_lim[0] < 0 < y_lim[1], "The y-axis limits must contain zero."
 
         super(DroneForestEnv, self).__init__()
         self.render_mode = render_mode
 
-        self.simulation: Simulation = None
-        self.dt = dt
-        self.xlim = xlim
-        self.ylim = ylim
-        self.n_trees = n_trees
-        self.max_tree_radius = max_tree_radius
-        self.n_lidar_beams = n_lidar_beams
-        self.max_lidar_range = max_lidar_range
-        self.min_spare_distance = min_spare_distance
-        self.max_spawn_attempts = max_spawn_attempts
-        self.seed = seed
-
-        self.action_space = gym.spaces.Discrete(N_ACTIONS)
-        self.observation_space = gym.spaces.Box(
-            low=0.0, high=max_lidar_range, shape=(n_lidar_beams,), dtype=np.float64
+        self.x_lim = x_lim
+        self.y_lim = y_lim
+        self.drone_prev_position = [0.0, 0.0]
+        self.env = DroneForest(
+            sim_step=dt,
+            x_lim=x_lim,
+            y_lim=y_lim,
+            n_trees=n_trees,
+            tree_min_radius=tree_radius_lim[0],
+            tree_max_radius=tree_radius_lim[1],
+            n_lidar_beams=n_lidar_beams,
+            lidar_range=lidar_range,
+            min_tree_spare_distance=min_tree_spare_distance,
+            max_spawn_attempts=max_spawn_attempts,
+            max_speed=max_speed,
+            max_acceleration=max_acceleration,
         )
 
-        # Rendering
-        if self.render_mode == "human":
-            self.m2px = IMAGE_HEIGHT / (ylim[1] - ylim[0])
-            render_width = int((xlim[1] - xlim[0]) * self.m2px)
-            # cv2.namedWindow("Drone Forest", cv2.WINDOW_NORMAL)
-            # cv2.resizeWindow("Drone Forest", render_width, RENDER_HEIGHT)
-            self.img = np.zeros((IMAGE_HEIGHT, render_width, 3), dtype=np.uint8)
+        self.action_vec = actions
+        self.action_space = gym.spaces.Discrete(len(actions))
+        self.observation_space = gym.spaces.Box(
+            low=0.0, high=lidar_range, shape=(n_lidar_beams,), dtype=np.float64
+        )
 
-    def step(self, action: int):
-        """Take a step in the environment."""
-        assert self.action_space.contains(action), f"Invalid action: {action}"
+    def step(self, action: int) -> Tuple[np.ndarray, float, bool, bool, dict]:
+        """Perform an action in the environment.
 
-        control_value: Point = Point(0, 0)
-        if action == 0:
-            control_value = Point(0, 1)
-        elif action == 1:
-            control_value = Point(-1, 0)
-        elif action == 2:
-            control_value = Point(0, -1)
-        elif action == 3:
-            control_value = Point(1, 0)
+        Args:
+            action (int): The action ID to perform.
 
-        observation = np.array(self.simulation.step(control_value), dtype=np.float64)
+        Returns:
+            Tuple[np.ndarray, float, bool, bool, dict]: The observation, reward, \
+            termination flag, truncation flag, and info dictionary.
+        """
+        assert self.action_space.contains(action), f"Invalid action {action}."
 
-        # Terminated, truncated and reward
+        # Perform the action
+        self.env.step(self.action_vec[action])
+
+        # Get the observation
+        obs = np.array(self.env.get_lidar_distances(), dtype=np.float64)
+
+        # Determine termination or truncation
+        drone_position = self.env.get_drone_position()
         if (
-            np.any(observation < TREE_COLLISION_DISTANCE)
-            or self.simulation.drone.position.y <= self.ylim[0]
-            or self.simulation.drone.position.y >= self.ylim[1]
-            or self.simulation.drone.position.x <= self.xlim[0]
-            or self.simulation.drone.position.x >= self.xlim[1]
+            np.any(obs < TREE_COLLISION_DISTANCE)
+            or drone_position[0] <= self.x_lim[0]
+            or drone_position[0] >= self.x_lim[1]
+            or drone_position[1] <= self.y_lim[0]
+            or drone_position[1] >= self.y_lim[1]
         ):
-            # Drone collided with a tree or went out of bounds
+            # Drone crashed or went out of bounds
             reward = PENALTY_TREE_COLLISION
             terminated = True
-        elif self.simulation.drone.position.x >= self.xlim[1] - 2.0:
-            # Drone reached the end of the forest
+        elif drone_position[1] >= self.x_lim[1] - 2.0:
+            # Drone reached the end
+            reward = 1.0
             terminated = True
         else:
-            reward = 0
+            # Drone is still flying
+            reward = 0.0
             terminated = False
-        truncated = self.simulation.sim_time >= MAX_SIM_TIME_S
+        truncated = self.env.get_time() >= MAX_SIM_TIME_S
 
         # Reward shaping
         if not terminated:
-            # Center line reward
-            reward += PENALTY_FAR_FROM_CENTER_LINE_COEFF * abs(
-                self.simulation.drone.position.x
-            )
+            # Penalize being too far from the center line
+            reward += PENALTY_FAR_FROM_CENTER_LINE_COEFF * abs(drone_position[0])
 
-            # Moving direction reward
-            reward += (
-                REWARD_GOOD_DIRECTION_COEFF
-                if self.simulation.drone.velocity.y > 0
-                else PENALTY_WRONG_DIRECTION_COEFF
-            )
-
-            # Penalty for being close to trees
-            for tree in self.simulation.forest.trees:
-                distance_to_tree = np.linalg.norm(
-                    self.simulation.drone.position - tree.circle.center
-                )
-                if distance_to_tree < TREE_SAFE_DISTANCE:
+            # Penalize being too close to a tree
+            for dist in obs:
+                if dist < TREE_SAFE_DISTANCE:
                     reward += PENALTY_CLOSE_TO_TREE
+                    break
+
+            # Reward moving in the right direction or penalize moving in the wrong
+            # direction
+            if drone_position[1] > self.drone_prev_position[1]:
+                reward += REWARD_GOOD_DIRECTION_COEFF
+            else:
+                reward += PENALTY_WRONG_DIRECTION_COEFF
 
         # Info
         info = {}
 
-        return observation, reward, terminated, truncated, info
+        return obs, reward, terminated, truncated, info
 
-    def reset(self, seed: Union[None, int] = None, options=None):
-        """Reset the environment."""
+    def reset(
+        self, seed: Union[None, int] = None, options=None
+    ) -> Tuple[np.ndarray, Dict]:
+        """Reset the environment.
+
+        Args:
+            seed (Union[None, int], optional): Seed for the randomness generator. \
+            Defaults to None.
+            options (_type_, optional): Optional options. Defaults to None.
+
+        Returns:
+            Tuple[np.ndarray, Dict]: The initial observation and info dictionary.
+        """
         super().reset(seed=seed, options=options)
 
+        # Reset the environment
         if seed is not None:
-            np.random.seed(seed)
+            self.env.reset_seed(seed)
+        else:
+            self.env.reset()
 
-        self.simulation = Simulation(
-            self.dt,
-            self.xlim,
-            self.ylim,
-            self.n_trees,
-            self.max_tree_radius,
-            self.n_lidar_beams,
-            self.max_lidar_range,
-            self.min_spare_distance,
-            self.max_spawn_attempts,
-        )
+        # Get the initial observation
+        obs = np.array(self.env.get_lidar_distances(), dtype=np.float64)
 
-        return np.array(self.simulation.step(Point(0, 0)), dtype=np.float64), {}
+        # Info
+        info = {}
+
+        return obs, info
 
     def render(self):
         """Render the environment."""
         if self.render_mode == "human":
-            self.img[:] = (0, 255, 0)
-            self.simulation.draw(self.img, self.m2px)
-            cv2.imshow("Drone Forest", self.img)
+            self.env.render()
+            img_data: List[int] = self.env.get_image()
+            img = np.array(img_data, dtype=np.uint8).reshape(
+                *self.env.get_image_size(), -1
+            )
+            cv2.imshow("Drone Forest", img)
             cv2.waitKey(1)
+        else:
+            raise NotImplementedError("Only human rendering is supported.")
 
     def close(self):
         """Close the environment."""
-        pass
+        cv2.destroyAllWindows()

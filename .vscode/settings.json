@@ -74,6 +74,13 @@
     "typeinfo": "cpp",
     "valarray": "cpp",
     "variant": "cpp",
-    "codecvt": "cpp"
-  }
+    "codecvt": "cpp",
+    "ranges": "cpp"
+  },
+  "python.autoComplete.extraPaths": [
+    "${workspaceFolder}/build/scripts",
+  ],
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/build/scripts"
+  ]
 }

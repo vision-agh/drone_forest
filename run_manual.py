@@ -2,26 +2,36 @@
 
 import random
 
-from drone_forest.gym_wrapper import DroneForestEnv
+from scripts.gym_wrapper import DroneForestEnv
 
 # Set the parameters for the simulation
+actions = [[0.0, 1.0], [-1.0, 0.0], [0.0, -1.0], [1.0, 0.0]]
 dt = 0.1
-xlim = (-10, 10)
-ylim = (-1, 25)
-n_trees = 200
-max_tree_radius = 1.0
-n_lidar_beams = 36
-max_lidar_range = 3.0
+x_lim = (-10.0, 10.0)
+y_lim = (-2.0, 23.0)
+n_trees = 100
+tree_radius_lim = (0.1, 0.75)
+n_lidar_beams = 72
+lidar_range = 3.0
+min_tree_spare_distance = 0.75
+max_spawn_attempts = 100
+max_speed = 1.0
+max_acceleration = 0.6
 
 # Create the simulation
 env = DroneForestEnv(
+    actions=actions,
     dt=dt,
-    xlim=xlim,
-    ylim=ylim,
+    x_lim=x_lim,
+    y_lim=y_lim,
     n_trees=n_trees,
-    max_tree_radius=max_tree_radius,
+    tree_radius_lim=tree_radius_lim,
     n_lidar_beams=n_lidar_beams,
-    max_lidar_range=max_lidar_range,
+    lidar_range=lidar_range,
+    min_tree_spare_distance=min_tree_spare_distance,
+    max_spawn_attempts=max_spawn_attempts,
+    max_speed=max_speed,
+    max_acceleration=max_acceleration,
 )
 env.reset()
 
@@ -46,7 +56,10 @@ while True:
             continue
 
         # Perform simulation step
-        env.step(action_id)
+        obs, reward, terminated, truncated, _ = env.step(action_id)
+        if terminated or truncated:
+            break
     choice = input("Do you want to continue? [y/n]: ")
     if choice.lower() != "y":
+        env.close()
         break

@@ -37,6 +37,7 @@ class GegelatiWrapper : public Learn::LearningEnvironment
   /**
    * @brief Construct a new Gegelati Wrapper object
    *
+   * @param actions Vector of predefined actions for the drone.
    * @param sim_step Time step of the simulation (in seconds)
    * @param xlim x-axis limits of the simulation area (min, max in meters)
    * @param ylim y-axis limits of the simulation area (min, max in meters)
@@ -51,6 +52,7 @@ class GegelatiWrapper : public Learn::LearningEnvironment
    * @param max_acceleration Maximum acceleration of the drone
    * @param img_height Height of the image to render
    * @param window_name Name of the window to render
+   * @param mode Learning mode in which the environment should be initialized
    */
   GegelatiWrapper(const std::vector<geometric::Point>& actions, double sim_step,
                   std::tuple<double, double> xlim,

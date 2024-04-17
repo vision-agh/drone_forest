@@ -62,6 +62,20 @@ class DroneForest
   }
 
   /**
+   * @brief Get the Drone Position As Vector object
+   *
+   * This method is compatible with the Python bindings.
+   *
+   * @return std::vector<double> Drone position as a vector
+   */
+  std::vector<double> GetDronePositionAsVector()
+  {
+    std::vector<double> drone_position = {drone_position_.x(),
+                                          drone_position_.y()};
+    return drone_position;
+  }
+
+  /**
    * @brief Get the image of the simulation
    *
    * @note This function should be called after Render()
@@ -74,11 +88,44 @@ class DroneForest
   }
 
   /**
+   * @brief Get the Image As Vector object
+   *
+   * This method is compatible with the Python bindings. Solution based on:
+   * https://stackoverflow.com/questions/26681713
+   *
+   * @return std::vector<uchar> Image of the simulation as a vector
+   */
+  std::vector<uchar> GetImageAsVector();
+
+  /**
+   * @brief Get the size of the image
+   *
+   * @return std::tuple<int, int> Size of the image (height, width)
+   */
+  std::tuple<int, int> GetImageSize()
+  {
+    return std::make_tuple(img_height_, img_width_);
+  }
+
+  /**
    * @brief Get the distances detected by the LiDAR sensor
    *
    * @return std::vector<double>& Distances detected by the LiDAR sensor
    */
   std::vector<double>& GetLidarDistances();
+
+  /**
+   * @brief Get the distances detected by the LiDAR sensor as a vector
+   *
+   * This method is compatible with the Python bindings.
+   *
+   * @return std::vector<double> Distances detected by the LiDAR sensor as a
+   * vector
+   */
+  std::vector<double> GetLidarDistancesAsVector()
+  {
+    return lidar_distances_;
+  }
 
   /**
    * @brief Get the time of the simulation
@@ -120,6 +167,18 @@ class DroneForest
    */
   void Step(geometric::Point velocity);
 
+  /**
+   * @brief Perform a simulation step
+   *
+   * This method moves the drone according to the given velocity and performs a
+   * LiDAR scan to detect the trees in the forest.
+   *
+   * This method is compatible with the Python bindings.
+   *
+   * @param velocity Velocity of the drone (in m/s)
+   */
+  void StepVelocityVector(std::vector<double> velocity);
+
  private:
   const double sim_step_;
   double sim_time_;
@@ -135,7 +194,7 @@ class DroneForest
   const double tree_min_radius_;
   const double tree_max_radius_;
   const double min_tree_spare_distance_;
-  const int max_spwan_attempts_;
+  const int max_spawn_attempts_;
 
   const std::string window_name_;
   cv::Mat img_;
