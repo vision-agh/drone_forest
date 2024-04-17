@@ -5,8 +5,8 @@
  * used in all pendulum related project in a single place.
  */
 
-#ifndef INSTRUCTIONS_H
-#define INSTRUCTIONS_H
+#ifndef _DRONE_FOREST_INSTRUCTIONS_H
+#define _DRONE_FOREST_INSTRUCTIONS_H
 
 #include <gegelati.h>
 
@@ -15,4 +15,4 @@
  */
 void fillInstructionSet(Instructions::Set& set);
 
-#endif  // INSTRUCTIONS_H
+#endif  // _DRONE_FOREST_INSTRUCTIONS_H

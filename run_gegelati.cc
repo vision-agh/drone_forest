@@ -1,5 +1,6 @@
 #include <drone_forest/gegelati_wrapper.h>
 #include <drone_forest/instructions.h>
+#include <drone_forest/json_parser.h>
 #include <gegelati.h>
 #include <inttypes.h>
 #include <math.h>
@@ -7,6 +8,7 @@
 #include <atomic>
 #include <chrono>
 #include <filesystem>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <opencv4/opencv2/opencv.hpp>
@@ -14,6 +16,7 @@
 #include <thread>
 
 namespace fs = std::filesystem;
+using json = nlohmann::json;
 
 void controllerLoop(std::atomic<bool>& exit, std::atomic<bool>& toggle_display,
                     std::atomic<bool>& do_eval,
@@ -118,21 +121,44 @@ int main(int argc, char** argv)
     std::cout << "Number of threads: " << params.nbThreads << std::endl;
 
     // Setup the Learning Environment (LE)
-    std::vector<evs::geometric::Point> actions = {
-        evs::geometric::Point(0.0, 1.0), evs::geometric::Point(-1.0, 0.0),
-        evs::geometric::Point(0.0, -1.0), evs::geometric::Point(1.0, 0.0)};
-    double sim_step = 0.1;
-    std::tuple<double, double> xlim = {-10, 10};
-    std::tuple<double, double> ylim = {-2, 23};
-    int n_trees = 100;
-    double tree_min_radius = 0.05;
-    double tree_max_radius = 0.75;
-    int n_lidar_beams = 36;
-    double lidar_range = 3.0;
-    double min_tree_spare_distance = 0.5;
-    int max_spawn_attempts = 100;
-    double max_speed = 1.0;
-    double max_acceleration = 0.6;
+    fs::path env_config_path = fs::path(ROOT_DIR) / "env_config.json";
+    std::ifstream env_config_file(env_config_path);
+    json env_config = evs::drone_forest::ParseJsonFile(env_config_path);
+    std::vector<evs::geometric::Point> actions;
+    if (env_config["nb_actions"] == 4)
+    {
+      actions = {
+          evs::geometric::Point(0.0, 1.0), evs::geometric::Point(-1.0, 0.0),
+          evs::geometric::Point(0.0, -1.0), evs::geometric::Point(1.0, 0.0)};
+    }
+    else if (env_config["nb_actions"] == 8)
+    {
+      actions = {
+          evs::geometric::Point(0.0, 1.0),  evs::geometric::Point(-1.0, 1.0),
+          evs::geometric::Point(-1.0, 0.0), evs::geometric::Point(-1.0, -1.0),
+          evs::geometric::Point(0.0, -1.0), evs::geometric::Point(1.0, -1.0),
+          evs::geometric::Point(1.0, 0.0),  evs::geometric::Point(1.0, 1.0)};
+    }
+    else
+    {
+      std::cerr << "Invalid number of actions in JSON file: "
+                << env_config["nb_actions"] << std::endl;
+      return 1;
+    }
+    double sim_step = env_config["sim_step"];
+    std::tuple<double, double> xlim = {env_config["x_lim"]["min"],
+                                       env_config["x_lim"]["max"]};
+    std::tuple<double, double> ylim = {env_config["y_lim"]["min"],
+                                       env_config["y_lim"]["max"]};
+    int n_trees = env_config["n_trees"];
+    double tree_min_radius = env_config["tree_radius_lim"]["min"];
+    double tree_max_radius = env_config["tree_radius_lim"]["max"];
+    int n_lidar_beams = env_config["n_lidar_beams"];
+    double lidar_range = env_config["lidar_range"];
+    double min_tree_spare_distance = env_config["min_tree_spare_distance"];
+    int max_spawn_attempts = env_config["max_spawn_attempts"];
+    double max_speed = env_config["max_speed"];
+    double max_acceleration = env_config["max_acceleration"];
     int img_height = 800;
     std::string window_name = "Drone Forest";
     evs::drone_forest::GegelatiWrapper drone_forest_le(
@@ -140,6 +166,9 @@ int main(int argc, char** argv)
         tree_max_radius, n_lidar_beams, lidar_range, min_tree_spare_distance,
         max_spawn_attempts, max_speed, max_acceleration, img_height,
         window_name);
+    fs::path env_out_path = exp_dir / "env_config.json";
+    std::ofstream env_out(env_out_path);
+    env_out << env_config << std::endl;
 
     // Instantiate and initialize the Learning Agent (LA)
     Learn::ParallelLearningAgent la(drone_forest_le, instruction_set, params);

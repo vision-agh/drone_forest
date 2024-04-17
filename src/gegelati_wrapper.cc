@@ -125,7 +125,11 @@ void GegelatiWrapper::doAction(uint64_t actionID)
 
   if (is_collision_)
   {
-    last_reward_ = -5.0;
+    last_reward_ = -10.0;
+  }
+  else if (is_success_)
+  {
+    last_reward_ = 50.0;
   }
   else if (last_drone_position_.y() < drone_position.y())
   {
@@ -137,7 +141,7 @@ void GegelatiWrapper::doAction(uint64_t actionID)
   }
   else
   {
-    last_reward_ = -1.0;
+    last_reward_ = -1.0;  // Was: -1.0;
   }
 
   // last_reward_ = -distance_to_goal;
@@ -201,15 +205,16 @@ double GegelatiWrapper::getScore() const
   // {
   //   return accumulated_reward_ / drone_forest_.GetTime();
   // }
-  if (isTerminal())
-  {
-    return accumulated_reward_;
-  }
-  else
-  {
-    return last_reward_;
-  }
+  // if (isTerminal())
+  // {
+  //   return accumulated_reward_;
+  // }
+  // else
+  // {
+  //   return last_reward_;
+  // }
   // return last_reward_;
+  return accumulated_reward_;
 }
 
 bool GegelatiWrapper::isTerminal() const

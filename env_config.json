@@ -1,0 +1,49 @@
+{
+    "//nb_actions": "Number of actions to be executed. Currently, only 4 or 8 actions are supported.",
+    "nb_actions": 4,
+
+    "//sim_step": "Duration of a simulation step in seconds.",
+    "sim_step": 0.1,
+
+    "//x_lim": "Width boundaries of the simulation area in meters.",
+    "x_lim": 
+    {
+        "min": -10.0,
+        "max": 10.0
+    },
+
+    "//y_lim": "Height boundaries of the simulation area in meters.",
+    "y_lim": 
+    {
+        "min": -2.0,
+        "max": 23.0
+    },
+
+    "//n_trees": "Number of trees in the simulation area.",
+    "n_trees": 100,
+
+    "//tree_radius_lim": "Radius of the trees in meters.",
+    "tree_radius_lim":
+    {
+        "min": 0.1,
+        "max": 0.75
+    },
+
+    "//n_lidar_beams": "Number of beams in the LiDAR sensor.",
+    "n_lidar_beams": 72,
+
+    "//lidar_range": "Range of the LiDAR sensor in meters.",
+    "lidar_range": 3.0,
+
+    "//min_tree_spare_distance": "Minimum distance between the trees in meters.",
+    "min_tree_spare_distance": 0.75,
+
+    "//max_spawn_attempts": "Maximum number of attempts to spawn a tree.",
+    "max_spawn_attempts": 100,
+
+    "//max_speed": "Maximum speed of the UAV in m/s.",
+    "max_speed": 1.0,
+
+    "//max_acceleration": "Maximum acceleration of the UAV in m/s^2.",
+    "max_acceleration": 0.6
+}
