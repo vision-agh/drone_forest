@@ -65,25 +65,15 @@ int main(int argc, char** argv)
   std::ifstream env_config_file(env_config_path);
   json env_config = evs::drone_forest::ParseJsonFile(env_config_path);
   std::vector<evs::geometric::Point> actions;
-  if (env_config["nb_actions"] == 4)
-  {
-    actions = {
-        evs::geometric::Point(0.0, 1.0), evs::geometric::Point(-1.0, 0.0),
-        evs::geometric::Point(0.0, -1.0), evs::geometric::Point(1.0, 0.0)};
-  }
-  else if (env_config["nb_actions"] == 8)
-  {
-    actions = {
-        evs::geometric::Point(0.0, 1.0),  evs::geometric::Point(-1.0, 1.0),
-        evs::geometric::Point(-1.0, 0.0), evs::geometric::Point(-1.0, -1.0),
-        evs::geometric::Point(0.0, -1.0), evs::geometric::Point(1.0, -1.0),
-        evs::geometric::Point(1.0, 0.0),  evs::geometric::Point(1.0, 1.0)};
-  }
-  else
+  if (env_config["nb_actions"] != 4 && env_config["nb_actions"] != 8)
   {
     std::cerr << "Invalid number of actions in JSON file: "
               << env_config["nb_actions"] << std::endl;
     return 1;
+  }
+  for (const auto& action : env_config["actions"])
+  {
+    actions.push_back(evs::geometric::Point(action["x"], action["y"]));
   }
   double sim_step = env_config["sim_step"];
   std::tuple<double, double> xlim = {env_config["x_lim"]["min"],

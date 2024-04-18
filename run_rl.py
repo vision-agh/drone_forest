@@ -18,23 +18,10 @@ from scripts.gym_wrapper import DroneForestEnv
 
 def make_env(rank: int, seed: int = 0, config_dict: Dict = {}) -> DroneForestEnv:
     """Make the drone forest environment."""
-    if config_dict["nb_actions"] == 4:
-        actions = [[0.0, 1.0], [-1.0, 0.0], [0.0, -1.0], [1.0, 0.0]]
-    elif config_dict["nb_actions"] == 8:
-        actions = [
-            [0.0, 1.0],
-            [-1.0, 1.0],
-            [-1.0, 0.0],
-            [-1.0, -1.0],
-            [0.0, -1.0],
-            [1.0, -1.0],
-            [1.0, 0.0],
-            [1.0, 1.0],
-        ]
 
     def _init() -> DroneForestEnv:
         env = DroneForestEnv(
-            actions=actions,
+            actions=config_dict["actions"],
             dt=config_dict["sim_step"],
             x_lim=(config_dict["x_lim"]["min"], config_dict["x_lim"]["max"]),
             y_lim=(config_dict["y_lim"]["min"], config_dict["y_lim"]["max"]),
@@ -68,6 +55,22 @@ if __name__ == "__main__":
     with open("./env_config.json", "r") as config_file:
         config_dict = json.load(config_file)
     assert config_dict["nb_actions"] in [4, 8], "Invalid number of actions."
+
+    # Create action vectors based on the number of actions
+    if config_dict["nb_actions"] == 4:
+        actions = [[0.0, 1.0], [-1.0, 0.0], [0.0, -1.0], [1.0, 0.0]]
+    elif config_dict["nb_actions"] == 8:
+        actions = [
+            [0.0, 1.0],
+            [-1.0, 1.0],
+            [-1.0, 0.0],
+            [-1.0, -1.0],
+            [0.0, -1.0],
+            [1.0, -1.0],
+            [1.0, 0.0],
+            [1.0, 1.0],
+        ]
+    config_dict["actions"] = actions
 
     # Check gym wrapper
     check_env(make_env(0, config_dict=config_dict)())

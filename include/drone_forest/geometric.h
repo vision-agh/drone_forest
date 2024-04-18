@@ -2,8 +2,11 @@
 #define _DRONE_FOREST_GEOMETRIC_H_
 
 #include <cmath>
+#include <nlohmann/json.hpp>
 #include <opencv4/opencv2/opencv.hpp>
 #include <vector>
+
+using json = nlohmann::json;
 
 namespace evs
 {
@@ -144,6 +147,28 @@ class Point
   double x_;
   double y_;
 };
+
+/**
+ * @brief Helper function to convert a Point object to a JSON input
+ *
+ * @param j JSON object to fill
+ * @param p Point object to convert
+ */
+void to_json(json& j, const Point& p)
+{
+  j = {{"x", p.x()}, {"y", p.y()}};
+}
+
+/**
+ * @brief Helper function to convert a JSON input to a Point object
+ *
+ * @param j JSON object to read from
+ * @param p Point object to fill
+ */
+void from_json(const json& j, Point& p)
+{
+  p = Point(j["x"], j["y"]);
+}
 
 /**
  * @brief A simple 2D circle class

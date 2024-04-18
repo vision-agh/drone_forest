@@ -11,7 +11,7 @@ find_package(OpenCV REQUIRED)
 
 add_library(geometric_lib SHARED geometric.cc ${HEADER_LIST} ${OpenCV_INCLUDE_DIRS})
 target_include_directories(geometric_lib PUBLIC ../include ${OpenCV_INCLUDE_DIRS})
-target_link_libraries(geometric_lib ${OpenCV_LIBS})
+target_link_libraries(geometric_lib ${OpenCV_LIBS} nlohmann_json::nlohmann_json)
 target_compile_features(geometric_lib PUBLIC cxx_std_17)
 
 add_library(forest_lib SHARED forest.cc ${HEADER_LIST})

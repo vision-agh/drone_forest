@@ -145,6 +145,7 @@ int main(int argc, char** argv)
                 << env_config["nb_actions"] << std::endl;
       return 1;
     }
+    env_config["actions"] = actions;
     double sim_step = env_config["sim_step"];
     std::tuple<double, double> xlim = {env_config["x_lim"]["min"],
                                        env_config["x_lim"]["max"]};
