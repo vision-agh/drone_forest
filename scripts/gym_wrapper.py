@@ -33,6 +33,9 @@ PENALTY_FAR_FROM_CENTER_LINE_COEFF = -0.1
 PENALTY_WRONG_DIRECTION_COEFF = -3.0
 REWARD_GOOD_DIRECTION_COEFF = 0.8
 
+X = 0
+Y = 1
+
 
 class DroneForestEnv(gym.Env):
     """Drone forest environment that follows the gym interface."""
@@ -124,15 +127,15 @@ class DroneForestEnv(gym.Env):
         drone_position = self.env.get_drone_position()
         if (
             np.any(obs < TREE_COLLISION_DISTANCE)
-            or drone_position[0] <= self.x_lim[0]
-            or drone_position[0] >= self.x_lim[1]
-            or drone_position[1] <= self.y_lim[0]
-            or drone_position[1] >= self.y_lim[1]
+            or drone_position[X] <= self.x_lim[0]
+            or drone_position[X] >= self.x_lim[1]
+            or drone_position[Y] <= self.y_lim[0]
+            or drone_position[Y] >= self.y_lim[1]
         ):
             # Drone crashed or went out of bounds
             reward = PENALTY_TREE_COLLISION
             terminated = True
-        elif drone_position[1] >= self.x_lim[1] - 2.0:
+        elif drone_position[Y] >= self.y_lim[1] - 2.0:
             # Drone reached the end
             reward = 1.0
             terminated = True
@@ -145,23 +148,25 @@ class DroneForestEnv(gym.Env):
         # Reward shaping
         if not terminated:
             # Penalize being too far from the center line
-            reward += PENALTY_FAR_FROM_CENTER_LINE_COEFF * abs(drone_position[0])
+            reward += PENALTY_FAR_FROM_CENTER_LINE_COEFF * abs(drone_position[X])
 
             # Penalize being too close to a tree
             for dist in obs:
                 if dist < TREE_SAFE_DISTANCE:
                     reward += PENALTY_CLOSE_TO_TREE
-                    break
 
             # Reward moving in the right direction or penalize moving in the wrong
             # direction
-            if drone_position[1] > self.drone_prev_position[1]:
+            if drone_position[Y] > self.drone_prev_position[Y]:
                 reward += REWARD_GOOD_DIRECTION_COEFF
             else:
                 reward += PENALTY_WRONG_DIRECTION_COEFF
 
         # Info
         info = {}
+
+        # Update the previous drone position
+        self.drone_prev_position = drone_position
 
         return obs, reward, terminated, truncated, info
 

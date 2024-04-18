@@ -87,7 +87,7 @@ void DroneForest::Reset()
   sim_time_ = 0.0;
 
   // NOTE: It is important to keep lidar_distances_ intact in terms of memory
-  // allocation!
+  // allocation! Actually, now maybe it is not that important?
   std::vector<double> tmp_distances = drone_.LidarScan(forest_.GetObstacles());
   for (size_t i = 0; i < tmp_distances.size(); i++)
   {
