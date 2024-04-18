@@ -106,7 +106,7 @@ void GegelatiWrapper::doAction(uint64_t actionID)
   // Success check
   double distance_to_goal =
       std::abs(drone_position.y() - std::get<1>(ylim_)) - 2.0;
-  is_success_ = distance_to_goal == 0;
+  is_success_ = distance_to_goal <= 0;
 
   // Reward calculation
   // // Quite good configuration
