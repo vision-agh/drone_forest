@@ -38,3 +38,7 @@ target_compile_definitions(run_gegelati PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 add_executable(eval_gegelati eval_gegelati.cc)
 target_link_libraries(eval_gegelati PRIVATE gegelati_wrapper_lib instructions_lib json_parser_lib ${GEGELATI_LIBRARIES})
 target_compile_definitions(eval_gegelati PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
+
+add_executable(codegen_gegelati codegen_gegelati.cc)
+target_link_libraries(codegen_gegelati PRIVATE instructions_lib json_parser_lib ${GEGELATI_LIBRARIES})
+target_compile_definitions(codegen_gegelati PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")

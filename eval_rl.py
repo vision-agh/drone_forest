@@ -48,7 +48,7 @@ def main(args):
         model,
         env,
         n_eval_episodes=args.num_episodes,
-        render=False,
+        render=True,
         deterministic=True,
     )
 
