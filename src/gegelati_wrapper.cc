@@ -21,6 +21,7 @@ GegelatiWrapper::GegelatiWrapper(
                     max_acceleration, img_height, window_name),
       xlim_(xlim),
       ylim_(ylim),
+      max_velocity_(max_speed),
       img_height_(img_height),
       mode_(mode),
       accumulated_reward_(0),
@@ -42,6 +43,7 @@ GegelatiWrapper::GegelatiWrapper(const GegelatiWrapper& other)
       lidar_distances_(other.lidar_distances_),
       xlim_(other.xlim_),
       ylim_(other.ylim_),
+      max_velocity_(other.max_velocity_),
       img_height_(other.img_height_),
       drone_forest_(other.drone_forest_),
       accumulated_reward_(other.accumulated_reward_),
@@ -79,7 +81,7 @@ void GegelatiWrapper::reset(size_t seed, Learn::LearningMode mode)
 void GegelatiWrapper::doAction(uint64_t actionID)
 {
   // One step of the simulation
-  drone_forest_.Step(actions_[actionID]);
+  drone_forest_.Step(actions_[actionID] * max_velocity_);
 
   // Update observation
   SetLidarDistances(drone_forest_.GetLidarDistances());
@@ -123,6 +125,27 @@ void GegelatiWrapper::doAction(uint64_t actionID)
   //   last_reward_ = -2.0;
   // }
 
+  // if (is_collision_)
+  // {
+  //   last_reward_ = -10.0;
+  // }
+  // else if (is_success_)
+  // {
+  //   last_reward_ = 50.0;
+  // }
+  // else if (last_drone_position_.y() < drone_position.y())
+  // {
+  //   last_reward_ = 1.0;
+  // }
+  // else if (last_drone_position_.y() > drone_position.y())
+  // {
+  //   last_reward_ = -2.0;
+  // }
+  // else
+  // {
+  //   last_reward_ = -1.0;  // Was: -1.0;
+  // }
+
   if (is_collision_)
   {
     last_reward_ = -10.0;
@@ -131,17 +154,21 @@ void GegelatiWrapper::doAction(uint64_t actionID)
   {
     last_reward_ = 50.0;
   }
-  else if (last_drone_position_.y() < drone_position.y())
-  {
-    last_reward_ = 1.0;
-  }
-  else if (last_drone_position_.y() > drone_position.y())
-  {
-    last_reward_ = -2.0;
-  }
   else
   {
-    last_reward_ = -1.0;  // Was: -1.0;
+    double y_diff = drone_position.y() - last_drone_position_.y();
+    if (y_diff > 0)
+    {
+      last_reward_ = 1.0 * y_diff;
+    }
+    else if (y_diff < 0)
+    {
+      last_reward_ = -5.0 * y_diff;
+    }
+    else
+    {
+      last_reward_ = 0.0;
+    }
   }
 
   // last_reward_ = -distance_to_goal;

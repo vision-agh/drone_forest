@@ -64,7 +64,7 @@
 			/* "nbActions" : 0,*/
 			// Number of root TPGTeams to maintain when populating the TPGGraph
 			// "nbRoots" : 100, // Default value
-			"nbRoots": 72,
+			"nbRoots": 300,
 			// Probability of adding an outgoing Edge to a Team.
 			// "pEdgeAddition" : 0.7, // Default value
 			"pEdgeAddition": 0.7,
@@ -84,7 +84,7 @@
 	},
 	// Number of generations of the training.
 	// "nbGenerations" : 500, // Default value
-	"nbGenerations" : 1500,
+	"nbGenerations" : 5000,
 	// [Only used in AdversarialLearningAgent.]
 	// Number of times each job is evaluated in the learning process.
 	// Each root may belong to several jobs, hence this parameter should be lower
@@ -99,13 +99,13 @@
 	"nbProgramConstant" : 0,
 	// Number of registers for the Program execution.
 	// "nbRegisters" : 8, // Default value
-	"nbRegisters" : 8,
+	"nbRegisters" : 16,
 	// [Only used in ParallelLearningAgent and child classes.]
 	// Number of threads used for the training process.
 	// When undefined in the json file, this parameter is automatically set to the
 	// number of cores of the CPU.
 	// /* "nbThreads" : 0,*/ // Commented by default
-	/* "nbThreads" : 0,*/
+	// "nbThreads" : 4,
 	// Percentage of deleted (and regenerated) root TPGVertex at each generation.
 	// "ratioDeletedRoots" : 0.5, // Default value
 	"ratioDeletedRoots" : 0.7

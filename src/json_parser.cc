@@ -10,6 +10,14 @@ json ParseJsonFile(const fs::path& file_path)
   std::ifstream config_file(file_path);
   json j = json::parse(config_file);
 
+  if (!j.contains("nb_directions"))
+  {
+    std::cerr << "Number of directions not found in JSON file." << std::endl;
+    j["nb_directions"] = 4;
+    std::cerr << "Setting number of directions to default: "
+              << j["nb_directions"] << std::endl;
+  }
+
   if (!j.contains("nb_actions"))
   {
     std::cerr << "Number of actions not found in JSON file." << std::endl;

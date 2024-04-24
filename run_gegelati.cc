@@ -124,26 +124,35 @@ int main(int argc, char** argv)
     fs::path env_config_path = fs::path(ROOT_DIR) / "env_config.json";
     std::ifstream env_config_file(env_config_path);
     json env_config = evs::drone_forest::ParseJsonFile(env_config_path);
-    std::vector<evs::geometric::Point> actions;
-    if (env_config["nb_actions"] == 4)
+    if (env_config["nb_directions"] != 4)
     {
-      actions = {
-          evs::geometric::Point(0.0, 1.0), evs::geometric::Point(-1.0, 0.0),
-          evs::geometric::Point(0.0, -1.0), evs::geometric::Point(1.0, 0.0)};
-    }
-    else if (env_config["nb_actions"] == 8)
-    {
-      actions = {
-          evs::geometric::Point(0.0, 1.0),  evs::geometric::Point(-1.0, 1.0),
-          evs::geometric::Point(-1.0, 0.0), evs::geometric::Point(-1.0, -1.0),
-          evs::geometric::Point(0.0, -1.0), evs::geometric::Point(1.0, -1.0),
-          evs::geometric::Point(1.0, 0.0),  evs::geometric::Point(1.0, 1.0)};
-    }
-    else
-    {
-      std::cerr << "Invalid number of actions in JSON file: "
-                << env_config["nb_actions"] << std::endl;
+      std::cerr << "Invalid number of directions in JSON file: "
+                << env_config["nb_directions"] << std::endl;
       return 1;
+    }
+    if (int(env_config["nb_actions"]) % int(env_config["nb_directions"]) != 0)
+    {
+      std::cerr << "Number of actions (" << env_config["nb_actions"]
+                << ") is not a multiple of the number of "
+                   "directions in JSON file: "
+                << env_config["nb_directions"] << std::endl;
+      return 1;
+    }
+    int actions_per_direction =
+        int(env_config["nb_actions"]) / int(env_config["nb_directions"]);
+    std::vector<evs::geometric::Point> actions;
+    std::vector<evs::geometric::Point> base_actions = {
+        evs::geometric::Point(0.0, 1.0), evs::geometric::Point(-1.0, 0.0),
+        evs::geometric::Point(0.0, -1.0), evs::geometric::Point(1.0, 0.0)};
+    for (int idx_dir = 0; idx_dir < int(env_config["nb_directions"]); idx_dir++)
+    {
+      for (int idx_act = 0; idx_act < actions_per_direction; idx_act++)
+      {
+        evs::geometric::Point action = base_actions[idx_dir];
+        action = action / double(actions_per_direction);
+        action = action * (idx_act + 1);
+        actions.push_back(action);
+      }
     }
     env_config["actions"] = actions;
     double sim_step = env_config["sim_step"];
