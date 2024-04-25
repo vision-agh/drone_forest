@@ -11,14 +11,16 @@ GegelatiWrapper::GegelatiWrapper(
     int n_trees, double tree_min_radius, double tree_max_radius,
     int n_lidar_beams, double lidar_range, double min_tree_spare_distance,
     int max_spawn_attempts, double max_speed, double max_acceleration,
-    int img_height, std::string window_name, Learn::LearningMode mode)
+    double drone_width_m, double drone_height_m, int img_height,
+    std::string window_name, Learn::LearningMode mode)
     : LearningEnvironment(actions.size()),
       actions_(actions),
       lidar_distances_(n_lidar_beams),
       drone_forest_(sim_step, xlim, ylim, n_trees, tree_min_radius,
                     tree_max_radius, n_lidar_beams, lidar_range,
                     min_tree_spare_distance, max_spawn_attempts, max_speed,
-                    max_acceleration, img_height, window_name),
+                    max_acceleration, drone_width_m, drone_height_m, img_height,
+                    window_name),
       xlim_(xlim),
       ylim_(ylim),
       max_velocity_(max_speed),
@@ -146,30 +148,30 @@ void GegelatiWrapper::doAction(uint64_t actionID)
   //   last_reward_ = -1.0;  // Was: -1.0;
   // }
 
-  if (is_collision_)
-  {
-    last_reward_ = -10.0;
-  }
-  else if (is_success_)
-  {
-    last_reward_ = 50.0;
-  }
-  else
-  {
-    double y_diff = drone_position.y() - last_drone_position_.y();
-    if (y_diff > 0)
-    {
-      last_reward_ = 1.0 * y_diff;
-    }
-    else if (y_diff < 0)
-    {
-      last_reward_ = -5.0 * y_diff;
-    }
-    else
-    {
-      last_reward_ = 0.0;
-    }
-  }
+  // if (is_collision_)
+  // {
+  //   last_reward_ = -10.0;
+  // }
+  // else if (is_success_)
+  // {
+  //   last_reward_ = 50.0;
+  // }
+  // else
+  // {
+  //   double y_diff = drone_position.y() - last_drone_position_.y();
+  //   if (y_diff > 0)
+  //   {
+  //     last_reward_ = 1.0 * y_diff;
+  //   }
+  //   else if (y_diff < 0)
+  //   {
+  //     last_reward_ = -5.0 * y_diff;
+  //   }
+  //   else
+  //   {
+  //     last_reward_ = 0.0;
+  //   }
+  // }
 
   // last_reward_ = -distance_to_goal;
 
@@ -204,7 +206,20 @@ void GegelatiWrapper::doAction(uint64_t actionID)
   //   }
   // }
 
-  accumulated_reward_ += last_reward_;
+  if (is_collision_)
+  {
+    accumulated_reward_ = -25.0;
+  }
+  else if (is_success_)
+  {
+    accumulated_reward_ = 100.0;
+  }
+  else
+  {
+    accumulated_reward_ = -distance_to_goal;
+  }
+
+  // accumulated_reward_ += last_reward_;
   last_drone_position_ = drone_position;
 }
 

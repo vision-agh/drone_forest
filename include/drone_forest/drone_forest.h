@@ -41,6 +41,8 @@ class DroneForest
    * @param max_spawn_attempts Maximum number of attempts to spawn a tree
    * @param max_speed Maximum speed of the drone
    * @param max_acceleration Maximum acceleration of the drone
+   * @param drone_width_m Width of the drone in meters
+   * @param drone_height_m Height of the drone in meters
    * @param img_height Height of the image to render
    * @param window_name Name of the window to render
    */
@@ -49,7 +51,8 @@ class DroneForest
               double tree_min_radius, double tree_max_radius, int n_lidar_beams,
               double lidar_range, double min_tree_spare_distance,
               int max_spawn_attempts, double max_speed, double max_acceleration,
-              int img_height = 800, std::string window_name = "Drone Forest");
+              double drone_width_m, double drone_height_m, int img_height = 800,
+              std::string window_name = "Drone Forest");
 
   /**
    * @brief Get the Drone Position object

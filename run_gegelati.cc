@@ -169,13 +169,15 @@ int main(int argc, char** argv)
     int max_spawn_attempts = env_config["max_spawn_attempts"];
     double max_speed = env_config["max_speed"];
     double max_acceleration = env_config["max_acceleration"];
+    double drone_width = env_config["drone_width"];
+    double drone_height = env_config["drone_height"];
     int img_height = 800;
     std::string window_name = "Drone Forest";
     evs::drone_forest::GegelatiWrapper drone_forest_le(
         actions, sim_step, xlim, ylim, n_trees, tree_min_radius,
         tree_max_radius, n_lidar_beams, lidar_range, min_tree_spare_distance,
-        max_spawn_attempts, max_speed, max_acceleration, img_height,
-        window_name);
+        max_spawn_attempts, max_speed, max_acceleration, drone_width,
+        drone_height, img_height, window_name);
     fs::path env_out_path = exp_dir / "env_config.json";
     std::ofstream env_out(env_out_path);
     env_out << env_config << std::endl;

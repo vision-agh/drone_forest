@@ -304,6 +304,69 @@ class Line
   Point end_;
 };
 
+class Rectangle
+{
+ public:
+  /**
+   * @brief Construct a default Rectangle object
+   *
+   */
+  Rectangle() : top_left_(0, 0), bottom_right_(0, 0) {}
+
+  /**
+   * @brief Construct a new Rectangle object
+   *
+   * @param top_left Top left corner of the rectangle
+   * @param bottom_right Bottom right corner of the rectangle
+   */
+  Rectangle(Point top_left, Point bottom_right)
+      : top_left_(top_left),
+        bottom_right_(bottom_right)
+  {
+  }
+
+  /**
+   * @brief Get the top left corner of the rectangle
+   *
+   * @return Point Top left corner of the rectangle
+   */
+  Point top_left() const
+  {
+    return top_left_;
+  }
+
+  /**
+   * @brief Get the bottom right corner of the rectangle
+   *
+   * @return Point Bottom right corner of the rectangle
+   */
+  Point bottom_right() const
+  {
+    return bottom_right_;
+  }
+
+  /**
+   * @brief Draw the rectangle on an image
+   *
+   * @param image Image to draw the rectangle on
+   * @param color Color of the rectangle
+   * @param t_vec Translation vector
+   * @param m2px Meters to pixels conversion factor
+   */
+  void Draw(cv::Mat& image, cv::Scalar color, Point t_vec, double m2px) const;
+
+  /**
+   * @brief Update the position of the rectangle
+   *
+   * @param new_center New center of the rectangle
+   */
+  void UpdatePosition(const Point& new_center);
+
+ private:
+  Point top_left_;
+  Point bottom_right_;
+};
+
 }  // namespace geometric
 }  // namespace evs
 

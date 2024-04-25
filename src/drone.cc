@@ -9,6 +9,9 @@ void Drone::Draw(cv::Mat& image, geometric::Point t_vec, double m2px) const
 {
   // Draw the LiDAR sensor
   lidar_.Draw(image, t_vec, m2px);
+
+  // Draw the drone body (black rectangle)
+  body_.Draw(image, cv::Scalar(0, 0, 0), t_vec, m2px);
 }
 
 std::vector<double> Drone::LidarScan(
@@ -58,12 +61,14 @@ geometric::Point Drone::Move(double dt, const geometric::Point& velocity)
   }
 
   // Calculate the new position
-  geometric::Point new_position = position_ + velocity * dt;
+  geometric::Point position_delta = velocity_ * dt;
+  geometric::Point new_position = position_ + position_delta;
 
   // Update the LiDAR sensor position
   lidar_.UpdatePosition(new_position);
 
   // Update the drone position
+  body_.UpdatePosition(new_position);
   position_ = new_position;
 
   return position_;
@@ -73,6 +78,7 @@ void Drone::Reset(const geometric::Point& position)
 {
   // Reset the drone position
   position_ = position;
+  body_.UpdatePosition(position);
 
   // Reset the drone velocity
   velocity_ = geometric::Point(0, 0);

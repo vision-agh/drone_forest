@@ -172,6 +172,22 @@ json ParseJsonFile(const fs::path& file_path)
               << j["max_acceleration"] << std::endl;
   }
 
+  if (!j.contains("drone_width"))
+  {
+    std::cerr << "Drone width not found in JSON file." << std::endl;
+    j["drone_width"] = 0.1;
+    std::cerr << "Setting drone width to default: " << j["drone_width"]
+              << std::endl;
+  }
+
+  if (!j.contains("drone_height"))
+  {
+    std::cerr << "Drone height not found in JSON file." << std::endl;
+    j["drone_height"] = 0.2;
+    std::cerr << "Setting drone height to default: " << j["drone_height"]
+              << std::endl;
+  }
+
   return j;
 }
 

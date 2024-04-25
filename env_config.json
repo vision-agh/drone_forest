@@ -3,7 +3,7 @@
     "nb_directions": 4,
     
     "//nb_actions": "Number of all possible actions that the UAV can take. Must be divisible by nb_directions.",
-    "nb_actions": 40,
+    "nb_actions": 20,
 
     "//sim_step": "Duration of a simulation step in seconds.",
     "sim_step": 0.1,
@@ -48,5 +48,11 @@
     "max_speed": 1.0,
 
     "//max_acceleration": "Maximum acceleration of the UAV in m/s^2.",
-    "max_acceleration": 0.6
+    "max_acceleration": 0.6,
+
+    "//drone_width": "Width of the drone in meters.",
+    "drone_width": 0.2,
+
+    "//drone_height": "Height of the drone in meters.",
+    "drone_height": 0.4
 }

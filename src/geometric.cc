@@ -123,5 +123,21 @@ void Line::Draw(cv::Mat& image, cv::Scalar color, Point t_vec,
            end_.ToCvPoint(t_vec, m2px, img_height), color);
 }
 
+void Rectangle::Draw(cv::Mat& image, cv::Scalar color, Point t_vec,
+                     double m2px) const
+{
+  int img_height = image.rows;
+  cv::Point top_left = top_left_.ToCvPoint(t_vec, m2px, img_height);
+  cv::Point bottom_right = bottom_right_.ToCvPoint(t_vec, m2px, img_height);
+  cv::rectangle(image, top_left, bottom_right, color, cv::FILLED);
+}
+
+void Rectangle::UpdatePosition(const Point& new_center)
+{
+  Point half_diagonal = (bottom_right_ - top_left_) / 2;
+  top_left_ = new_center + half_diagonal;
+  bottom_right_ = new_center - half_diagonal;
+}
+
 }  // namespace geometric
 }  // namespace evs

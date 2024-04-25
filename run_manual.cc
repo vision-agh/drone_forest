@@ -25,6 +25,8 @@ int main(int argc, char** argv)
   int max_spawn_attempts = 100;
   double max_speed = 1.0;
   double max_acceleration = 0.6;
+  double drone_width_m = 0.1;
+  double drone_height_m = 0.2;
   int img_height = 800;
   std::string window_name = "Drone Forest";
 
@@ -32,7 +34,8 @@ int main(int argc, char** argv)
   evs::drone_forest::DroneForest sim(
       sim_step, xlim, ylim, n_trees, tree_min_radius, tree_max_radius,
       n_lidar_beams, lidar_range, min_tree_spare_distance, max_spawn_attempts,
-      max_speed, max_acceleration, img_height, window_name);
+      max_speed, max_acceleration, drone_width_m, drone_height_m, img_height,
+      window_name);
 
   // Run the simulation in an infinite loop
   bool end_sim = false;

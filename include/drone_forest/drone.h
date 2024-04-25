@@ -24,14 +24,20 @@ class Drone
    * @param lidar_n_beams Number of beams of the LiDAR sensor
    * @param max_speed Maximum speed of the drone
    * @param max_acceleration Maximum acceleration of the drone
+   * @param drone_width_m Width of the drone in meters
+   * @param drone_height_m Height of the drone in meters
    */
   Drone(const geometric::Point& position, double lidar_range, int lidar_n_beams,
-        double max_speed = 1.0, double max_acceleration = 0.6)
+        double max_speed = 1.0, double max_acceleration = 0.6,
+        double drone_width_m = 0.1, double drone_height_m = 0.2)
       : position_(position),
         velocity_(0, 0),
         max_speed_(max_speed),
         max_acceleration_(max_acceleration),
-        lidar_(position, lidar_range, lidar_n_beams)
+        lidar_(position, lidar_range, lidar_n_beams),
+        body_(
+            position + geometric::Point(drone_width_m / 2, drone_height_m / 2),
+            position - geometric::Point(drone_width_m / 2, drone_height_m / 2))
   {
   }
 
@@ -94,6 +100,7 @@ class Drone
   double max_speed_;
   double max_acceleration_;
   lidar::Lidar lidar_;
+  geometric::Rectangle body_;
 };
 
 }  // namespace drone
