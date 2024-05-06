@@ -43,6 +43,19 @@ DroneForest::DroneForest(double sim_step, std::tuple<double, double> xlim,
   img_ = cv::Mat(img_height_, img_width_, CV_8UC3, cv::Scalar(0, 255, 0));
 }
 
+bool DroneForest::CheckCollision() const
+{
+  for (const geometric::Circle& circ : forest_.GetObstacles())
+  {
+    if (drone_.body().CheckCircleIntersection(circ))
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 std::vector<uchar> DroneForest::GetImageAsVector()
 {
   std::vector<uchar> img_data;

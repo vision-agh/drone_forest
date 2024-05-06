@@ -17,6 +17,8 @@ min_tree_spare_distance = 0.75
 max_spawn_attempts = 100
 max_speed = 1.0
 max_acceleration = 0.6
+drone_width = 0.2
+drone_height = 0.4
 
 # Create the simulation
 env = DroneForestEnv(
@@ -32,6 +34,8 @@ env = DroneForestEnv(
     max_spawn_attempts=max_spawn_attempts,
     max_speed=max_speed,
     max_acceleration=max_acceleration,
+    drone_width_m=drone_width,
+    drone_height_m=drone_height,
 )
 env.reset()
 

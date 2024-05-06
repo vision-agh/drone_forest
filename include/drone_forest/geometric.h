@@ -346,6 +346,16 @@ class Rectangle
   }
 
   /**
+   * @brief Determine if any part of the rectangle intersects with a given
+   * circle
+   *
+   * @param circ Circle to check for intersection
+   * @return true The rectangle intersects with the circle
+   * @return false The rectangle does not intersect with the circle
+   */
+  bool CheckCircleIntersection(const Circle& circ) const;
+
+  /**
    * @brief Draw the rectangle on an image
    *
    * @param image Image to draw the rectangle on

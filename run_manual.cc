@@ -80,6 +80,12 @@ int main(int argc, char** argv)
         std::cout << "Unrecognized control sequence!" << std::endl;
         break;
     }
+
+    // Check if the simulation is over
+    if (sim.CheckCollision())
+    {
+      std::cout << "Collision detected!" << std::endl;
+    }
   }
 
   return 0;

@@ -28,12 +28,12 @@
     "//tree_radius_lim": "Radius of the trees in meters.",
     "tree_radius_lim":
     {
-        "min": 0.1,
+        "min": 0.2,
         "max": 0.75
     },
 
     "//n_lidar_beams": "Number of beams in the LiDAR sensor.",
-    "n_lidar_beams": 72,
+    "n_lidar_beams": 36,
 
     "//lidar_range": "Range of the LiDAR sensor in meters.",
     "lidar_range": 3.0,

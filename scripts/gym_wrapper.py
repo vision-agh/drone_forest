@@ -56,6 +56,8 @@ class DroneForestEnv(gym.Env):
         max_spawn_attempts: int,
         max_speed: float,
         max_acceleration: float,
+        drone_width_m: float,
+        drone_height_m: float,
         render_mode: str = "human",
     ):
         """Initialize the drone forest environment.
@@ -97,6 +99,8 @@ class DroneForestEnv(gym.Env):
             max_spawn_attempts=max_spawn_attempts,
             max_speed=max_speed,
             max_acceleration=max_acceleration,
+            drone_width_m=drone_width_m,
+            drone_height_m=drone_height_m,
         )
 
         self.action_vec = actions
@@ -126,7 +130,7 @@ class DroneForestEnv(gym.Env):
         # Determine termination or truncation
         drone_position = self.env.get_drone_position()
         if (
-            np.any(obs < TREE_COLLISION_DISTANCE)
+            self.env.check_collision()
             or drone_position[X] <= self.x_lim[0]
             or drone_position[X] >= self.x_lim[1]
             or drone_position[Y] <= self.y_lim[0]

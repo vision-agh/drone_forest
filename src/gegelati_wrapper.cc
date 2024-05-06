@@ -93,19 +93,8 @@ void GegelatiWrapper::doAction(uint64_t actionID)
   is_collision_ = drone_position.x() < std::get<0>(xlim_)
                   || drone_position.x() > std::get<1>(xlim_)
                   || drone_position.y() < std::get<0>(ylim_)
-                  || drone_position.y() > std::get<1>(ylim_);
-
-  if (!is_collision_)
-  {
-    for (double distance : drone_forest_.GetLidarDistances())
-    {
-      if (distance < kTreeCollisionDistance)
-      {
-        is_collision_ = true;
-        break;
-      }
-    }
-  }
+                  || drone_position.y() > std::get<1>(ylim_)
+                  || drone_forest_.CheckCollision();
 
   // Success check
   double distance_to_goal =

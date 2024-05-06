@@ -123,6 +123,53 @@ void Line::Draw(cv::Mat& image, cv::Scalar color, Point t_vec,
            end_.ToCvPoint(t_vec, m2px, img_height), color);
 }
 
+bool Rectangle::CheckCircleIntersection(const Circle& circ) const
+{
+  // Check if the circle is inside the rectangle
+  if (top_left_.x() <= circ.center().x()
+      && circ.center().x() <= bottom_right_.x()
+      && bottom_right_.y() <= circ.center().y()
+      && circ.center().y() <= top_left_.y())
+  {
+    return true;
+  }
+
+  // Check if the circle intersects the rectangle
+  Line top_line{top_left_, Point(bottom_right_.x(), top_left_.y())};
+  std::vector<Point> top_line_intersections =
+      top_line.CalculateCircleIntersection(circ);
+  if (!top_line_intersections.empty())
+  {
+    return true;
+  }
+
+  Line bottom_line{Point(top_left_.x(), bottom_right_.y()), bottom_right_};
+  std::vector<Point> bottom_line_intersections =
+      bottom_line.CalculateCircleIntersection(circ);
+  if (!bottom_line_intersections.empty())
+  {
+    return true;
+  }
+
+  Line left_line{top_left_, Point(top_left_.x(), bottom_right_.y())};
+  std::vector<Point> left_line_intersections =
+      left_line.CalculateCircleIntersection(circ);
+  if (!left_line_intersections.empty())
+  {
+    return true;
+  }
+
+  Line right_line{Point(bottom_right_.x(), top_left_.y()), bottom_right_};
+  std::vector<Point> right_line_intersections =
+      right_line.CalculateCircleIntersection(circ);
+  if (!right_line_intersections.empty())
+  {
+    return true;
+  }
+
+  return false;
+}
+
 void Rectangle::Draw(cv::Mat& image, cv::Scalar color, Point t_vec,
                      double m2px) const
 {

@@ -13,6 +13,8 @@ from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.vec_env import SubprocVecEnv
 
+import torch
+
 from scripts.gym_wrapper import DroneForestEnv
 
 
@@ -36,6 +38,8 @@ def make_env(rank: int, seed: int = 0, config_dict: Dict = {}) -> DroneForestEnv
             max_spawn_attempts=config_dict["max_spawn_attempts"],
             max_speed=config_dict["max_speed"],
             max_acceleration=config_dict["max_acceleration"],
+            drone_width_m=config_dict["drone_width"],
+            drone_height_m=config_dict["drone_height"],
         )
         env.reset(seed=seed + rank)
         return env
@@ -54,22 +58,26 @@ if __name__ == "__main__":
     # Read environment configuration
     with open("./env_config.json", "r") as config_file:
         config_dict = json.load(config_file)
-    assert config_dict["nb_actions"] in [4, 8], "Invalid number of actions."
+    assert config_dict["nb_directions"] == 4, "Only 4 directions are supported."
+    assert (
+        config_dict["nb_actions"] % config_dict["nb_directions"] == 0
+    ), "The number of actions must be a multiple of the number of directions."
 
-    # Create action vectors based on the number of actions
-    if config_dict["nb_actions"] == 4:
-        actions = [[0.0, 1.0], [-1.0, 0.0], [0.0, -1.0], [1.0, 0.0]]
-    elif config_dict["nb_actions"] == 8:
-        actions = [
-            [0.0, 1.0],
-            [-1.0, 1.0],
-            [-1.0, 0.0],
-            [-1.0, -1.0],
-            [0.0, -1.0],
-            [1.0, -1.0],
-            [1.0, 0.0],
-            [1.0, 1.0],
-        ]
+    # Create action vectors based on the directions and number of actions
+    base_actions_x = [0.0, -1.0, 0.0, 1.0]
+    base_actions_y = [1.0, 0.0, -1.0, 0.0]
+    actions = []
+    actions_per_direction = config_dict["nb_actions"] // config_dict["nb_directions"]
+    for idx_dir in range(config_dict["nb_directions"]):
+        actions.extend(
+            [
+                [
+                    base_actions_x[idx_dir] * (i + 1) / actions_per_direction,
+                    base_actions_y[idx_dir] * (i + 1) / actions_per_direction,
+                ]
+                for i in range(actions_per_direction)
+            ]
+        )
     config_dict["actions"] = actions
 
     # Check gym wrapper
@@ -103,5 +111,11 @@ if __name__ == "__main__":
     )
 
     # Create the reinforcement learning model
-    model = PPO("MlpPolicy", train_envs, verbose=1, tensorboard_log=log_dir)
+    model = PPO(
+        "MlpPolicy",
+        train_envs,
+        verbose=1,
+        tensorboard_log=log_dir,
+        policy_kwargs={"activation_fn": torch.nn.ReLU, "net_arch": [64, 64]},
+    )
     model.learn(total_timesteps=n_learning_steps, callback=eval_callback)

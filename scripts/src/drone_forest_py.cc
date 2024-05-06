@@ -22,6 +22,8 @@ PYBIND11_MODULE(drone_forest, m)
            py::arg("max_acceleration"), py::arg("drone_width_m"),
            py::arg("drone_height_m"), py::arg("img_height") = 800,
            py::arg("window_name") = "Drone Forest")
+      .def("check_collision", &evs::drone_forest::DroneForest::CheckCollision,
+           "Check if the drone is colliding with a tree")
       .def("get_drone_position",
            &evs::drone_forest::DroneForest::GetDronePositionAsVector,
            "Get the drone position")

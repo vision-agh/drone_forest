@@ -55,6 +55,14 @@ class DroneForest
               std::string window_name = "Drone Forest");
 
   /**
+   * @brief Check if the drone is colliding with a tree
+   *
+   * @return true The drone is colliding with a tree
+   * @return false The drone is not colliding with a tree
+   */
+  bool CheckCollision() const;
+
+  /**
    * @brief Get the Drone Position object
    *
    * @return geometric::Point& Drone position

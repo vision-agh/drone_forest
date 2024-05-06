@@ -62,6 +62,16 @@ class Drone
   }
 
   /**
+   * @brief Return the body of the drone
+   *
+   * @return geometric::Rectangle
+   */
+  geometric::Rectangle body() const
+  {
+    return body_;
+  }
+
+  /**
    * @brief Draw the drone on an image
    *
    * @param image Image to draw the drone on
