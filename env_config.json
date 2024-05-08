@@ -3,7 +3,7 @@
     "nb_directions": 4,
     
     "//nb_actions": "Number of all possible actions that the UAV can take. Must be divisible by nb_directions.",
-    "nb_actions": 20,
+    "nb_actions": 4,
 
     "//sim_step": "Duration of a simulation step in seconds.",
     "sim_step": 0.1,

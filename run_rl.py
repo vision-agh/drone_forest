@@ -53,7 +53,7 @@ if __name__ == "__main__":
     n_training_envs = 16
     n_eval_envs = 4
     n_learning_steps = 100_000_000
-    n_eval_every = 100_000
+    n_eval_every = 250_000
 
     # Read environment configuration
     with open("./env_config.json", "r") as config_file:
@@ -107,15 +107,17 @@ if __name__ == "__main__":
         eval_freq=max(n_eval_every // n_training_envs, 1),
         n_eval_episodes=1,
         deterministic=True,
-        render=True,
+        render=False,
     )
 
     # Create the reinforcement learning model
     model = PPO(
         "MlpPolicy",
         train_envs,
-        verbose=1,
+        verbose=0,
         tensorboard_log=log_dir,
         policy_kwargs={"activation_fn": torch.nn.ReLU, "net_arch": [64, 64]},
     )
-    model.learn(total_timesteps=n_learning_steps, callback=eval_callback)
+    model.learn(
+        total_timesteps=n_learning_steps, callback=eval_callback, progress_bar=True
+    )

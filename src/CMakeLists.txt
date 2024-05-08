@@ -14,9 +14,14 @@ target_include_directories(geometric_lib PUBLIC ../include ${OpenCV_INCLUDE_DIRS
 target_link_libraries(geometric_lib ${OpenCV_LIBS} nlohmann_json::nlohmann_json)
 target_compile_features(geometric_lib PUBLIC cxx_std_17)
 
+add_library(tree_lib SHARED tree.cc ${HEADER_LIST})
+target_include_directories(tree_lib PUBLIC ../include)
+target_link_libraries(tree_lib geometric_lib)
+target_compile_features(tree_lib PUBLIC cxx_std_17)
+
 add_library(forest_lib SHARED forest.cc ${HEADER_LIST})
 target_include_directories(forest_lib PUBLIC ../include)
-target_link_libraries(forest_lib geometric_lib)
+target_link_libraries(forest_lib geometric_lib tree_lib)
 target_compile_features(forest_lib PUBLIC cxx_std_17)
 
 add_library(lidar_lib SHARED lidar.cc ${HEADER_LIST})
