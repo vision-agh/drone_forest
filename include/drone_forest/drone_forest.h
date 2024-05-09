@@ -34,6 +34,7 @@ class DroneForest
    * @param sim_step Time step of the simulation (in seconds)
    * @param xlim x-axis limits of the simulation area (min, max in meters)
    * @param ylim y-axis limits of the simulation area (min, max in meters)
+   * @param y_static_limit y-limit of the static part of the forest
    * @param goal_y y-coordinate of the goal position
    * @param n_trees Number of trees in the forest
    * @param tree_min_radius Minimum radius of a tree
@@ -50,11 +51,12 @@ class DroneForest
    * @param window_name Name of the window to render
    */
   DroneForest(double sim_step, std::tuple<double, double> xlim,
-              std::tuple<double, double> ylim, double goal_y, int n_trees,
-              double tree_min_radius, double tree_max_radius, int n_lidar_beams,
-              double lidar_range, double min_tree_spare_distance,
-              int max_spawn_attempts, double max_speed, double max_acceleration,
-              double drone_width_m, double drone_height_m, int img_height = 800,
+              std::tuple<double, double> ylim, double y_static_limit,
+              double goal_y, int n_trees, double tree_min_radius,
+              double tree_max_radius, int n_lidar_beams, double lidar_range,
+              double min_tree_spare_distance, int max_spawn_attempts,
+              double max_speed, double max_acceleration, double drone_width_m,
+              double drone_height_m, int img_height = 800,
               std::string window_name = "Drone Forest");
 
   /**
@@ -223,6 +225,7 @@ class DroneForest
   forest::Forest forest_;
   const std::tuple<double, double> xlim_;
   const std::tuple<double, double> ylim_;
+  double y_static_limit_;
   double goal_y_;
   const int n_trees_;
   const double tree_min_radius_;

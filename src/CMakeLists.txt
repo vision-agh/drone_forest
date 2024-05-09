@@ -29,22 +29,22 @@ target_include_directories(drone PUBLIC ../include)
 target_link_libraries(drone geometric lidar)
 target_compile_features(drone PUBLIC cxx_std_17)
 
-add_library(drone_forest_lib SHARED drone_forest.cc ${HEADER_LIST})
-target_include_directories(drone_forest_lib PUBLIC ../include)
-target_link_libraries(drone_forest_lib forest drone)
-target_compile_features(drone_forest_lib PUBLIC cxx_std_17)
+add_library(drone_forest_sim SHARED drone_forest.cc ${HEADER_LIST})
+target_include_directories(drone_forest_sim PUBLIC ../include)
+target_link_libraries(drone_forest_sim forest drone)
+target_compile_features(drone_forest_sim PUBLIC cxx_std_17)
 
-add_library(gegelati_wrapper_lib SHARED gegelati_wrapper.cc ${HEADER_LIST})
-target_include_directories(gegelati_wrapper_lib PUBLIC ../include ${GEGELATI_INCLUDE_DIRS})
-target_link_libraries(gegelati_wrapper_lib drone_forest_lib ${GEGELATI_LIBRARIES})
+add_library(gegelati_wrapper SHARED gegelati_wrapper.cc ${HEADER_LIST})
+target_include_directories(gegelati_wrapper PUBLIC ../include ${GEGELATI_INCLUDE_DIRS})
+target_link_libraries(gegelati_wrapper drone_forest_sim ${GEGELATI_LIBRARIES})
 
-add_library(instructions_lib SHARED instructions.cc ${HEADER_LIST})
-target_include_directories(instructions_lib PUBLIC ../include ${GEGELATI_INCLUDE_DIRS})
-target_link_libraries(instructions_lib ${GEGELATI_LIBRARIES})
+add_library(instructions SHARED instructions.cc ${HEADER_LIST})
+target_include_directories(instructions PUBLIC ../include ${GEGELATI_INCLUDE_DIRS})
+target_link_libraries(instructions ${GEGELATI_LIBRARIES})
 
-add_library(json_parser_lib SHARED json_parser.cc ${HEADER_LIST})
-target_include_directories(json_parser_lib PUBLIC ../include)
-target_link_libraries(json_parser_lib nlohmann_json::nlohmann_json)
+add_library(json_parser SHARED json_parser.cc ${HEADER_LIST})
+target_include_directories(json_parser PUBLIC ../include)
+target_link_libraries(json_parser nlohmann_json::nlohmann_json)
 
 source_group(
     TREE "${PROJECT_SOURCE_DIR}/include" 

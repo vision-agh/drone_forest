@@ -8,8 +8,8 @@ namespace drone_forest
 {
 
 DroneForest::DroneForest(double sim_step, std::tuple<double, double> xlim,
-                         std::tuple<double, double> ylim, double goal_y,
-                         int n_trees, double tree_min_radius,
+                         std::tuple<double, double> ylim, double y_static_limit,
+                         double goal_y, int n_trees, double tree_min_radius,
                          double tree_max_radius, int n_lidar_beams,
                          double lidar_range, double min_tree_spare_distance,
                          int max_spawn_attempts, double max_speed,
@@ -22,11 +22,12 @@ DroneForest::DroneForest(double sim_step, std::tuple<double, double> xlim,
       drone_(geometric::Point(0, 0), lidar_range, n_lidar_beams, max_speed,
              max_acceleration, drone_width_m, drone_height_m),
       drone_position_(geometric::Point(0, 0)),
-      forest_(xlim, ylim, n_trees, tree_min_radius, tree_max_radius,
-              {geometric::Circle(geometric::Point(0, 0), 1.0)},
+      forest_(xlim, ylim, y_static_limit, n_trees, tree_min_radius,
+              tree_max_radius, {geometric::Circle(geometric::Point(0, 0), 1.0)},
               min_tree_spare_distance, max_spawn_attempts),
       xlim_(xlim),
       ylim_(ylim),
+      y_static_limit_(y_static_limit),
       goal_y_(goal_y),
       n_trees_(n_trees),
       tree_min_radius_(tree_min_radius),
@@ -164,10 +165,10 @@ void DroneForest::Reset()
   geometric::Point drone_start_position(0, 0);
   drone_.Reset(drone_start_position);
   drone_position_ = drone_start_position;
-  forest_ =
-      forest::Forest(xlim_, ylim_, n_trees_, tree_min_radius_, tree_max_radius_,
-                     {geometric::Circle(geometric::Point(0, 0), 1.0)},
-                     min_tree_spare_distance_, max_spawn_attempts_);
+  forest_ = forest::Forest(xlim_, ylim_, y_static_limit_, n_trees_,
+                           tree_min_radius_, tree_max_radius_,
+                           {geometric::Circle(geometric::Point(0, 0), 1.0)},
+                           min_tree_spare_distance_, max_spawn_attempts_);
   sim_time_ = 0.0;
 
   // NOTE: It is important to keep lidar_distances_ intact in terms of memory
@@ -189,10 +190,15 @@ void DroneForest::Step(geometric::Point velocity)
 {
   // Move the drone
   drone_position_ = drone_.Move(sim_step_, velocity);
+
+  // Move the trees
+  forest_.UpdateMovingTreesPosition(sim_step_, xlim_);
+
+  // Update simulation time
   sim_time_ += sim_step_;
 
   // NOTE: It is important to keep lidar_distances_ intact in terms of memory
-  // allocation!
+  // allocation! Actually, now maybe it is not that important?
   std::vector<double> tmp_distances = drone_.LidarScan(forest_.GetObstacles());
   for (size_t i = 0; i < tmp_distances.size(); i++)
   {

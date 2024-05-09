@@ -54,6 +54,13 @@ class Circle : public Shape
   void Draw(cv::Mat& image, const cv::Scalar& color, Point t_vec,
             double m2px) const override;
 
+  /**
+   * @brief Update the position of the circle
+   *
+   * @param new_center New center of the circle
+   */
+  void UpdatePosition(Point new_center);
+
  private:
   Point center_;
   double radius_;

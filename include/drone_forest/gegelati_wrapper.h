@@ -41,6 +41,7 @@ class GegelatiWrapper : public Learn::LearningEnvironment
    * @param sim_step Time step of the simulation (in seconds)
    * @param xlim x-axis limits of the simulation area (min, max in meters)
    * @param ylim y-axis limits of the simulation area (min, max in meters)
+   * @param y_static_limit y-limit of the static part of the forest
    * @param n_trees Number of trees in the forest
    * @param tree_min_radius Minimum radius of a tree
    * @param tree_max_radius Maximum radius of a tree
@@ -58,8 +59,8 @@ class GegelatiWrapper : public Learn::LearningEnvironment
    */
   GegelatiWrapper(const std::vector<geometric::Point>& actions, double sim_step,
                   std::tuple<double, double> xlim,
-                  std::tuple<double, double> ylim, int n_trees,
-                  double tree_min_radius, double tree_max_radius,
+                  std::tuple<double, double> ylim, double y_static_limit,
+                  int n_trees, double tree_min_radius, double tree_max_radius,
                   int n_lidar_beams, double lidar_range,
                   double min_tree_spare_distance, int max_spawn_attempts,
                   double max_speed, double drone_width_m, double drone_height_m,

@@ -79,7 +79,7 @@ Point Rectangle::TopLeft() const
   return top_left_;
 }
 
-void Rectangle::UpdatePosition(const Point& new_center)
+void Rectangle::UpdatePosition(Point new_center)
 {
   Point half_diagonal = (bottom_right_ - top_left_) / 2;
   top_left_ = new_center + half_diagonal;

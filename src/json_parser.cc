@@ -88,6 +88,14 @@ json ParseJsonFile(const fs::path& file_path)
     }
   }
 
+  if (!j.contains("y_static_limit"))
+  {
+    std::cerr << "Y-axis static limit not found in JSON file." << std::endl;
+    j["y_static_limit"] = j["y_lim"]["max"];
+    std::cerr << "Setting y-axis static limit to default: "
+              << j["y_static_limit"] << std::endl;
+  }
+
   if (!j.contains("n_trees"))
   {
     std::cerr << "Number of trees not found in JSON file." << std::endl;

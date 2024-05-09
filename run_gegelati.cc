@@ -160,6 +160,7 @@ int main(int argc, char** argv)
                                        env_config["x_lim"]["max"]};
     std::tuple<double, double> ylim = {env_config["y_lim"]["min"],
                                        env_config["y_lim"]["max"]};
+    double y_static_limit = env_config["y_static_limit"];
     int n_trees = env_config["n_trees"];
     double tree_min_radius = env_config["tree_radius_lim"]["min"];
     double tree_max_radius = env_config["tree_radius_lim"]["max"];
@@ -174,7 +175,7 @@ int main(int argc, char** argv)
     int img_height = 800;
     std::string window_name = "Drone Forest";
     evs::drone_forest::GegelatiWrapper drone_forest_le(
-        actions, sim_step, xlim, ylim, n_trees, tree_min_radius,
+        actions, sim_step, xlim, ylim, y_static_limit, n_trees, tree_min_radius,
         tree_max_radius, n_lidar_beams, lidar_range, min_tree_spare_distance,
         max_spawn_attempts, max_speed, max_acceleration, drone_width,
         drone_height, img_height, window_name);

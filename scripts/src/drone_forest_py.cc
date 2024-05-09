@@ -11,17 +11,17 @@ PYBIND11_MODULE(drone_forest, m)
 {
   py::class_<evs::drone_forest::DroneForest>(m, "DroneForest")
       .def(py::init<double, std::tuple<double, double>,
-                    std::tuple<double, double>, double, int, double, double,
-                    int, double, double, int, double, double, double, double,
-                    int, std::string>(),
+                    std::tuple<double, double>, double, double, int, double,
+                    double, int, double, double, int, double, double, double,
+                    double, int, std::string>(),
            py::arg("sim_step"), py::arg("x_lim"), py::arg("y_lim"),
-           py::arg("goal_y"), py::arg("n_trees"), py::arg("tree_min_radius"),
-           py::arg("tree_max_radius"), py::arg("n_lidar_beams"),
-           py::arg("lidar_range"), py::arg("min_tree_spare_distance"),
-           py::arg("max_spawn_attempts"), py::arg("max_speed"),
-           py::arg("max_acceleration"), py::arg("drone_width_m"),
-           py::arg("drone_height_m"), py::arg("img_height") = 800,
-           py::arg("window_name") = "Drone Forest")
+           py::arg("y_static_limit"), py::arg("goal_y"), py::arg("n_trees"),
+           py::arg("tree_min_radius"), py::arg("tree_max_radius"),
+           py::arg("n_lidar_beams"), py::arg("lidar_range"),
+           py::arg("min_tree_spare_distance"), py::arg("max_spawn_attempts"),
+           py::arg("max_speed"), py::arg("max_acceleration"),
+           py::arg("drone_width_m"), py::arg("drone_height_m"),
+           py::arg("img_height") = 800, py::arg("window_name") = "Drone Forest")
       .def("check_collision", &evs::drone_forest::DroneForest::CheckCollision,
            "Check if the drone is colliding with a tree")
       .def("get_drone_position",

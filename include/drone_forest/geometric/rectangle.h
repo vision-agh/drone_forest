@@ -77,7 +77,7 @@ class Rectangle : public Shape
    *
    * @param new_center New center of the rectangle
    */
-  void UpdatePosition(const Point& new_center);
+  void UpdatePosition(Point new_center);
 
  private:
   Point top_left_;

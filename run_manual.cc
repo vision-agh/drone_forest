@@ -16,6 +16,8 @@ int main(int argc, char** argv)
   double sim_step = 0.1;
   std::tuple<double, double> xlim = {-10, 10};
   std::tuple<double, double> ylim = {-2, 23};
+  double y_static_limit = 18;
+  double goal_y = std::get<1>(ylim) - 2.0;
   int n_trees = 100;
   double tree_min_radius = 0.05;
   double tree_max_radius = 0.75;
@@ -32,7 +34,7 @@ int main(int argc, char** argv)
 
   // Create a simulation object
   evs::drone_forest::DroneForest sim(
-      sim_step, xlim, ylim, std::get<1>(ylim) - 2.0, n_trees, tree_min_radius,
+      sim_step, xlim, ylim, y_static_limit, goal_y, n_trees, tree_min_radius,
       tree_max_radius, n_lidar_beams, lidar_range, min_tree_spare_distance,
       max_spawn_attempts, max_speed, max_acceleration, drone_width_m,
       drone_height_m, img_height, window_name);
@@ -85,6 +87,10 @@ int main(int argc, char** argv)
     if (sim.CheckCollision())
     {
       std::cout << "Collision detected!" << std::endl;
+    }
+    else if (sim.CheckGoalReached())
+    {
+      std::cout << "Goal reached!" << std::endl;
     }
   }
 

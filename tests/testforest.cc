@@ -54,9 +54,9 @@ TEST(ForestTest, ForestConstructor)
   std::vector<evs::geometric::Circle> exclusion_zones;
   double min_spare_distance = 0;
   int max_spawn_attempts = 50;
-  evs::forest::Forest forest(x_limits, y_limits, num_trees, min_radius,
-                             max_radius, exclusion_zones, min_spare_distance,
-                             max_spawn_attempts);
+  evs::forest::Forest forest(x_limits, y_limits, std::get<1>(y_limits),
+                             num_trees, min_radius, max_radius, exclusion_zones,
+                             min_spare_distance, max_spawn_attempts);
   EXPECT_LE(forest.NumberOfTrees(), num_trees);
   std::vector<evs::forest::Tree> trees = forest.Trees();
   for (const evs::forest::Tree& tree : trees)
@@ -86,9 +86,9 @@ TEST(ForestTest, ForestExclusionZones)
       evs::geometric::Circle(evs::geometric::Point(8, 8), 3));
   double min_spare_distance = 0;
   int max_spawn_attempts = 50;
-  evs::forest::Forest forest(x_limits, y_limits, num_trees, min_radius,
-                             max_radius, exclusion_zones, min_spare_distance,
-                             max_spawn_attempts);
+  evs::forest::Forest forest(x_limits, y_limits, std::get<1>(y_limits),
+                             num_trees, min_radius, max_radius, exclusion_zones,
+                             min_spare_distance, max_spawn_attempts);
   std::vector<evs::forest::Tree> trees = forest.Trees();
   for (const evs::forest::Tree& tree : trees)
   {
@@ -116,9 +116,9 @@ TEST(ForestTest, ForestTreesDistances)
   std::vector<evs::geometric::Circle> exclusion_zones;
   double min_spare_distance = 0;
   int max_spawn_attempts = 50;
-  evs::forest::Forest forest(x_limits, y_limits, num_trees, min_radius,
-                             max_radius, exclusion_zones, min_spare_distance,
-                             max_spawn_attempts);
+  evs::forest::Forest forest(x_limits, y_limits, std::get<1>(y_limits),
+                             num_trees, min_radius, max_radius, exclusion_zones,
+                             min_spare_distance, max_spawn_attempts);
   std::vector<evs::forest::Tree> trees = forest.Trees();
   for (int i = 0; i < trees.size(); i++)
   {
@@ -142,9 +142,9 @@ TEST(ForestTest, ForestSize)
   std::vector<evs::geometric::Circle> exclusion_zones;
   double min_spare_distance = 0;
   int max_spawn_attempts = 50;
-  evs::forest::Forest forest(x_limits, y_limits, num_trees, min_radius,
-                             max_radius, exclusion_zones, min_spare_distance,
-                             max_spawn_attempts);
+  evs::forest::Forest forest(x_limits, y_limits, std::get<1>(y_limits),
+                             num_trees, min_radius, max_radius, exclusion_zones,
+                             min_spare_distance, max_spawn_attempts);
   EXPECT_EQ(forest.NumberOfTrees(), forest.Trees().size());
 }
 
@@ -158,9 +158,9 @@ TEST(ForestTest, ForestDraw)
   std::vector<evs::geometric::Circle> exclusion_zones;
   double min_spare_distance = 0;
   int max_spawn_attempts = 50;
-  evs::forest::Forest forest(x_limits, y_limits, num_trees, min_radius,
-                             max_radius, exclusion_zones, min_spare_distance,
-                             max_spawn_attempts);
+  evs::forest::Forest forest(x_limits, y_limits, std::get<1>(y_limits),
+                             num_trees, min_radius, max_radius, exclusion_zones,
+                             min_spare_distance, max_spawn_attempts);
   cv::Mat img(200, 200, CV_8UC3, cv::Scalar(0, 255, 0));
   evs::geometric::Point t_vec(0, 0);
   double m2px = 1;
@@ -178,13 +178,13 @@ TEST(ForestTest, ForestSetSeed)
   double min_spare_distance = 0;
   int max_spawn_attempts = 50;
   evs::forest::Forest::SetSeed(0);
-  evs::forest::Forest forest1(x_limits, y_limits, num_trees, min_radius,
-                              max_radius, exclusion_zones, min_spare_distance,
-                              max_spawn_attempts);
+  evs::forest::Forest forest1(
+      x_limits, y_limits, std::get<1>(y_limits), num_trees, min_radius,
+      max_radius, exclusion_zones, min_spare_distance, max_spawn_attempts);
   evs::forest::Forest::SetSeed(0);
-  evs::forest::Forest forest2(x_limits, y_limits, num_trees, min_radius,
-                              max_radius, exclusion_zones, min_spare_distance,
-                              max_spawn_attempts);
+  evs::forest::Forest forest2(
+      x_limits, y_limits, std::get<1>(y_limits), num_trees, min_radius,
+      max_radius, exclusion_zones, min_spare_distance, max_spawn_attempts);
   EXPECT_EQ(forest1.Trees().size(), forest2.Trees().size());
   for (int i = 0; i < forest1.Trees().size(); i++)
   {
@@ -207,9 +207,9 @@ TEST(ForestTest, ForestGetObstacles)
   std::vector<evs::geometric::Circle> exclusion_zones;
   double min_spare_distance = 0;
   int max_spawn_attempts = 50;
-  evs::forest::Forest forest(x_limits, y_limits, num_trees, min_radius,
-                             max_radius, exclusion_zones, min_spare_distance,
-                             max_spawn_attempts);
+  evs::forest::Forest forest(x_limits, y_limits, std::get<1>(y_limits),
+                             num_trees, min_radius, max_radius, exclusion_zones,
+                             min_spare_distance, max_spawn_attempts);
   std::vector<evs::geometric::Circle> obstacles = forest.GetObstacles();
   for (const evs::geometric::Circle& obstacle : obstacles)
   {

@@ -19,11 +19,14 @@
     "y_lim": 
     {
         "min": -2.0,
-        "max": 23.0
+        "max": 24.0
     },
 
+    "//y_static_limit": "Height boundary of the static area in meters.",
+    "y_static_limit": 12.0,
+
     "//n_trees": "Number of trees in the simulation area.",
-    "n_trees": 100,
+    "n_trees": 70,
 
     "//tree_radius_lim": "Radius of the trees in meters.",
     "tree_radius_lim":
@@ -33,13 +36,13 @@
     },
 
     "//n_lidar_beams": "Number of beams in the LiDAR sensor.",
-    "n_lidar_beams": 36,
+    "n_lidar_beams": 72,
 
     "//lidar_range": "Range of the LiDAR sensor in meters.",
     "lidar_range": 3.0,
 
     "//min_tree_spare_distance": "Minimum distance between the trees in meters.",
-    "min_tree_spare_distance": 0.75,
+    "min_tree_spare_distance": 0.5,
 
     "//max_spawn_attempts": "Maximum number of attempts to spawn a tree.",
     "max_spawn_attempts": 100,

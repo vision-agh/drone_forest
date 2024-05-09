@@ -25,5 +25,10 @@ void Tree::Draw(cv::Mat& img, geometric::Point t_vec, double m2px) const
   trunk_.Draw(img, cv::Scalar(19, 69, 139), t_vec, m2px);
 }
 
+void Tree::UpdatePosition(geometric::Point new_center)
+{
+  trunk_.UpdatePosition(new_center);
+}
+
 }  // namespace forest
 }  // namespace evs

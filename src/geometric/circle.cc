@@ -29,5 +29,10 @@ void Circle::Draw(cv::Mat& image, const cv::Scalar& color, Point t_vec,
              color, cv::FILLED);
 }
 
+void Circle::UpdatePosition(Point new_center)
+{
+  center_ = new_center;
+}
+
 }  // namespace geometric
 }  // namespace evs

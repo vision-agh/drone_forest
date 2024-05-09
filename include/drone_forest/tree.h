@@ -55,6 +55,13 @@ class Tree
    */
   void Draw(cv::Mat& img, geometric::Point t_vec, double m2px) const;
 
+  /**
+   * @brief Update the position of the tree
+   *
+   * @param new_center New center of the tree's trunk
+   */
+  void UpdatePosition(geometric::Point new_center);
+
  private:
   geometric::Circle trunk_;
 };
