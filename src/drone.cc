@@ -32,6 +32,11 @@ void Drone::Draw(cv::Mat& image, geometric::Point t_vec, double m2px) const
   body_.Draw(image, cv::Scalar(0, 0, 0), t_vec, m2px);
 }
 
+double Drone::GetMaxSpeed() const
+{
+  return max_speed_;
+}
+
 lidar::Lidar Drone::Lidar() const
 {
   return lidar_;

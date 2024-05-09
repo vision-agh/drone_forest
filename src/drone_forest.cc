@@ -47,6 +47,16 @@ DroneForest::DroneForest(double sim_step, std::tuple<double, double> xlim,
 
 bool DroneForest::CheckCollision() const
 {
+  // Check collision with boundaries
+  if (drone_position_.x() < std::get<0>(xlim_)
+      || drone_position_.x() > std::get<1>(xlim_)
+      || drone_position_.y() < std::get<0>(ylim_)
+      || drone_position_.y() > std::get<1>(ylim_))
+  {
+    return true;
+  }
+
+  // Check collision with trees
   for (const geometric::Circle& circ : forest_.GetObstacles())
   {
     if (drone_.Body().CheckCircleIntersection(circ))
@@ -61,6 +71,16 @@ bool DroneForest::CheckCollision() const
 bool DroneForest::CheckGoalReached() const
 {
   return drone_position_.y() >= goal_y_;
+}
+
+double DroneForest::DistanceToGoal() const
+{
+  return std::abs(goal_y_ - drone_position_.y());
+}
+
+double DroneForest::GetDroneMaxSpeed() const
+{
+  return drone_.GetMaxSpeed();
 }
 
 geometric::Point DroneForest::GetDronePosition() const
@@ -104,6 +124,16 @@ std::vector<double>& DroneForest::GetLidarDistances()
 std::vector<double> DroneForest::GetLidarDistancesAsVector() const
 {
   return lidar_distances_;
+}
+
+std::tuple<double, double> DroneForest::GetLimitsX() const
+{
+  return xlim_;
+}
+
+std::tuple<double, double> DroneForest::GetLimitsY() const
+{
+  return ylim_;
 }
 
 double DroneForest::GetTime() const

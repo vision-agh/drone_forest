@@ -21,10 +21,6 @@ GegelatiWrapper::GegelatiWrapper(
                     lidar_range, min_tree_spare_distance, max_spawn_attempts,
                     max_speed, max_acceleration, drone_width_m, drone_height_m,
                     img_height, window_name),
-      xlim_(xlim),
-      ylim_(ylim),
-      max_velocity_(max_speed),
-      img_height_(img_height),
       mode_(mode),
       accumulated_reward_(0),
       last_reward_(0),
@@ -43,10 +39,6 @@ GegelatiWrapper::GegelatiWrapper(const GegelatiWrapper& other)
     : LearningEnvironment(actions_.size()),
       actions_(other.actions_),
       lidar_distances_(other.lidar_distances_),
-      xlim_(other.xlim_),
-      ylim_(other.ylim_),
-      max_velocity_(other.max_velocity_),
-      img_height_(other.img_height_),
       drone_forest_(other.drone_forest_),
       accumulated_reward_(other.accumulated_reward_),
       last_reward_(other.last_reward_),
@@ -83,23 +75,16 @@ void GegelatiWrapper::reset(size_t seed, Learn::LearningMode mode)
 void GegelatiWrapper::doAction(uint64_t actionID)
 {
   // One step of the simulation
-  drone_forest_.Step(actions_[actionID] * max_velocity_);
+  drone_forest_.Step(actions_[actionID] * drone_forest_.GetDroneMaxSpeed());
 
   // Update observation
   SetLidarDistances(drone_forest_.GetLidarDistances());
 
   // Collision check
-  geometric::Point drone_position = drone_forest_.GetDronePosition();
-  is_collision_ = drone_position.x() < std::get<0>(xlim_)
-                  || drone_position.x() > std::get<1>(xlim_)
-                  || drone_position.y() < std::get<0>(ylim_)
-                  || drone_position.y() > std::get<1>(ylim_)
-                  || drone_forest_.CheckCollision();
+  is_collision_ = drone_forest_.CheckCollision();
 
   // Success check
-  double distance_to_goal =
-      std::abs(drone_position.y() - std::get<1>(ylim_)) - 2.0;
-  is_success_ = distance_to_goal <= 0;
+  is_success_ = drone_forest_.CheckGoalReached();
 
   // Reward calculation
   // // Quite good configuration
@@ -205,11 +190,11 @@ void GegelatiWrapper::doAction(uint64_t actionID)
   }
   else
   {
-    accumulated_reward_ = -distance_to_goal;
+    accumulated_reward_ = -drone_forest_.DistanceToGoal();
   }
 
   // accumulated_reward_ += last_reward_;
-  last_drone_position_ = drone_position;
+  // last_drone_position_ = drone_forest_.GetDronePosition();
 }
 
 bool GegelatiWrapper::isCopyable() const

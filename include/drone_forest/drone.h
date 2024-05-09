@@ -49,6 +49,13 @@ class Drone
   void Draw(cv::Mat& image, geometric::Point t_vec, double m2px) const;
 
   /**
+   * @brief Return the maximum speed of the drone
+   *
+   * @return double Maximum speed of the drone
+   */
+  double GetMaxSpeed() const;
+
+  /**
    * @brief Return the LiDAR sensor of the drone
    *
    * @return lidar::Lidar The LiDAR sensor

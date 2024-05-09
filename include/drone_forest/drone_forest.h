@@ -74,6 +74,20 @@ class DroneForest
   bool CheckGoalReached() const;
 
   /**
+   * @brief Calculate the distance to the goal
+   *
+   * @return double Distance to the goal (in meters)
+   */
+  double DistanceToGoal() const;
+
+  /**
+   * @brief Get the maximum speed of the drone
+   *
+   * @return double Maximum speed of the drone (in m/s)
+   */
+  double GetDroneMaxSpeed() const;
+
+  /**
    * @brief Get the Drone Position object
    *
    * @return geometric::Point& Drone position
@@ -131,6 +145,21 @@ class DroneForest
    * vector
    */
   std::vector<double> GetLidarDistancesAsVector() const;
+
+  /**
+   * @brief Get the limits of the x-axis
+   *
+   * @return std::tuple<double, double> Limits of the x-axis (min, max)
+   */
+  std::tuple<double, double> GetLimitsX() const;
+
+  /**
+   * @brief Get the limits of the y-axis
+   *
+   * @return std::tuple<double, double> Limits of the y-axis (min, max)
+   */
+  std::tuple<double, double> GetLimitsY() const;
+
   /**
    * @brief Get the time of the simulation
    *

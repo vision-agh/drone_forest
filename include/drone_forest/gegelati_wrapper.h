@@ -173,11 +173,7 @@ class GegelatiWrapper : public Learn::LearningEnvironment
   void SetLidarDistances(const std::vector<double>& distances);
 
  private:
-  // Simulation parameters
-  std::tuple<double, double> xlim_;
-  std::tuple<double, double> ylim_;
-  double max_velocity_;
-  int img_height_;
+  // Rendering components
   cv::Mat render_;
   const int score_panel_height_ = 100;
 
