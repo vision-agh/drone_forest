@@ -27,6 +27,7 @@ def main(args):
         dt=config_dict["sim_step"],
         x_lim=(config_dict["x_lim"]["min"], config_dict["x_lim"]["max"]),
         y_lim=(config_dict["y_lim"]["min"], config_dict["y_lim"]["max"]),
+        goal_y=config_dict["y_lim"]["max"] - 2.0,
         n_trees=config_dict["n_trees"],
         tree_radius_lim=(
             config_dict["tree_radius_lim"]["min"],

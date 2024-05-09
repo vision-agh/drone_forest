@@ -8,13 +8,14 @@ namespace drone_forest
 {
 
 DroneForest::DroneForest(double sim_step, std::tuple<double, double> xlim,
-                         std::tuple<double, double> ylim, int n_trees,
-                         double tree_min_radius, double tree_max_radius,
-                         int n_lidar_beams, double lidar_range,
-                         double min_tree_spare_distance, int max_spawn_attempts,
-                         double max_speed, double max_acceleration,
-                         double drone_width_m, double drone_height_m,
-                         int img_height, std::string window_name)
+                         std::tuple<double, double> ylim, double goal_y,
+                         int n_trees, double tree_min_radius,
+                         double tree_max_radius, int n_lidar_beams,
+                         double lidar_range, double min_tree_spare_distance,
+                         int max_spawn_attempts, double max_speed,
+                         double max_acceleration, double drone_width_m,
+                         double drone_height_m, int img_height,
+                         std::string window_name)
     : sim_step_(sim_step),
       sim_time_(0.0),
       lidar_distances_(n_lidar_beams, lidar_range),
@@ -26,6 +27,7 @@ DroneForest::DroneForest(double sim_step, std::tuple<double, double> xlim,
               min_tree_spare_distance, max_spawn_attempts),
       xlim_(xlim),
       ylim_(ylim),
+      goal_y_(goal_y),
       n_trees_(n_trees),
       tree_min_radius_(tree_min_radius),
       tree_max_radius_(tree_max_radius),
@@ -47,7 +49,7 @@ bool DroneForest::CheckCollision() const
 {
   for (const geometric::Circle& circ : forest_.GetObstacles())
   {
-    if (drone_.body().CheckCircleIntersection(circ))
+    if (drone_.Body().CheckCircleIntersection(circ))
     {
       return true;
     }
@@ -56,7 +58,29 @@ bool DroneForest::CheckCollision() const
   return false;
 }
 
-std::vector<uchar> DroneForest::GetImageAsVector()
+bool DroneForest::CheckGoalReached() const
+{
+  return drone_position_.y() >= goal_y_;
+}
+
+geometric::Point DroneForest::GetDronePosition() const
+{
+  return drone_position_;
+}
+
+std::vector<double> DroneForest::GetDronePositionAsVector() const
+{
+  std::vector<double> drone_position = {drone_position_.x(),
+                                        drone_position_.y()};
+  return drone_position;
+}
+
+const cv::Mat& DroneForest::GetImage() const
+{
+  return img_;
+}
+
+std::vector<uchar> DroneForest::GetImageAsVector() const
 {
   std::vector<uchar> img_data;
 
@@ -67,7 +91,17 @@ std::vector<uchar> DroneForest::GetImageAsVector()
   return img_data;
 }
 
+std::tuple<int, int> DroneForest::GetImageSize() const
+{
+  return std::make_tuple(img_height_, img_width_);
+}
+
 std::vector<double>& DroneForest::GetLidarDistances()
+{
+  return lidar_distances_;
+}
+
+std::vector<double> DroneForest::GetLidarDistancesAsVector() const
 {
   return lidar_distances_;
 }
@@ -87,6 +121,12 @@ void DroneForest::Render()
 
   // Draw the drone
   drone_.Draw(img_, t_vec_, m2px_);
+
+  // Draw the goal as a red line
+  geometric::Point goal_left_end(std::get<0>(xlim_), goal_y_);
+  geometric::Point goal_right_end(std::get<1>(xlim_), goal_y_);
+  geometric::Line goal_line(goal_left_end, goal_right_end);
+  goal_line.Draw(img_, cv::Scalar(0, 0, 255), t_vec_, m2px_);
 }
 
 void DroneForest::Reset()

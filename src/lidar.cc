@@ -6,9 +6,9 @@ namespace lidar
 {
 
 Lidar::Lidar(const geometric::Point& position, double range, int n_beams)
+    : position_(position),
+      range_(range)
 {
-  position_ = position;
-  range_ = range;
   beam_angles_.resize(n_beams);
   beams_.resize(n_beams);
 
@@ -29,6 +29,16 @@ Lidar::Lidar(const geometric::Point& position, double range, int n_beams)
   }
 }
 
+std::vector<double> Lidar::Angles() const
+{
+  return beam_angles_;
+}
+
+std::vector<geometric::Line> Lidar::Beams() const
+{
+  return beams_;
+}
+
 void Lidar::Draw(cv::Mat& image, geometric::Point t_vec, double m2px) const
 {
   // Draw the lidar beams
@@ -37,6 +47,16 @@ void Lidar::Draw(cv::Mat& image, geometric::Point t_vec, double m2px) const
     // NOTE: Beam has a blue color
     beam.Draw(image, cv::Scalar(255, 0, 0), t_vec, m2px);
   }
+}
+
+geometric::Point Lidar::Position() const
+{
+  return position_;
+}
+
+double Lidar::Range() const
+{
+  return range_;
 }
 
 void Lidar::Reset(const geometric::Point& position)
@@ -104,6 +124,13 @@ std::vector<double> Lidar::Scan(const std::vector<geometric::Circle>& obstacles)
   }
 
   return distances;
+}
+
+geometric::Point Lidar::UpdatePosition(const geometric::Point& new_position)
+{
+  geometric::Point old_position = position_;
+  position_ = new_position;
+  return old_position;
 }
 
 }  // namespace lidar

@@ -5,6 +5,24 @@ namespace evs
 namespace drone
 {
 
+Drone::Drone(const geometric::Point& position, double lidar_range,
+             int lidar_n_beams, double max_speed, double max_acceleration,
+             double drone_width_m, double drone_height_m)
+    : position_(position),
+      velocity_(0.0, 0.0),
+      max_speed_(max_speed),
+      max_acceleration_(max_acceleration),
+      lidar_(position, lidar_range, lidar_n_beams),
+      body_(position + geometric::Point(drone_width_m / 2, drone_height_m / 2),
+            position - geometric::Point(drone_width_m / 2, drone_height_m / 2))
+{
+}
+
+geometric::Rectangle Drone::Body() const
+{
+  return body_;
+}
+
 void Drone::Draw(cv::Mat& image, geometric::Point t_vec, double m2px) const
 {
   // Draw the LiDAR sensor
@@ -12,6 +30,11 @@ void Drone::Draw(cv::Mat& image, geometric::Point t_vec, double m2px) const
 
   // Draw the drone body (black rectangle)
   body_.Draw(image, cv::Scalar(0, 0, 0), t_vec, m2px);
+}
+
+lidar::Lidar Drone::Lidar() const
+{
+  return lidar_;
 }
 
 std::vector<double> Drone::LidarScan(
@@ -71,6 +94,11 @@ geometric::Point Drone::Move(double dt, const geometric::Point& velocity)
   body_.UpdatePosition(new_position);
   position_ = new_position;
 
+  return position_;
+}
+
+geometric::Point Drone::Position() const
+{
   return position_;
 }
 

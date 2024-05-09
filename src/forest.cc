@@ -26,15 +26,15 @@ Forest::Forest(const std::tuple<double, double> x_limits,
     for (int idx_attempt = 0; idx_attempt < max_spawn_attempts; idx_attempt++)
     {
       // Generate random tree
-      geometric::Circle tree(geometric::Point(x_dist(gen_), y_dist(gen_)),
-                             radius_dist(gen_));
+      Tree tree(geometric::Point(x_dist(gen_), y_dist(gen_)),
+                radius_dist(gen_));
 
       // Check if tree is in exclusion zone
       bool in_exclusion_zone = false;
       for (const geometric::Circle& exclusion_zone : exclusion_zones)
       {
-        if (tree.center().Distance(exclusion_zone.center())
-            < tree.radius() + exclusion_zone.radius())
+        if (tree.Trunk().Center().Distance(exclusion_zone.Center())
+            < tree.Trunk().Radius() + exclusion_zone.Radius())
         {
           in_exclusion_zone = true;
           break;
@@ -51,8 +51,9 @@ Forest::Forest(const std::tuple<double, double> x_limits,
       bool min_distance_satisfied = true;
       for (const Tree& other_tree : trees_)
       {
-        if (tree.center().Distance(other_tree.trunk().center())
-            < tree.radius() + other_tree.trunk().radius() + min_spare_distance)
+        if (tree.Trunk().Center().Distance(other_tree.Trunk().Center())
+            < tree.Trunk().Radius() + other_tree.Trunk().Radius()
+                  + min_spare_distance)
         {
           min_distance_satisfied = false;
           break;
@@ -85,9 +86,19 @@ std::vector<geometric::Circle> Forest::GetObstacles() const
   std::vector<geometric::Circle> obstacles;
   for (const Tree& tree : trees_)
   {
-    obstacles.push_back(tree.trunk());
+    obstacles.push_back(tree.Trunk());
   }
   return obstacles;
+}
+
+int Forest::NumberOfTrees() const
+{
+  return trees_.size();
+}
+
+std::vector<Tree> Forest::Trees() const
+{
+  return trees_;
 }
 
 }  // namespace forest

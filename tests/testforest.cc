@@ -7,10 +7,10 @@
 TEST(ForestTest, TreeDefaultConstructor)
 {
   evs::forest::Tree tree;
-  evs::geometric::Circle trunk = tree.trunk();
-  EXPECT_EQ(trunk.center().x(), 0);
-  EXPECT_EQ(trunk.center().y(), 0);
-  EXPECT_EQ(trunk.radius(), 0);
+  evs::geometric::Circle trunk = tree.Trunk();
+  EXPECT_EQ(trunk.Center().x(), 0);
+  EXPECT_EQ(trunk.Center().y(), 0);
+  EXPECT_EQ(trunk.Radius(), 0);
 }
 
 TEST(ForestTest, TreeConstructor)
@@ -18,20 +18,20 @@ TEST(ForestTest, TreeConstructor)
   evs::geometric::Point center(1, 2);
   double radius = 3;
   evs::forest::Tree tree(center, radius);
-  evs::geometric::Circle trunk = tree.trunk();
-  EXPECT_EQ(trunk.center().x(), 1);
-  EXPECT_EQ(trunk.center().y(), 2);
-  EXPECT_EQ(trunk.radius(), 3);
+  evs::geometric::Circle trunk = tree.Trunk();
+  EXPECT_EQ(trunk.Center().x(), 1);
+  EXPECT_EQ(trunk.Center().y(), 2);
+  EXPECT_EQ(trunk.Radius(), 3);
 }
 
 TEST(ForestTest, TreeConstructorCircle)
 {
   evs::geometric::Circle trunk(evs::geometric::Point(1, 2), 3);
   evs::forest::Tree tree(trunk);
-  evs::geometric::Circle trunk_out = tree.trunk();
-  EXPECT_EQ(trunk_out.center().x(), 1);
-  EXPECT_EQ(trunk_out.center().y(), 2);
-  EXPECT_EQ(trunk_out.radius(), 3);
+  evs::geometric::Circle trunk_out = tree.Trunk();
+  EXPECT_EQ(trunk_out.Center().x(), 1);
+  EXPECT_EQ(trunk_out.Center().y(), 2);
+  EXPECT_EQ(trunk_out.Radius(), 3);
 }
 
 TEST(ForestTest, TreeCenter)
@@ -39,7 +39,7 @@ TEST(ForestTest, TreeCenter)
   evs::geometric::Point center(1, 2);
   double radius = 3;
   evs::forest::Tree tree(center, radius);
-  evs::geometric::Point center_out = tree.center();
+  evs::geometric::Point center_out = tree.Trunk().Center();
   EXPECT_EQ(center_out.x(), 1);
   EXPECT_EQ(center_out.y(), 2);
 }
@@ -57,16 +57,16 @@ TEST(ForestTest, ForestConstructor)
   evs::forest::Forest forest(x_limits, y_limits, num_trees, min_radius,
                              max_radius, exclusion_zones, min_spare_distance,
                              max_spawn_attempts);
-  EXPECT_LE(forest.trees().size(), num_trees);
-  std::vector<evs::forest::Tree> trees = forest.trees();
+  EXPECT_LE(forest.NumberOfTrees(), num_trees);
+  std::vector<evs::forest::Tree> trees = forest.Trees();
   for (const evs::forest::Tree& tree : trees)
   {
-    EXPECT_GE(tree.trunk().center().x(), std::get<0>(x_limits));
-    EXPECT_LE(tree.trunk().center().x(), std::get<1>(x_limits));
-    EXPECT_GE(tree.trunk().center().y(), std::get<0>(y_limits));
-    EXPECT_LE(tree.trunk().center().y(), std::get<1>(y_limits));
-    EXPECT_GE(tree.trunk().radius(), min_radius);
-    EXPECT_LE(tree.trunk().radius(), max_radius);
+    EXPECT_GE(tree.Trunk().Center().x(), std::get<0>(x_limits));
+    EXPECT_LE(tree.Trunk().Center().x(), std::get<1>(x_limits));
+    EXPECT_GE(tree.Trunk().Center().y(), std::get<0>(y_limits));
+    EXPECT_LE(tree.Trunk().Center().y(), std::get<1>(y_limits));
+    EXPECT_GE(tree.Trunk().Radius(), min_radius);
+    EXPECT_LE(tree.Trunk().Radius(), max_radius);
   }
 }
 
@@ -89,14 +89,14 @@ TEST(ForestTest, ForestExclusionZones)
   evs::forest::Forest forest(x_limits, y_limits, num_trees, min_radius,
                              max_radius, exclusion_zones, min_spare_distance,
                              max_spawn_attempts);
-  std::vector<evs::forest::Tree> trees = forest.trees();
+  std::vector<evs::forest::Tree> trees = forest.Trees();
   for (const evs::forest::Tree& tree : trees)
   {
     bool in_exclusion_zone = false;
     for (const evs::geometric::Circle& exclusion_zone : exclusion_zones)
     {
-      if (tree.trunk().center().Distance(exclusion_zone.center())
-          < tree.trunk().radius() + exclusion_zone.radius())
+      if (tree.Trunk().Center().Distance(exclusion_zone.Center())
+          < tree.Trunk().Radius() + exclusion_zone.Radius())
       {
         in_exclusion_zone = true;
         break;
@@ -119,14 +119,14 @@ TEST(ForestTest, ForestTreesDistances)
   evs::forest::Forest forest(x_limits, y_limits, num_trees, min_radius,
                              max_radius, exclusion_zones, min_spare_distance,
                              max_spawn_attempts);
-  std::vector<evs::forest::Tree> trees = forest.trees();
+  std::vector<evs::forest::Tree> trees = forest.Trees();
   for (int i = 0; i < trees.size(); i++)
   {
     for (int j = i + 1; j < trees.size(); j++)
     {
       double distance =
-          trees[i].trunk().center().Distance(trees[j].trunk().center());
-      EXPECT_GE(distance, trees[i].trunk().radius() + trees[j].trunk().radius()
+          trees[i].Trunk().Center().Distance(trees[j].Trunk().Center());
+      EXPECT_GE(distance, trees[i].Trunk().Radius() + trees[j].Trunk().Radius()
                               + min_spare_distance);
     }
   }
@@ -145,7 +145,7 @@ TEST(ForestTest, ForestSize)
   evs::forest::Forest forest(x_limits, y_limits, num_trees, min_radius,
                              max_radius, exclusion_zones, min_spare_distance,
                              max_spawn_attempts);
-  EXPECT_EQ(forest.size(), forest.trees().size());
+  EXPECT_EQ(forest.NumberOfTrees(), forest.Trees().size());
 }
 
 TEST(ForestTest, ForestDraw)
@@ -185,15 +185,15 @@ TEST(ForestTest, ForestSetSeed)
   evs::forest::Forest forest2(x_limits, y_limits, num_trees, min_radius,
                               max_radius, exclusion_zones, min_spare_distance,
                               max_spawn_attempts);
-  EXPECT_EQ(forest1.trees().size(), forest2.trees().size());
-  for (int i = 0; i < forest1.trees().size(); i++)
+  EXPECT_EQ(forest1.Trees().size(), forest2.Trees().size());
+  for (int i = 0; i < forest1.Trees().size(); i++)
   {
-    EXPECT_EQ(forest1.trees()[i].trunk().center().x(),
-              forest2.trees()[i].trunk().center().x());
-    EXPECT_EQ(forest1.trees()[i].trunk().center().y(),
-              forest2.trees()[i].trunk().center().y());
-    EXPECT_EQ(forest1.trees()[i].trunk().radius(),
-              forest2.trees()[i].trunk().radius());
+    EXPECT_EQ(forest1.Trees()[i].Trunk().Center().x(),
+              forest2.Trees()[i].Trunk().Center().x());
+    EXPECT_EQ(forest1.Trees()[i].Trunk().Center().y(),
+              forest2.Trees()[i].Trunk().Center().y());
+    EXPECT_EQ(forest1.Trees()[i].Trunk().Radius(),
+              forest2.Trees()[i].Trunk().Radius());
   }
 }
 
@@ -214,10 +214,10 @@ TEST(ForestTest, ForestGetObstacles)
   for (const evs::geometric::Circle& obstacle : obstacles)
   {
     bool in_forest = false;
-    for (const evs::forest::Tree& tree : forest.trees())
+    for (const evs::forest::Tree& tree : forest.Trees())
     {
-      if (obstacle.center() == tree.trunk().center()
-          && obstacle.radius() == tree.trunk().radius())
+      if (obstacle.Center() == tree.Trunk().Center()
+          && obstacle.Radius() == tree.Trunk().Radius())
       {
         in_forest = true;
         break;

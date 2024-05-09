@@ -1,7 +1,7 @@
 #ifndef _DRONE_FOREST_FOREST_H_
 #define _DRONE_FOREST_FOREST_H_
 
-#include <drone_forest/geometric.h>
+#include <drone_forest/geometric/circle.h>
 #include <drone_forest/tree.h>
 
 #include <opencv4/opencv2/opencv.hpp>
@@ -36,26 +36,6 @@ class Forest
          double min_spare_distance, int max_spawn_attempts = 50);
 
   /**
-   * @brief Get the trees in the forest
-   *
-   * @return std::vector<Tree> Trees in the forest
-   */
-  std::vector<Tree> trees() const
-  {
-    return trees_;
-  }
-
-  /**
-   * @brief Get the number of trees in the forest
-   *
-   * @return int Number of trees in the forest
-   */
-  int size() const
-  {
-    return trees_.size();
-  }
-
-  /**
    * @brief Draw the forest on an image
    *
    * @param img Image to draw the forest on
@@ -70,6 +50,20 @@ class Forest
    * @return std::vector<geometric::Circle> Obstacles in the forest
    */
   std::vector<geometric::Circle> GetObstacles() const;
+
+  /**
+   * @brief Get the number of trees in the forest
+   *
+   * @return int Number of trees in the forest
+   */
+  int NumberOfTrees() const;
+
+  /**
+   * @brief Get the trees in the forest
+   *
+   * @return std::vector<Tree> Trees in the forest
+   */
+  std::vector<Tree> Trees() const;
 
   /**
    * @brief Set the seed of the random number generator

@@ -1,4 +1,6 @@
-#include <drone_forest/geometric.h>
+#include <drone_forest/geometric/circle.h>
+#include <drone_forest/geometric/line.h>
+#include <drone_forest/geometric/point.h>
 #include <gtest/gtest.h>
 
 #include <cmath>

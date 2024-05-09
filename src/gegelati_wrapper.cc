@@ -16,11 +16,11 @@ GegelatiWrapper::GegelatiWrapper(
     : LearningEnvironment(actions.size()),
       actions_(actions),
       lidar_distances_(n_lidar_beams),
-      drone_forest_(sim_step, xlim, ylim, n_trees, tree_min_radius,
-                    tree_max_radius, n_lidar_beams, lidar_range,
-                    min_tree_spare_distance, max_spawn_attempts, max_speed,
-                    max_acceleration, drone_width_m, drone_height_m, img_height,
-                    window_name),
+      drone_forest_(sim_step, xlim, ylim, std::get<1>(ylim) - 2.0, n_trees,
+                    tree_min_radius, tree_max_radius, n_lidar_beams,
+                    lidar_range, min_tree_spare_distance, max_spawn_attempts,
+                    max_speed, max_acceleration, drone_width_m, drone_height_m,
+                    img_height, window_name),
       xlim_(xlim),
       ylim_(ylim),
       max_velocity_(max_speed),
@@ -256,7 +256,7 @@ bool GegelatiWrapper::isTerminal() const
 cv::Mat& GegelatiWrapper::Render()
 {
   drone_forest_.Render();
-  cv::Mat& img = drone_forest_.GetImage();
+  const cv::Mat& img = drone_forest_.GetImage();
   cv::Mat score_panel =
       cv::Mat(score_panel_height_, img.cols, CV_8UC3, cv::Scalar(0, 0, 0));
   cv::putText(score_panel, "Score: " + std::to_string(getScore()),

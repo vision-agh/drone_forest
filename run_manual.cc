@@ -32,10 +32,10 @@ int main(int argc, char** argv)
 
   // Create a simulation object
   evs::drone_forest::DroneForest sim(
-      sim_step, xlim, ylim, n_trees, tree_min_radius, tree_max_radius,
-      n_lidar_beams, lidar_range, min_tree_spare_distance, max_spawn_attempts,
-      max_speed, max_acceleration, drone_width_m, drone_height_m, img_height,
-      window_name);
+      sim_step, xlim, ylim, std::get<1>(ylim) - 2.0, n_trees, tree_min_radius,
+      tree_max_radius, n_lidar_beams, lidar_range, min_tree_spare_distance,
+      max_spawn_attempts, max_speed, max_acceleration, drone_width_m,
+      drone_height_m, img_height, window_name);
 
   // Run the simulation in an infinite loop
   bool end_sim = false;

@@ -26,6 +26,7 @@ env = DroneForestEnv(
     dt=dt,
     x_lim=x_lim,
     y_lim=y_lim,
+    goal_y=y_lim[1] - 2.0,
     n_trees=n_trees,
     tree_radius_lim=tree_radius_lim,
     n_lidar_beams=n_lidar_beams,

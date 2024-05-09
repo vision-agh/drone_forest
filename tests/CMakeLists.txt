@@ -12,17 +12,17 @@ target_link_libraries(GTest::GTest INTERFACE gtest_main)
 find_package(OpenCV REQUIRED)
 
 add_executable(geometric_test testgeometric.cc)
-target_link_libraries(geometric_test PRIVATE GTest::GTest geometric_lib ${OpenCV_LIBS})
+target_link_libraries(geometric_test PRIVATE GTest::GTest geometric ${OpenCV_LIBS})
 add_test(test_geometric geometric_test)
 
 add_executable(forest_test testforest.cc)
-target_link_libraries(forest_test PRIVATE GTest::GTest forest_lib ${OpenCV_LIBS})
+target_link_libraries(forest_test PRIVATE GTest::GTest forest ${OpenCV_LIBS})
 add_test(test_forest forest_test)
 
 add_executable(lidar_test testlidar.cc)
-target_link_libraries(lidar_test PRIVATE GTest::GTest lidar_lib ${OpenCV_LIBS})
+target_link_libraries(lidar_test PRIVATE GTest::GTest lidar ${OpenCV_LIBS})
 add_test(test_lidar lidar_test)
 
 add_executable(drone_test testdrone.cc)
-target_link_libraries(drone_test PRIVATE GTest::GTest drone_lib)
+target_link_libraries(drone_test PRIVATE GTest::GTest drone)
 add_test(test_drone drone_test)

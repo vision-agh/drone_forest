@@ -11,23 +11,23 @@ TEST(LidarTest, LidarConstructor)
   int n_beams = 4;
   std::vector<double> ref_angles = {0, M_PI / 2, M_PI, 3 * M_PI / 2};
   evs::lidar::Lidar lidar(position, range, n_beams);
-  EXPECT_DOUBLE_EQ(lidar.position().x(), 1);
-  EXPECT_DOUBLE_EQ(lidar.position().y(), 2);
-  EXPECT_DOUBLE_EQ(lidar.range(), 3);
-  EXPECT_DOUBLE_EQ(lidar.angles().size(), 4);
-  EXPECT_DOUBLE_EQ(lidar.beams().size(), 4);
-  std::vector<double> angles = lidar.angles();
+  EXPECT_DOUBLE_EQ(lidar.Position().x(), 1);
+  EXPECT_DOUBLE_EQ(lidar.Position().y(), 2);
+  EXPECT_DOUBLE_EQ(lidar.Range(), 3);
+  EXPECT_DOUBLE_EQ(lidar.Angles().size(), 4);
+  EXPECT_DOUBLE_EQ(lidar.Beams().size(), 4);
+  std::vector<double> angles = lidar.Angles();
   for (int i = 0; i < n_beams; i++)
   {
     EXPECT_DOUBLE_EQ(angles[i], ref_angles[i]);
   }
-  std::vector<evs::geometric::Line> beams = lidar.beams();
+  std::vector<evs::geometric::Line> beams = lidar.Beams();
   for (int i = 0; i < n_beams; i++)
   {
-    EXPECT_DOUBLE_EQ(beams[i].start().x(), 1);
-    EXPECT_DOUBLE_EQ(beams[i].start().y(), 2);
-    EXPECT_DOUBLE_EQ(beams[i].end().x(), 1 + 3 * cos(ref_angles[i]));
-    EXPECT_DOUBLE_EQ(beams[i].end().y(), 2 + 3 * sin(ref_angles[i]));
+    EXPECT_DOUBLE_EQ(beams[i].Start().x(), 1);
+    EXPECT_DOUBLE_EQ(beams[i].Start().y(), 2);
+    EXPECT_DOUBLE_EQ(beams[i].End().x(), 1 + 3 * cos(ref_angles[i]));
+    EXPECT_DOUBLE_EQ(beams[i].End().y(), 2 + 3 * sin(ref_angles[i]));
   }
 }
 
@@ -37,14 +37,14 @@ TEST(LidarTest, LidarUpdatePosition)
   double range = 3;
   int n_beams = 4;
   evs::lidar::Lidar lidar(position, range, n_beams);
-  EXPECT_DOUBLE_EQ(lidar.position().x(), 1);
-  EXPECT_DOUBLE_EQ(lidar.position().y(), 2);
+  EXPECT_DOUBLE_EQ(lidar.Position().x(), 1);
+  EXPECT_DOUBLE_EQ(lidar.Position().y(), 2);
   evs::geometric::Point new_position(3, 4);
   evs::geometric::Point old_position = lidar.UpdatePosition(new_position);
   EXPECT_DOUBLE_EQ(old_position.x(), 1);
   EXPECT_DOUBLE_EQ(old_position.y(), 2);
-  EXPECT_DOUBLE_EQ(lidar.position().x(), 3);
-  EXPECT_DOUBLE_EQ(lidar.position().y(), 4);
+  EXPECT_DOUBLE_EQ(lidar.Position().x(), 3);
+  EXPECT_DOUBLE_EQ(lidar.Position().y(), 4);
 }
 
 TEST(LidarTest, LidarScan)

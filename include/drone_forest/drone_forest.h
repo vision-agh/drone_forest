@@ -3,6 +3,8 @@
 
 #include <drone_forest/drone.h>
 #include <drone_forest/forest.h>
+#include <drone_forest/geometric/line.h>
+#include <drone_forest/geometric/point.h>
 
 #include <opencv4/opencv2/opencv.hpp>
 #include <string>
@@ -32,6 +34,7 @@ class DroneForest
    * @param sim_step Time step of the simulation (in seconds)
    * @param xlim x-axis limits of the simulation area (min, max in meters)
    * @param ylim y-axis limits of the simulation area (min, max in meters)
+   * @param goal_y y-coordinate of the goal position
    * @param n_trees Number of trees in the forest
    * @param tree_min_radius Minimum radius of a tree
    * @param tree_max_radius Maximum radius of a tree
@@ -47,7 +50,7 @@ class DroneForest
    * @param window_name Name of the window to render
    */
   DroneForest(double sim_step, std::tuple<double, double> xlim,
-              std::tuple<double, double> ylim, int n_trees,
+              std::tuple<double, double> ylim, double goal_y, int n_trees,
               double tree_min_radius, double tree_max_radius, int n_lidar_beams,
               double lidar_range, double min_tree_spare_distance,
               int max_spawn_attempts, double max_speed, double max_acceleration,
@@ -63,14 +66,19 @@ class DroneForest
   bool CheckCollision() const;
 
   /**
+   * @brief Check if the goal has been reached
+   *
+   * @return true The goal has been reached
+   * @return false The goal has not been reached
+   */
+  bool CheckGoalReached() const;
+
+  /**
    * @brief Get the Drone Position object
    *
    * @return geometric::Point& Drone position
    */
-  geometric::Point& GetDronePosition()
-  {
-    return drone_position_;
-  }
+  geometric::Point GetDronePosition() const;
 
   /**
    * @brief Get the Drone Position As Vector object
@@ -79,12 +87,7 @@ class DroneForest
    *
    * @return std::vector<double> Drone position as a vector
    */
-  std::vector<double> GetDronePositionAsVector()
-  {
-    std::vector<double> drone_position = {drone_position_.x(),
-                                          drone_position_.y()};
-    return drone_position;
-  }
+  std::vector<double> GetDronePositionAsVector() const;
 
   /**
    * @brief Get the image of the simulation
@@ -93,10 +96,7 @@ class DroneForest
    *
    * @return cv::Mat& Image of the simulation
    */
-  cv::Mat& GetImage()
-  {
-    return img_;
-  }
+  const cv::Mat& GetImage() const;
 
   /**
    * @brief Get the Image As Vector object
@@ -106,17 +106,14 @@ class DroneForest
    *
    * @return std::vector<uchar> Image of the simulation as a vector
    */
-  std::vector<uchar> GetImageAsVector();
+  std::vector<uchar> GetImageAsVector() const;
 
   /**
    * @brief Get the size of the image
    *
    * @return std::tuple<int, int> Size of the image (height, width)
    */
-  std::tuple<int, int> GetImageSize()
-  {
-    return std::make_tuple(img_height_, img_width_);
-  }
+  std::tuple<int, int> GetImageSize() const;
 
   /**
    * @brief Get the distances detected by the LiDAR sensor
@@ -133,11 +130,7 @@ class DroneForest
    * @return std::vector<double> Distances detected by the LiDAR sensor as a
    * vector
    */
-  std::vector<double> GetLidarDistancesAsVector()
-  {
-    return lidar_distances_;
-  }
-
+  std::vector<double> GetLidarDistancesAsVector() const;
   /**
    * @brief Get the time of the simulation
    *
@@ -201,6 +194,7 @@ class DroneForest
   forest::Forest forest_;
   const std::tuple<double, double> xlim_;
   const std::tuple<double, double> ylim_;
+  double goal_y_;
   const int n_trees_;
   const double tree_min_radius_;
   const double tree_max_radius_;

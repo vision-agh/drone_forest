@@ -1,7 +1,8 @@
 #ifndef _DRONE_FOREST_DRONE_H_
 #define _DRONE_FOREST_DRONE_H_
 
-#include <drone_forest/geometric.h>
+#include <drone_forest/geometric/point.h>
+#include <drone_forest/geometric/rectangle.h>
 #include <drone_forest/lidar.h>
 
 namespace evs
@@ -29,47 +30,14 @@ class Drone
    */
   Drone(const geometric::Point& position, double lidar_range, int lidar_n_beams,
         double max_speed = 1.0, double max_acceleration = 0.6,
-        double drone_width_m = 0.1, double drone_height_m = 0.2)
-      : position_(position),
-        velocity_(0, 0),
-        max_speed_(max_speed),
-        max_acceleration_(max_acceleration),
-        lidar_(position, lidar_range, lidar_n_beams),
-        body_(
-            position + geometric::Point(drone_width_m / 2, drone_height_m / 2),
-            position - geometric::Point(drone_width_m / 2, drone_height_m / 2))
-  {
-  }
-
-  /**
-   * @brief Return the current position of the drone
-   *
-   * @return geometric::Point Current position of the drone
-   */
-  geometric::Point position() const
-  {
-    return position_;
-  }
-
-  /**
-   * @brief Return the LiDAR sensor of the drone
-   *
-   * @return lidar::Lidar The LiDAR sensor
-   */
-  lidar::Lidar lidar() const
-  {
-    return lidar_;
-  }
+        double drone_width_m = 0.1, double drone_height_m = 0.2);
 
   /**
    * @brief Return the body of the drone
    *
    * @return geometric::Rectangle
    */
-  geometric::Rectangle body() const
-  {
-    return body_;
-  }
+  geometric::Rectangle Body() const;
 
   /**
    * @brief Draw the drone on an image
@@ -79,6 +47,13 @@ class Drone
    * @param m2px Meters to pixels conversion factor
    */
   void Draw(cv::Mat& image, geometric::Point t_vec, double m2px) const;
+
+  /**
+   * @brief Return the LiDAR sensor of the drone
+   *
+   * @return lidar::Lidar The LiDAR sensor
+   */
+  lidar::Lidar Lidar() const;
 
   /**
    * @brief Perform a LiDAR scan
@@ -98,6 +73,13 @@ class Drone
    * @return geometric::Point New position of the drone
    */
   geometric::Point Move(double dt, const geometric::Point& velocity);
+
+  /**
+   * @brief Return the current position of the drone
+   *
+   * @return geometric::Point Current position of the drone
+   */
+  geometric::Point Position() const;
 
   /**
    * @brief Reset the drone state
