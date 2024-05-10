@@ -56,6 +56,13 @@ class Drone
   double GetMaxSpeed() const;
 
   /**
+   * @brief Get the Lidar range
+   *
+   * @return double Lidar range
+   */
+  double GetLidarRange() const;
+
+  /**
    * @brief Return the LiDAR sensor of the drone
    *
    * @return lidar::Lidar The LiDAR sensor

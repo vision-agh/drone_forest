@@ -182,6 +182,9 @@ class GegelatiWrapper : public Learn::LearningEnvironment
   /**
    * @brief Set the distances measured by the LiDAR sensor.
    *
+   * Distances are normalized to the range [0, 1] based on the maximum range of
+   * the LiDAR sensor.
+   *
    * @param distances Vector of distances measured by the LiDAR sensor.
    */
   void SetLidarDistances(const std::vector<double>& distances);

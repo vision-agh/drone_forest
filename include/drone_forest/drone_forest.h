@@ -149,6 +149,13 @@ class DroneForest
   std::vector<double> GetLidarDistancesAsVector() const;
 
   /**
+   * @brief Get the maximum range of the LiDAR sensor
+   *
+   * @return double Maximum range of the LiDAR sensor (in meters)
+   */
+  double GetLidarRange() const;
+
+  /**
    * @brief Get the limits of the x-axis
    *
    * @return std::tuple<double, double> Limits of the x-axis (min, max)

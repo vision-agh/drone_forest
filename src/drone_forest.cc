@@ -127,6 +127,11 @@ std::vector<double> DroneForest::GetLidarDistancesAsVector() const
   return lidar_distances_;
 }
 
+double DroneForest::GetLidarRange() const
+{
+  return drone_.GetLidarRange();
+}
+
 std::tuple<double, double> DroneForest::GetLimitsX() const
 {
   return xlim_;

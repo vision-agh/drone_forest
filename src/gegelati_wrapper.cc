@@ -280,9 +280,11 @@ bool GegelatiWrapper::isSuccess() const
 
 void GegelatiWrapper::SetLidarDistances(const std::vector<double>& distances)
 {
+  double lidar_max_range = drone_forest_.GetLidarRange();
   for (size_t i = 0; i < distances.size(); i++)
   {
-    lidar_distances_.setDataAt(typeid(double), i, distances[i]);
+    lidar_distances_.setDataAt(typeid(double), i,
+                               distances[i] / lidar_max_range);
   }
 }
 

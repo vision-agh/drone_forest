@@ -37,6 +37,11 @@ double Drone::GetMaxSpeed() const
   return max_speed_;
 }
 
+double Drone::GetLidarRange() const
+{
+  return lidar_.Range();
+}
+
 lidar::Lidar Drone::Lidar() const
 {
   return lidar_;
