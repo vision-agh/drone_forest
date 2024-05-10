@@ -163,7 +163,20 @@ class GegelatiWrapper : public Learn::LearningEnvironment
    */
   virtual bool isTerminal() const override;
 
+  /**
+   * @brief Render the current state of the learning environment.
+   *
+   * @return cv::Mat& The rendered image of the environment.
+   */
   cv::Mat& Render();
+
+  /**
+   * @brief Get information about the positive outcome of the episode.
+   *
+   * @return true Episode was successful.
+   * @return false Episode was not successful.
+   */
+  bool isSuccess() const;
 
  protected:
   /**
@@ -187,6 +200,7 @@ class GegelatiWrapper : public Learn::LearningEnvironment
   Learn::LearningMode mode_;
 
   // Internal state
+  uint64_t last_action_id_;
   bool is_collision_;
   bool is_success_;
   geometric::Point last_drone_position_;

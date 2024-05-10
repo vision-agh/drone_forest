@@ -108,5 +108,5 @@
 	// "nbThreads" : 4,
 	// Percentage of deleted (and regenerated) root TPGVertex at each generation.
 	// "ratioDeletedRoots" : 0.5, // Default value
-	"ratioDeletedRoots" : 0.7
+	"ratioDeletedRoots" : 0.5
 }

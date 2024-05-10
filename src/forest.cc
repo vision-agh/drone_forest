@@ -11,7 +11,8 @@ Forest::Forest(const std::tuple<double, double> x_limits,
                const std::tuple<double, double> y_limits, double y_limit_static,
                int num_trees, double min_radius, double max_radius,
                std::vector<geometric::Circle> exclusion_zones,
-               double min_spare_distance, int max_spawn_attempts)
+               double min_spare_distance, double max_tree_speed,
+               int max_spawn_attempts)
 {
   // Generate uniform distribution for static trees
   std::uniform_real_distribution<double> x_dist(std::get<0>(x_limits),
@@ -84,7 +85,7 @@ Forest::Forest(const std::tuple<double, double> x_limits,
   if (y_limit_static < std::get<1>(y_limits))
   {
     GenerateMovingTrees(max_y, std::get<1>(y_limits), x_dist, radius_dist,
-                        min_spare_distance);
+                        min_spare_distance, max_tree_speed);
   }
 }
 
@@ -153,10 +154,11 @@ void Forest::GenerateMovingTrees(
     double y_current_min, double y_max,
     std::uniform_real_distribution<double>& x_dist,
     std::uniform_real_distribution<double>& radius_dist,
-    double min_spare_distance)
+    double min_spare_distance, double max_speed)
 {
   // Generate distribution for moving trees
-  std::uniform_real_distribution<double> moving_speed_dist(-5.0, 5.0);
+  std::uniform_real_distribution<double> moving_speed_dist(-max_speed,
+                                                           max_speed);
 
   while (y_current_min < y_max)
   {

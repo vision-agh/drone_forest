@@ -25,6 +25,7 @@ GegelatiWrapper::GegelatiWrapper(
       mode_(mode),
       accumulated_reward_(0),
       last_reward_(0),
+      last_action_id_(0),
       is_collision_(false),
       is_success_(false)
 {
@@ -44,6 +45,7 @@ GegelatiWrapper::GegelatiWrapper(const GegelatiWrapper& other)
       accumulated_reward_(other.accumulated_reward_),
       last_reward_(other.last_reward_),
       mode_(other.mode_),
+      last_action_id_(other.last_action_id_),
       is_collision_(other.is_collision_),
       is_success_(other.is_success_),
       last_drone_position_(other.last_drone_position_)
@@ -70,6 +72,7 @@ void GegelatiWrapper::reset(size_t seed, Learn::LearningMode mode)
   last_drone_position_ = drone_forest_.GetDronePosition();
   accumulated_reward_ = 0;
   last_reward_ = 0;
+  last_action_id_ = 0;
   mode_ = mode;
 }
 
@@ -77,6 +80,7 @@ void GegelatiWrapper::doAction(uint64_t actionID)
 {
   // One step of the simulation
   drone_forest_.Step(actions_[actionID] * drone_forest_.GetDroneMaxSpeed());
+  last_action_id_ = actionID;
 
   // Update observation
   SetLidarDistances(drone_forest_.GetLidarDistances());
@@ -181,17 +185,24 @@ void GegelatiWrapper::doAction(uint64_t actionID)
   //   }
   // }
 
-  if (is_collision_)
+  if (mode_ != Learn::LearningMode::VALIDATION)
   {
-    accumulated_reward_ = -25.0;
-  }
-  else if (is_success_)
-  {
-    accumulated_reward_ = 100.0;
+    if (is_collision_)
+    {
+      accumulated_reward_ = -25.0;
+    }
+    else if (is_success_)
+    {
+      accumulated_reward_ = 100.0;
+    }
+    else
+    {
+      accumulated_reward_ = -drone_forest_.DistanceToGoal();
+    }
   }
   else
   {
-    accumulated_reward_ = -drone_forest_.DistanceToGoal();
+    accumulated_reward_ = drone_forest_.GetDronePosition().y();
   }
 
   // accumulated_reward_ += last_reward_;
@@ -252,9 +263,19 @@ cv::Mat& GegelatiWrapper::Render()
               "Time: " + std::to_string(drone_forest_.GetTime()) + " s",
               cv::Point(10, 70), cv::FONT_HERSHEY_SIMPLEX, 1,
               cv::Scalar(255, 255, 255), 2);
+  cv::putText(score_panel, "Action: ", cv::Point(img.cols - 130, 30),
+              cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
+  cv::putText(score_panel, std::to_string(last_action_id_),
+              cv::Point(img.cols - 100, 70), cv::FONT_HERSHEY_SIMPLEX, 1,
+              cv::Scalar(255, 255, 255), 2);
   cv::vconcat(img, score_panel, render_);
 
   return render_;
+}
+
+bool GegelatiWrapper::isSuccess() const
+{
+  return is_success_;
 }
 
 void GegelatiWrapper::SetLidarDistances(const std::vector<double>& distances)

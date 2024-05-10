@@ -30,13 +30,15 @@ class Forest
    * @param exclusion_zones Exclusion zones for the trees
    * @param min_spare_distance Minimum distance between trees
    * @param num_moving_trees Number of moving trees
+   * @param max_tree_speed Maximum speed of the moving trees
    * @param max_spawn_attempts Maximum number of attempts to spawn a tree
    */
   Forest(const std::tuple<double, double> x_limits,
          const std::tuple<double, double> y_limits, double y_limit_static,
          int num_trees, double min_radius, double max_radius,
          std::vector<geometric::Circle> exclusion_zones,
-         double min_spare_distance, int max_spawn_attempts = 50);
+         double min_spare_distance, double max_tree_speed = 0.0,
+         int max_spawn_attempts = 50);
 
   /**
    * @brief Draw the forest on an image
@@ -90,7 +92,7 @@ class Forest
   void GenerateMovingTrees(double y_current_min, double y_max,
                            std::uniform_real_distribution<double>& x_dist,
                            std::uniform_real_distribution<double>& radius_dist,
-                           double min_spare_distance);
+                           double min_spare_distance, double max_speed);
 
  private:
   static std::mt19937 gen_;

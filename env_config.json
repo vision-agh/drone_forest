@@ -3,7 +3,7 @@
     "nb_directions": 4,
     
     "//nb_actions": "Number of all possible actions that the UAV can take. Must be divisible by nb_directions.",
-    "nb_actions": 4,
+    "nb_actions": 40,
 
     "//sim_step": "Duration of a simulation step in seconds.",
     "sim_step": 0.1,
@@ -23,10 +23,10 @@
     },
 
     "//y_static_limit": "Height boundary of the static area in meters.",
-    "y_static_limit": 12.0,
+    "y_static_limit": 8.0,
 
     "//n_trees": "Number of trees in the simulation area.",
-    "n_trees": 70,
+    "n_trees": 50,
 
     "//tree_radius_lim": "Radius of the trees in meters.",
     "tree_radius_lim":
@@ -42,10 +42,10 @@
     "lidar_range": 3.0,
 
     "//min_tree_spare_distance": "Minimum distance between the trees in meters.",
-    "min_tree_spare_distance": 0.5,
+    "min_tree_spare_distance": 0.75,
 
     "//max_spawn_attempts": "Maximum number of attempts to spawn a tree.",
-    "max_spawn_attempts": 100,
+    "max_spawn_attempts": 50,
 
     "//max_speed": "Maximum speed of the UAV in m/s.",
     "max_speed": 1.0,

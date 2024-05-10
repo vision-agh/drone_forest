@@ -10,9 +10,17 @@
 
 namespace fs = std::filesystem;
 
+// Simple template function to format output
+template <typename TSeed, typename TScore>
+void print_row(std::ostream& os, TSeed seed, TScore score)
+{
+  os << std::setw(5) << seed << " " << std::setw(10) << std::fixed
+     << std::setprecision(2) << score << std::endl;
+}
+
 int main(int argc, char** argv)
 {
-  size_t seed = argc > 1 ? std::stoul(argv[1]) : 0;
+  int n_evals = argc > 1 ? std::stoul(argv[1]) : 1;
   fs::path save_eval_dir = argc > 2 ? fs::path(argv[2]) : fs::path();
   const double FPS = 30.0;
 
@@ -65,12 +73,6 @@ int main(int argc, char** argv)
   std::ifstream env_config_file(env_config_path);
   json env_config = evs::drone_forest::ParseJsonFile(env_config_path);
   std::vector<evs::geometric::Point> actions;
-  if (env_config["nb_actions"] != 4 && env_config["nb_actions"] != 8)
-  {
-    std::cerr << "Invalid number of actions in JSON file: "
-              << env_config["nb_actions"] << std::endl;
-    return 1;
-  }
   for (const auto& action : env_config["actions"])
   {
     actions.push_back(evs::geometric::Point(action["x"], action["y"]));
@@ -115,37 +117,93 @@ int main(int argc, char** argv)
   dot_importer.importGraph();
 
   // Setup evaluation
-  drone_forest_le.reset(seed, Learn::LearningMode::VALIDATION);
   TPG::TPGExecutionEngine tee(dot_env);
   const TPG::TPGVertex* root(dot_graph.getRootVertices().back());
   cv::namedWindow(window_name, cv::WINDOW_NORMAL);
   cv::Mat display;
   char k = 0;
 
-  // Evaluate the best program
-  for (size_t i = 0;
-       i < params.maxNbActionsPerEval && !drone_forest_le.isTerminal(); i++)
-  {
-    // Perform action
-    auto vertex_list = tee.executeFromRoot(*root);
-    const auto action_id =
-        ((const TPG::TPGAction*)vertex_list.back())->getActionID();
-    drone_forest_le.doAction(action_id);
+  // Setup statistics
+  double avg_reward = 0.0;
+  double success_rate = 0.0;
 
-    // Render the environment
-    display = drone_forest_le.Render();
-    if (!save_eval_dir.empty())
+  // Run evaluation
+  bool show_env = true;
+  bool run_eval = true;
+  size_t seed = 0;
+  std::cout << "Running evaluation for " << n_evals << " environments."
+            << std::endl;
+  std::cout << "Press 'q' to quit, 's' to show the environment, 'h' to hide."
+            << std::endl;
+  print_row(std::cout, "Seed", "Score");
+  for (seed = 0; seed < n_evals && run_eval; seed++)
+  {
+    // Reset the environment
+    drone_forest_le.reset(seed, Learn::LearningMode::VALIDATION);
+
+    // Evaluate the best program
+    for (size_t i = 0;
+         i < params.maxNbActionsPerEval && !drone_forest_le.isTerminal(); i++)
     {
-      fs::path img_path = save_eval_dir / (std::to_string(i) + ".png");
-      cv::imwrite(img_path.string(), display);
+      // Perform action
+      auto vertex_list = tee.executeFromRoot(*root);
+      const auto action_id =
+          ((const TPG::TPGAction*)vertex_list.back())->getActionID();
+      drone_forest_le.doAction(action_id);
+
+      // Save rendered environment
+      display = drone_forest_le.Render();
+      if (!save_eval_dir.empty())
+      {
+        fs::path img_path = save_eval_dir / (std::to_string(i) + ".png");
+        cv::imwrite(img_path.string(), display);
+      }
+
+      // Display environment
+      if (show_env)
+      {
+        cv::imshow(window_name, display);
+        k = char(cv::waitKey(1000 / FPS));
+      }
+      else
+      {
+        k = cv::waitKey(1);
+      }
+
+      // Control the evaluation
+      if (k == 'q')
+      {
+        run_eval = false;
+        break;
+      }
+      else if (k == 's')
+      {
+        show_env = true;
+      }
+      else if (k == 'h')
+      {
+        show_env = false;
+      }
     }
-    cv::imshow(window_name, display);
-    k = char(cv::waitKey(1000 / FPS));
-    if (k == 'q')
+
+    // Print output score
+    print_row(std::cout, seed, drone_forest_le.getScore());
+
+    // Update statistics
+    avg_reward += drone_forest_le.getScore();
+    if (drone_forest_le.isSuccess())
     {
-      break;
+      success_rate += 1.0;
     }
   }
+  // Print statistics
+  avg_reward /= seed;
+  success_rate /= seed;
+  std::cout << "Average score: " << std::fixed << std::setprecision(2)
+            << avg_reward << std::endl;
+  std::cout << "Success rate: " << std::fixed << std::setprecision(2)
+            << success_rate * 100 << " %" << std::endl;
+
   std::cin.clear();
   std::cout << "Evaluation ended. Press any key with the focus on the window "
             << window_name << " to close the program." << std::endl;
