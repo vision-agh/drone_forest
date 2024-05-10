@@ -18,6 +18,30 @@
 namespace fs = std::filesystem;
 using json = nlohmann::json;
 
+std::vector<evs::geometric::Point> createActionVec(int nb_actions,
+                                                   int nb_directions)
+{
+  std::vector<evs::geometric::Point> actions;
+  std::vector<evs::geometric::Point> base_actions = {
+      evs::geometric::Point(0.0, 1.0), evs::geometric::Point(-1.0, 0.0),
+      evs::geometric::Point(0.0, -1.0), evs::geometric::Point(1.0, 0.0)};
+
+  // Generate actions as 2D velocity vectors
+  int actions_per_direction = nb_actions / nb_directions;
+  for (int idx_dir = 0; idx_dir < nb_directions; idx_dir++)
+  {
+    for (int idx_act = 0; idx_act < actions_per_direction; idx_act++)
+    {
+      evs::geometric::Point action = base_actions[idx_dir];
+      action = action / double(actions_per_direction);
+      action = action * (idx_act + 1);
+      actions.push_back(action);
+    }
+  }
+
+  return actions;
+}
+
 void controllerLoop(std::atomic<bool>& exit, std::atomic<bool>& toggle_display,
                     std::atomic<bool>& do_eval,
                     const TPG::TPGVertex** best_root,
@@ -138,22 +162,8 @@ int main(int argc, char** argv)
                 << env_config["nb_directions"] << std::endl;
       return 1;
     }
-    int actions_per_direction =
-        int(env_config["nb_actions"]) / int(env_config["nb_directions"]);
-    std::vector<evs::geometric::Point> actions;
-    std::vector<evs::geometric::Point> base_actions = {
-        evs::geometric::Point(0.0, 1.0), evs::geometric::Point(-1.0, 0.0),
-        evs::geometric::Point(0.0, -1.0), evs::geometric::Point(1.0, 0.0)};
-    for (int idx_dir = 0; idx_dir < int(env_config["nb_directions"]); idx_dir++)
-    {
-      for (int idx_act = 0; idx_act < actions_per_direction; idx_act++)
-      {
-        evs::geometric::Point action = base_actions[idx_dir];
-        action = action / double(actions_per_direction);
-        action = action * (idx_act + 1);
-        actions.push_back(action);
-      }
-    }
+    std::vector<evs::geometric::Point> actions = createActionVec(
+        int(env_config["nb_actions"]), int(env_config["nb_directions"]));
     env_config["actions"] = actions;
     double sim_step = env_config["sim_step"];
     std::tuple<double, double> xlim = {env_config["x_lim"]["min"],

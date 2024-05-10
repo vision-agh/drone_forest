@@ -12,10 +12,11 @@ namespace fs = std::filesystem;
 
 // Simple template function to format output
 template <typename TSeed, typename TScore>
-void print_row(std::ostream& os, TSeed seed, TScore score)
+void print_row(std::ostream& os, TSeed seed, TScore score, std::string success)
 {
   os << std::setw(5) << seed << " " << std::setw(10) << std::fixed
-     << std::setprecision(2) << score << std::endl;
+     << std::setprecision(2) << score << " " << std::setw(10) << success
+     << std::endl;
 }
 
 int main(int argc, char** argv)
@@ -135,7 +136,7 @@ int main(int argc, char** argv)
             << std::endl;
   std::cout << "Press 'q' to quit, 's' to show the environment, 'h' to hide."
             << std::endl;
-  print_row(std::cout, "Seed", "Score");
+  print_row(std::cout, "Seed", "Score", "Success");
   for (seed = 0; seed < n_evals && run_eval; seed++)
   {
     // Reset the environment
@@ -187,7 +188,8 @@ int main(int argc, char** argv)
     }
 
     // Print output score
-    print_row(std::cout, seed, drone_forest_le.getScore());
+    print_row(std::cout, seed, drone_forest_le.getScore(),
+              drone_forest_le.isSuccess() ? "Yes" : "No");
 
     // Update statistics
     avg_reward += drone_forest_le.getScore();
