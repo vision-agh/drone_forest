@@ -23,7 +23,7 @@
     },
 
     "//y_static_limit": "Height boundary of the static area in meters.",
-    "y_static_limit": 8.0,
+    "y_static_limit": 10.0,
 
     "//n_trees": "Number of trees in the simulation area.",
     "n_trees": 50,

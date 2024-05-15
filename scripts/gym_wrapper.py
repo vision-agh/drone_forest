@@ -48,6 +48,7 @@ class DroneForestEnv(gym.Env):
         dt: float,
         x_lim: Tuple[float, float],
         y_lim: Tuple[float, float],
+        y_static_limit: float,
         n_trees: int,
         tree_radius_lim: Tuple[float, float],
         n_lidar_beams: int,
@@ -90,6 +91,8 @@ class DroneForestEnv(gym.Env):
             sim_step=dt,
             x_lim=x_lim,
             y_lim=y_lim,
+            y_static_limit=y_static_limit,
+            goal_y=y_lim[1] - 2.0,
             n_trees=n_trees,
             tree_min_radius=tree_radius_lim[0],
             tree_max_radius=tree_radius_lim[1],
@@ -129,17 +132,11 @@ class DroneForestEnv(gym.Env):
 
         # Determine termination or truncation
         drone_position = self.env.get_drone_position()
-        if (
-            self.env.check_collision()
-            or drone_position[X] <= self.x_lim[0]
-            or drone_position[X] >= self.x_lim[1]
-            or drone_position[Y] <= self.y_lim[0]
-            or drone_position[Y] >= self.y_lim[1]
-        ):
+        if self.env.check_collision():
             # Drone crashed or went out of bounds
             reward = PENALTY_TREE_COLLISION
             terminated = True
-        elif drone_position[Y] >= self.y_lim[1] - 2.0:
+        elif self.env.check_goal_reached():
             # Drone reached the end
             reward = 1.0
             terminated = True

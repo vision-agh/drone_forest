@@ -17,7 +17,7 @@
 	// reached, possibly after several generations, the score of the root will be
 	// fixed, and no further evaluation will be done.
 	// "maxNbEvaluationPerPolicy" : 1000, // Default value
-	"maxNbEvaluationPerPolicy" : 100,
+	"maxNbEvaluationPerPolicy" : 1000,
 	"mutation" : 
 	{
 		"prog" : 
@@ -50,7 +50,7 @@
 		"tpg": {
 			// When a Program is mutated, makes sure its behavior is no longer the same.
 			// "forceProgramBehaviorChangeOnMutation" : false, // Default value
-			"forceProgramBehaviorChangeOnMutation": true,
+			"forceProgramBehaviorChangeOnMutation": false,
 			// Maximum number of TPGEdge connected to each TPGTeam of the TPGGraph when
 			// initialized.
 			// "maxInitOutgoingEdges" : 3, // Default value
@@ -64,7 +64,7 @@
 			/* "nbActions" : 0,*/
 			// Number of root TPGTeams to maintain when populating the TPGGraph
 			// "nbRoots" : 100, // Default value
-			"nbRoots": 160,
+			"nbRoots": 360,
 			// Probability of adding an outgoing Edge to a Team.
 			// "pEdgeAddition" : 0.7, // Default value
 			"pEdgeAddition": 0.7,
@@ -84,7 +84,7 @@
 	},
 	// Number of generations of the training.
 	// "nbGenerations" : 500, // Default value
-	"nbGenerations" : 500,
+	"nbGenerations" : 250,
 	// [Only used in AdversarialLearningAgent.]
 	// Number of times each job is evaluated in the learning process.
 	// Each root may belong to several jobs, hence this parameter should be lower
@@ -96,7 +96,7 @@
 	"nbIterationsPerPolicyEvaluation" : 5,
 	// Number of Constant available in each Program.
 	// "nbProgramConstant" : 0, // Default value
-	"nbProgramConstant" : 0,
+	"nbProgramConstant" : 5,
 	// Number of registers for the Program execution.
 	// "nbRegisters" : 8, // Default value
 	"nbRegisters" : 16,

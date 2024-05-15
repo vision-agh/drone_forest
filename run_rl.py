@@ -28,7 +28,6 @@ def make_env(rank: int, seed: int = 0, config_dict: Dict = {}) -> DroneForestEnv
             x_lim=(config_dict["x_lim"]["min"], config_dict["x_lim"]["max"]),
             y_lim=(config_dict["y_lim"]["min"], config_dict["y_lim"]["max"]),
             y_static_limit=config_dict["y_static_limit"],
-            goal_y=config_dict["y_lim"]["max"] - 2.0,
             n_trees=config_dict["n_trees"],
             tree_radius_lim=(
                 config_dict["tree_radius_lim"]["min"],
@@ -54,8 +53,8 @@ if __name__ == "__main__":
     # Set the parameters for the simulation
     n_training_envs = 16
     n_eval_envs = 4
-    n_learning_steps = 100_000_000
-    n_eval_every = 250_000
+    n_learning_steps = 25_000_000
+    n_eval_every = 100_000
 
     # Read environment configuration
     with open("./env_config.json", "r") as config_file:
