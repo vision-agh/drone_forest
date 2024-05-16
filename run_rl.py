@@ -53,7 +53,7 @@ if __name__ == "__main__":
     # Set the parameters for the simulation
     n_training_envs = 16
     n_eval_envs = 4
-    n_learning_steps = 25_000_000
+    n_learning_steps = 30_000_000
     n_eval_every = 100_000
 
     # Read environment configuration

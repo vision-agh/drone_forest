@@ -28,7 +28,7 @@ MAX_SIM_TIME_S = 120.0
 TREE_SAFE_DISTANCE = 0.15
 TREE_COLLISION_DISTANCE = 0.2
 PENALTY_CLOSE_TO_TREE = -0.25
-PENALTY_TREE_COLLISION = -1.5
+PENALTY_TREE_COLLISION = -25.0  # -1.5
 PENALTY_FAR_FROM_CENTER_LINE_COEFF = -0.1
 PENALTY_WRONG_DIRECTION_COEFF = -3.0
 REWARD_GOOD_DIRECTION_COEFF = 0.8
@@ -134,34 +134,34 @@ class DroneForestEnv(gym.Env):
         drone_position = self.env.get_drone_position()
         if self.env.check_collision():
             # Drone crashed or went out of bounds
-            reward = PENALTY_TREE_COLLISION
+            reward = -25.0
             terminated = True
         elif self.env.check_goal_reached():
             # Drone reached the end
-            reward = 1.0
+            reward = 100.0
             terminated = True
         else:
             # Drone is still flying
-            reward = 0.0
+            reward = -self.env.distance_to_goal()
             terminated = False
         truncated = self.env.get_time() >= MAX_SIM_TIME_S
 
-        # Reward shaping
-        if not terminated:
-            # Penalize being too far from the center line
-            reward += PENALTY_FAR_FROM_CENTER_LINE_COEFF * abs(drone_position[X])
+        # # Reward shaping
+        # if not terminated:
+        #     # Penalize being too far from the center line
+        #     reward += PENALTY_FAR_FROM_CENTER_LINE_COEFF * abs(drone_position[X])
 
-            # Penalize being too close to a tree
-            for dist in obs:
-                if dist < TREE_SAFE_DISTANCE:
-                    reward += PENALTY_CLOSE_TO_TREE
+        #     # Penalize being too close to a tree
+        #     for dist in obs:
+        #         if dist < TREE_SAFE_DISTANCE:
+        #             reward += PENALTY_CLOSE_TO_TREE
 
-            # Reward moving in the right direction or penalize moving in the wrong
-            # direction
-            if drone_position[Y] > self.drone_prev_position[Y]:
-                reward += REWARD_GOOD_DIRECTION_COEFF
-            else:
-                reward += PENALTY_WRONG_DIRECTION_COEFF
+        #     # Reward moving in the right direction or penalize moving in the wrong
+        #     # direction
+        #     if drone_position[Y] > self.drone_prev_position[Y]:
+        #         reward += REWARD_GOOD_DIRECTION_COEFF
+        #     else:
+        #         reward += PENALTY_WRONG_DIRECTION_COEFF
 
         # Info
         info = {
