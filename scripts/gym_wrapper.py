@@ -164,7 +164,11 @@ class DroneForestEnv(gym.Env):
                 reward += PENALTY_WRONG_DIRECTION_COEFF
 
         # Info
-        info = {}
+        info = {
+            "is_collision": self.env.check_collision(),
+            "is_goal_reached": self.env.check_goal_reached(),
+            "drone_position_y": self.env.get_drone_position()[Y],
+        }
 
         # Update the previous drone position
         self.drone_prev_position = drone_position
@@ -196,7 +200,11 @@ class DroneForestEnv(gym.Env):
         obs = np.array(self.env.get_lidar_distances(), dtype=np.float64)
 
         # Info
-        info = {}
+        info = {
+            "is_collision": self.env.check_collision(),
+            "is_goal_reached": self.env.check_goal_reached(),
+            "drone_position_y": self.env.get_drone_position()[Y],
+        }
 
         return obs, info
 
