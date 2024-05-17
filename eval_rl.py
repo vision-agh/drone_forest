@@ -3,7 +3,6 @@
 import argparse
 
 # import cv2
-import json
 import os
 
 from stable_baselines3 import PPO
@@ -11,6 +10,8 @@ from stable_baselines3 import PPO
 # from stable_baselines3.common.evaluation import evaluate_policy
 
 from scripts.gym_wrapper import DroneForestEnv
+
+import scripts.json_utils as jutils
 
 
 def main(args):
@@ -20,12 +21,7 @@ def main(args):
         args (argparse.Namespace): The parsed command-line arguments.
     """
     # Load the experiment configuration
-    with open(os.path.join(args.exp_dir, "env_config.json"), "r") as f:
-        config_dict = json.load(f)
-    assert config_dict["nb_directions"] in [4], "Invalid number of actions."
-    assert (
-        config_dict["nb_actions"] % config_dict["nb_directions"] == 0
-    ), "Invalid number of actions."
+    config_dict = jutils.read_env_config(os.path.join(args.exp_dir, "env_config.json"))
 
     # Load the environment
     env = DroneForestEnv(
@@ -51,15 +47,6 @@ def main(args):
 
     # Load the trained RL agent
     model = PPO.load(os.path.join(args.exp_dir, "best_model.zip"))
-
-    # Evaluate the agent
-    # mean_reward, std_reward = evaluate_policy(
-    #     model,
-    #     env,
-    #     n_eval_episodes=args.num_episodes,
-    #     render=True,
-    #     deterministic=True,
-    # )
 
     end_evaluation = False
     avg_reward = 0

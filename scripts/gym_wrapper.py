@@ -142,7 +142,9 @@ class DroneForestEnv(gym.Env):
             terminated = True
         else:
             # Drone is still flying
-            reward = -self.env.distance_to_goal()
+            reward = drone_position[Y] - self.drone_prev_position[Y]
+            if reward > 0:
+                reward *= 2.0
             terminated = False
         truncated = self.env.get_time() >= MAX_SIM_TIME_S
 

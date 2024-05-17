@@ -1,0 +1,25 @@
+{
+    "//algorithm": "Name of the algorithm to use. Can be 'ppo'.",
+    "algorithm": "ppo",
+
+    "//nb_layers": "Number of layers for the neural network.",
+    "nb_layers": 2,
+
+    "//nb_neurons": "Number of neurons per layer.",
+    "nb_neurons": 64,
+
+    "//activation_fn": "Activation function for the neural network. Can be 'relu', 'tanh', 'sigmoid'.",
+    "activation_fn": "relu",
+
+    "//nb_training_steps": "Number of learning steps in training.",
+    "nb_training_steps": 100000000,
+
+    "//nb_training_envs": "Number of parallel training environments.",
+    "nb_training_envs": 16,
+
+    "//nb_eval_envs": "Number of parallel evaluation environments.",
+    "nb_eval_envs": 4,
+
+    "//nb_eval_every": "Evaluate the agent every n steps.",
+    "nb_eval_every": 100000
+}
