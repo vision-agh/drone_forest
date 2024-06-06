@@ -44,7 +44,7 @@ target_link_libraries(instructions ${GEGELATI_LIBRARIES})
 
 add_library(json_parser SHARED json_parser.cc ${HEADER_LIST})
 target_include_directories(json_parser PUBLIC ../include)
-target_link_libraries(json_parser nlohmann_json::nlohmann_json)
+target_link_libraries(json_parser nlohmann_json::nlohmann_json geometric)
 
 source_group(
     TREE "${PROJECT_SOURCE_DIR}/include" 

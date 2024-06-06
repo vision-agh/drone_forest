@@ -5,6 +5,30 @@ namespace evs
 namespace drone_forest
 {
 
+std::vector<evs::geometric::Point> createActionVec(int nb_actions,
+                                                   int nb_directions)
+{
+  std::vector<evs::geometric::Point> actions;
+  std::vector<evs::geometric::Point> base_actions = {
+      evs::geometric::Point(0.0, 1.0), evs::geometric::Point(-1.0, 0.0),
+      evs::geometric::Point(0.0, -1.0), evs::geometric::Point(1.0, 0.0)};
+
+  // Generate actions as 2D velocity vectors
+  int actions_per_direction = nb_actions / nb_directions;
+  for (int idx_dir = 0; idx_dir < nb_directions; idx_dir++)
+  {
+    for (int idx_act = 0; idx_act < actions_per_direction; idx_act++)
+    {
+      evs::geometric::Point action = base_actions[idx_dir];
+      action = action / double(actions_per_direction);
+      action = action * (idx_act + 1);
+      actions.push_back(action);
+    }
+  }
+
+  return actions;
+}
+
 json ParseJsonFile(const fs::path& file_path)
 {
   std::ifstream config_file(file_path);
@@ -24,6 +48,13 @@ json ParseJsonFile(const fs::path& file_path)
     j["nb_actions"] = 4;
     std::cerr << "Setting number of actions to default: " << j["nb_actions"]
               << std::endl;
+  }
+
+  if (!j.contains("actions"))
+  {
+    std::cerr << "Actions not found in JSON file." << std::endl;
+    j["actions"] = createActionVec(j["nb_actions"], j["nb_directions"]);
+    std::cerr << "Setting actions to default: " << j["actions"] << std::endl;
   }
 
   if (!j.contains("sim_step"))

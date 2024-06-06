@@ -59,7 +59,8 @@ def main(args):
             action, _ = model.predict(obs, deterministic=True)
             obs, _, terminated, truncated, info = env.step(action)
             done = terminated or truncated
-            # env.render()
+            if args.render:
+                env.render()
             if done:
                 if info["is_goal_reached"]:
                     success_rate += 1
@@ -89,6 +90,11 @@ if __name__ == "__main__":
         type=int,
         default=100,
         help="Number of episodes to evaluate the agent for.",
+    )
+    parser.add_argument(
+        "--render",
+        action="store_true",
+        help="Render the environment during evaluation.",
     )
     args = parser.parse_args()
     main(args)
