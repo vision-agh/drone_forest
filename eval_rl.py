@@ -13,6 +13,8 @@ from scripts.gym_wrapper import DroneForestEnv
 
 import scripts.json_utils as jutils
 
+EVAL_RESULTS_DIR = "eval_rl"
+
 
 def main(args):
     """Evaluate the trained RL agent on the environment.
@@ -20,6 +22,11 @@ def main(args):
     Args:
         args (argparse.Namespace): The parsed command-line arguments.
     """
+    # Save path to experiment directory into evaluation results
+    if args.store_results:
+        with open(os.path.join(EVAL_RESULTS_DIR, "exp_dir.txt"), "w") as f:
+            f.write(os.path.abspath(args.exp_dir))
+
     # Load the experiment configuration
     config_dict = jutils.read_env_config(os.path.join(args.exp_dir, "env_config.json"))
 
@@ -53,6 +60,8 @@ def main(args):
     success_rate = 0
     print(" Seed " + " " * 5 + "Score " + " " * 3 + "Success")
     for i in range(args.num_episodes):
+        if args.store_results:
+            open(os.path.join(EVAL_RESULTS_DIR, "drone_pos.csv"), "w").close()
         obs, _ = env.reset(seed=i)
         done = False
         while not done:
@@ -69,6 +78,9 @@ def main(args):
                     f"{i:5d} {info['drone_position_y']:10.2f} "
                     f"{('Yes' if info['is_goal_reached'] else 'No')!s:>10}"
                 )
+            if args.store_results:
+                with open(os.path.join(EVAL_RESULTS_DIR, "drone_pos.csv"), "a") as f:
+                    f.write(f"{info['drone_position_x']},{info['drone_position_y']}\n")
         if end_evaluation:
             break
     env.close()
@@ -95,6 +107,11 @@ if __name__ == "__main__":
         "--render",
         action="store_true",
         help="Render the environment during evaluation.",
+    )
+    parser.add_argument(
+        "--store_results",
+        action="store_true",
+        help="Store the evaluation results in a directory.",
     )
     args = parser.parse_args()
     main(args)

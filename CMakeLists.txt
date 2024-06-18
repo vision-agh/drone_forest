@@ -44,6 +44,6 @@ target_link_libraries(codegen_gegelati PRIVATE instructions json_parser ${GEGELA
 target_compile_definitions(codegen_gegelati PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 add_executable(render_eval render_eval.cc)
-target_include_directories(render_eval PUBLIC ../include ${OpenCV_INCLUDE_DIRS})
+target_include_directories(render_eval PUBLIC ../include ${HEADER_LIST} ${OpenCV_INCLUDE_DIRS})
 target_link_libraries(render_eval PRIVATE forest drone json_parser ${OpenCV_LIBS})
 target_compile_definitions(render_eval PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")

@@ -155,7 +155,7 @@ int main(int argc, char** argv)
     double x_range = std::get<1>(xlim) - std::get<0>(xlim);
     m2px = img_height / y_range;
     double img_width = int(x_range * m2px);
-    img = cv::Mat(img_height, img_width, CV_8UC3, cv::Scalar(0, 255, 0));
+    img = cv::Mat(img_height, img_width, CV_8UC3, cv::Scalar(54, 149, 70));
     forest.Draw(img, t_vec, m2px);
   }
   else

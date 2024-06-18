@@ -22,7 +22,9 @@ geometric::Circle Tree::Trunk() const
 void Tree::Draw(cv::Mat& img, geometric::Point t_vec, double m2px) const
 {
   // NOTE: Tree has a brown color
-  trunk_.Draw(img, cv::Scalar(19, 69, 139), t_vec, m2px);
+  // cv::Scalar color(139, 69, 19);
+  cv::Scalar color(13, 63, 112);
+  trunk_.Draw(img, color, t_vec, m2px);
 }
 
 void Tree::UpdatePosition(geometric::Point new_center)

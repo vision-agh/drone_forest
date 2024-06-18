@@ -169,6 +169,7 @@ class DroneForestEnv(gym.Env):
         info = {
             "is_collision": self.env.check_collision(),
             "is_goal_reached": self.env.check_goal_reached(),
+            "drone_position_x": self.env.get_drone_position()[X],
             "drone_position_y": self.env.get_drone_position()[Y],
         }
 
