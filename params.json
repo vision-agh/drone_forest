@@ -24,13 +24,13 @@
 		{
 			// Maximum constant value possible.
 			// "maxConstValue" : 100, // Default value
-			"maxConstValue" : 50,
+			"maxConstValue" : 100,
 			// Maximum number of Line within the Program of the TPG.
 			// "maxProgramSize" : 96, // Default value
 			"maxProgramSize" : 96,
 			// Minimum constant value possible.
 			// "minConstValue" : -10, // Default value
-			"minConstValue" : -20,
+			"minConstValue" : -10,
 			// Probability of inserting a line in the Program.
 			// "pAdd" : 0.5, // Default value
 			"pAdd" : 0.5,
@@ -54,37 +54,37 @@
 			// Maximum number of TPGEdge connected to each TPGTeam of the TPGGraph when
 			// initialized.
 			// "maxInitOutgoingEdges" : 3, // Default value
-			"maxInitOutgoingEdges": 3,
+			"maxInitOutgoingEdges" : 3,
 			// Maximum number of outgoing edge during TPGGraph mutations.
 			// "maxOutgoingEdges" : 5, // Default value
-			"maxOutgoingEdges": 5,
+			"maxOutgoingEdges" : 5,
 			// Number of TPGAction vertex of the initialized TPGGraph.
 			// This parameter is generally automatically set by the LearningEnvironment.
 			// /* "nbActions" : 0,*/ // Commented by default
 			/* "nbActions" : 0,*/
 			// Number of root TPGTeams to maintain when populating the TPGGraph
 			// "nbRoots" : 100, // Default value
-			"nbRoots": 252,
+			"nbRoots" : 324,
 			// Probability of adding an outgoing Edge to a Team.
 			// "pEdgeAddition" : 0.7, // Default value
-			"pEdgeAddition": 0.7,
+			"pEdgeAddition" : 0.8,
 			// Probability of deleting an outgoing Edge of a Team.
 			// "pEdgeDeletion" : 0.7, // Default value
-			"pEdgeDeletion": 0.7,
+			"pEdgeDeletion" : 0.7,
 			// Probability of changing the destination of an Edge.
 			// "pEdgeDestinationChange" : 0.1, // Default value
-			"pEdgeDestinationChange": 0.1,
+			"pEdgeDestinationChange" : 0.1,
 			// Probability of the new destination of an Edge to be an Action.
 			// "pEdgeDestinationIsAction" : 0.5, // Default value
-			"pEdgeDestinationIsAction": 0.5,
+			"pEdgeDestinationIsAction" : 0.5,
 			// Probability of mutating the Program of an outgoing Edge.
 			// "pProgramMutation" : 0.2, // Default value
-			"pProgramMutation": 0.2
+			"pProgramMutation" : 0.2
 		}
 	},
 	// Number of generations of the training.
 	// "nbGenerations" : 500, // Default value
-	"nbGenerations" : 250,
+	"nbGenerations" : 100,
 	// [Only used in AdversarialLearningAgent.]
 	// Number of times each job is evaluated in the learning process.
 	// Each root may belong to several jobs, hence this parameter should be lower

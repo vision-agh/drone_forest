@@ -36,9 +36,14 @@ target_link_libraries(run_gegelati PRIVATE gegelati_wrapper instructions json_pa
 target_compile_definitions(run_gegelati PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 add_executable(eval_gegelati eval_gegelati.cc)
-target_link_libraries(eval_gegelati PRIVATE gegelati_wrapper instructions json_parser ${GEGELATI_LIBRARIES})
+target_link_libraries(eval_gegelati PRIVATE gegelati_wrapper instructions json_parser geometric ${GEGELATI_LIBRARIES})
 target_compile_definitions(eval_gegelati PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
 
 add_executable(codegen_gegelati codegen_gegelati.cc)
 target_link_libraries(codegen_gegelati PRIVATE instructions json_parser ${GEGELATI_LIBRARIES})
 target_compile_definitions(codegen_gegelati PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")
+
+add_executable(render_eval render_eval.cc)
+target_include_directories(render_eval PUBLIC ../include ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(render_eval PRIVATE forest drone json_parser ${OpenCV_LIBS})
+target_compile_definitions(render_eval PRIVATE ROOT_DIR="${CMAKE_SOURCE_DIR}")

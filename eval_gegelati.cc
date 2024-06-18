@@ -1,14 +1,18 @@
 #include <drone_forest/gegelati_wrapper.h>
+#include <drone_forest/geometric/point.h>
 #include <drone_forest/instructions.h>
 #include <drone_forest/json_parser.h>
 #include <gegelati.h>
 
 #include <algorithm>
 #include <filesystem>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 
 namespace fs = std::filesystem;
+
+const std::string kExpDirFile = "exp_dir.txt";
 
 // Simple template function to format output
 template <typename TSeed, typename TScore>
@@ -64,6 +68,13 @@ int main(int argc, char** argv)
   }
   fs::path exp_dir = exp_paths[exp_idx];
   std::cout << "Selected experiment: " << exp_dir << std::endl;
+  if (!save_eval_dir.empty())
+  {
+    // Save exp_dir to file
+    std::ofstream exp_file(save_eval_dir / kExpDirFile);
+    exp_file << exp_dir;
+    exp_file.close();
+  }
 
   // Create the set of instructions
   Instructions::Set set;
@@ -142,6 +153,21 @@ int main(int argc, char** argv)
     // Reset the environment
     drone_forest_le.reset(seed, Learn::LearningMode::VALIDATION);
 
+    // Clear eval directory content
+    if (!save_eval_dir.empty())
+    {
+      for (const auto& entry :
+           std::filesystem::directory_iterator(save_eval_dir))
+      {
+        // Do NOT remove file with path to exp dir
+        if (entry.path().extension() == ".txt")
+        {
+          continue;
+        }
+        std::filesystem::remove_all(entry.path());
+      }
+    }
+
     // Evaluate the best program
     for (size_t i = 0;
          i < params.maxNbActionsPerEval && !drone_forest_le.isTerminal(); i++)
@@ -158,6 +184,10 @@ int main(int argc, char** argv)
       {
         fs::path img_path = save_eval_dir / (std::to_string(i) + ".png");
         cv::imwrite(img_path.string(), display);
+
+        evs::geometric::Point drone_pos = drone_forest_le.GetDronePosition();
+        std::ofstream pos_file(save_eval_dir / "drone_pos.csv", std::ios::app);
+        pos_file << drone_pos.x() << "," << drone_pos.y() << std::endl;
       }
 
       // Display environment

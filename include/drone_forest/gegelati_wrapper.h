@@ -178,6 +178,13 @@ class GegelatiWrapper : public Learn::LearningEnvironment
    */
   bool isSuccess() const;
 
+  /**
+   * @brief Get the drone position.
+   *
+   * @return geometric::Point Drone position.
+   */
+  geometric::Point GetDronePosition() const;
+
  protected:
   /**
    * @brief Set the distances measured by the LiDAR sensor.

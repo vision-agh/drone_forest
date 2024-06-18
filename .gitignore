@@ -8,3 +8,4 @@ __pycache__/
 logs*/
 build/
 scripts/*.gif
+eval_tpg/

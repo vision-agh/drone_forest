@@ -278,6 +278,11 @@ bool GegelatiWrapper::isSuccess() const
   return is_success_;
 }
 
+geometric::Point GegelatiWrapper::GetDronePosition() const
+{
+  return drone_forest_.GetDronePosition();
+}
+
 void GegelatiWrapper::SetLidarDistances(const std::vector<double>& distances)
 {
   double lidar_max_range = drone_forest_.GetLidarRange();
